@@ -1,10 +1,10 @@
-baseURL = "http://example.org/"
+baseURL = "https://mariano-gonzalez.com"
 languageCode = "en-us"
-title = "Ink"
+title = "Mariano Gonzalez"
 theme = "hugo-ink"
 paginate = 5
 
-copyright = "© Copyright notice"
+copyright = "<p>Copyright © 2023 Mariano Gonzalez</p><p xmlns:dct='http://purl.org/dc/terms/' xmlns:cc='http://creativecommons.org/ns#' class='license-text'><a rel='cc:attributionURL' property='dct:title' href='https://github.com/schnerring/schnerring.github.io/tree/main/content'>Content</a> licensed under <a rel='license' href='https://creativecommons.org/licenses/by/4.0'>CC BY 4.0</a></p>"
 
 pygmentsstyle = "vs"
 pygmentscodefences = true
@@ -14,10 +14,11 @@ googleAnalytics = "UA-123-45"
 disqusShortname = "ink-demo"
 
 [params]
-	subtitle = "Crisp, minimal personal [blog theme for Hugo](https://github.com/knadh/hugo-ink)"
+	subtitle = "Coder and Computer Enthusiast"
 
 	# Optional 64x64 avatar image.
-	avatar = "https://image.freepik.com/free-vector/young-man-head-with-beard-avatar-character_24877-36786.jpg"
+	# avatar = "https://image.freepik.com/free-vector/mexican-man-face-avatar-icon-cartoon_18591-52236.jpg"
+
 
 	# Content types to disable Disqus on.
 	disableDisqusTypes = ["page"]
@@ -53,7 +54,7 @@ weight = 4
 [[params.social]]
 name = "Github"
 icon = "github"
-url = "https://github.com/knadh/hugo-ink"
+url = "https://github.com/eschizoid"
 
 [[params.social]]
 name = "RSS"
@@ -61,4 +62,4 @@ icon = "rss"
 url = "/index.xml"
 
 [taxonomies]
-   tag = "tags"
+tag = "tags"
