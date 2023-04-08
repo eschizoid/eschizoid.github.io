@@ -4,14 +4,14 @@ title = "Mariano Gonzalez"
 theme = "hugo-ink"
 paginate = 5
 
-copyright = "<p>Copyright © 2023 Mariano Gonzalez</p><p xmlns:dct='http://purl.org/dc/terms/' xmlns:cc='http://creativecommons.org/ns#' class='license-text'><a rel='cc:attributionURL' property='dct:title' href='https://github.com/schnerring/schnerring.github.io/tree/main/content'>Content</a> licensed under <a rel='license' href='https://creativecommons.org/licenses/by/4.0'>CC BY 4.0</a></p>"
+copyright = "<p>Copyright © 2023 Mariano Gonzalez</p><p xmlns:dct='http://purl.org/dc/terms/' xmlns:cc='http://creativecommons.org/ns#' class='license-text'><a rel='cc:attributionURL' property='dct:title' href='https://github.com/eschizoid/eschizoid.github.io/tree/main/content'>Content</a> licensed under <a rel='license' href='https://creativecommons.org/licenses/by/4.0'>CC BY 4.0</a></p>"
 
 pygmentsstyle = "vs"
 pygmentscodefences = true
 pygmentscodefencesguesssyntax = true
 
-googleAnalytics = "UA-123-45"
-disqusShortname = "ink-demo"
+googleAnalytics = "G-1R50XCY25D"
+	disqusShortname = "eschizoid"
 
 [params]
 	subtitle = "Coder and Computer Enthusiast"
@@ -50,6 +50,11 @@ weight = 3
 name = "Tags"
 url = "/tags"
 weight = 4
+
+[[params.social]]
+name = "LinkedIn"
+icon = "linkedin"
+url = "https://www.linkedin.com/in/marianogonzalezmx/?locale=en_US"
 
 [[params.social]]
 name = "Github"
