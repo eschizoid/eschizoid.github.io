@@ -11,7 +11,7 @@ pygmentscodefences = true
 pygmentscodefencesguesssyntax = true
 
 googleAnalytics = "G-1R50XCY25D"
-	disqusShortname = "eschizoid"
+disqusShortname = "eschizoid"
 
 [params]
 	subtitle = "Coder and Computer Enthusiast"
@@ -67,4 +67,4 @@ icon = "rss"
 url = "/index.xml"
 
 [taxonomies]
-   tag = "tags"
+tag = "tags"
