@@ -24,6 +24,7 @@
 	<link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" type="text/css" media="screen" href="{{ .Site.BaseURL }}css/normalize.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="{{ .Site.BaseURL }}css/main.css" />
+
 	{{- if isset .Site.Params "customcss" }}
 		<link rel="stylesheet" type="text/css" href="{{ .Site.BaseURL }}{{ .Site.Params.customCSS }}" />
 	{{ end }}
@@ -42,4 +43,6 @@
 	{{- if isset .Site.Params "customjs" -}}
 		{{- range .Site.Params.customJS }}<script src="{{ $.Site.BaseURL }}{{ . }}"></script>{{- end }}
 	{{- end }}
+
+	<script defer language="javascript" type="text/javascript"  src="{{ "/js/copy-code.js" | urlize | relURL }}"></script>
 </head>
