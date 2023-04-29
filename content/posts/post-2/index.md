@@ -1,35 +1,36 @@
 ---
 title: "Introduction to MLOps With SageMaker: Running your First LLM"
 date: 2023-04-26T17:27:40-05:00
-description: "Deploying Dolly with SageMaker"
+description: "Deploying an LLM with SageMaker"
 draft: false
 tags:
   - "mlops"
   - "llm"
   - "dolly"
+  - "langchain"
   - "sagemaker"
   - "hugging face"
   - "aws"
   - "databricks"
+  - "activeloop"
 ---
 
 ## Introduction
 
-As the field of machine learning continues to evolve and make strides in its capabilities, it has become increasingly
-important for organizations to develop robust practices for managing their machine-learning workflows. MLOp has emerged
-as a set of best practices and tools for managing the end-to-end lifecycle of machine learning models, from development
-to deployment and beyond.
+As the field of machine learning advances, it has become increasingly important for organizations to develop robust
+practices for managing their workflows. That's where MLOps comes in - a set of best practices and tools for managing the
+entire lifecycle of machine learning models, from development to deployment and beyond.
 
-In this blog post, we will explore how MLOps practices can be leveraged to deploy an LLM
-in [AWS SageMaker](https://aws.amazon.com/sagemaker/) using the
-popular [Hugging Face Transformers library](https://github.com/aws/sagemaker-huggingface-inference-toolkit). We will
-dive into the details of setting up an end-to-end pipeline for deploying a Language Model on SageMaker and monitoring
-its performance.
+In this blog post, we'll delve into how MLOps practices can be leveraged to deploy an LLM
+in [AWS SageMaker](https://aws.amazon.com/sagemaker/), using the
+popular [Hugging Face Transformers library](https://github.com/aws/sagemaker-huggingface-inference-toolkit). We'll cover
+everything from setting up an end-to-end pipeline for deploying a Large Language Model on SageMaker, to monitoring its
+performance.
 
-By the end of this post, you will have a better understanding of the key components of an MLOps workflow, and how they
-can be used to streamline the deployment of complex machine learning models in production environments. Whether you're
-an experienced machine learning practitioner or just getting started, this post will provide valuable insights into the
-cutting-edge tools and techniques that are driving the field forward.
+By the end of this post, you'll have a better understanding of the key components of an MLOps workflow, and how they can
+be used to streamline the deployment of complex machine learning models in production environments. Whether you're an
+experienced machine learning practitioner or just starting out, this post will provide valuable insights into the
+cutting-edge tools and techniques driving the field forward.
 
 ## Getting Started
 
@@ -49,7 +50,6 @@ Make sure your have an AWS account configured:
 
 ```bash
 cat ~/.aws/config
-
 aws_access_key_id = [REDACTED]
 aws_secret_access_key = [REDACTED]
 ```
@@ -71,9 +71,13 @@ aws_secret_access_key = [REDACTED]
    task tf_apply
    ```
 
-### Creating `mode.tar.gz` file
+### Creating `model.tar.gz` for the Amazon SageMaker real-time endpoint
 
-1. The first step is to create a folder structure like the following:
+1. There are two ways you can deploy transformers to Amazon SageMaker. You can either deploy a model from the Hugging
+   Face Hub directly or deploy a model stored on S3. Since we are not using the default Transformers method we need to
+   go with the second option and deploy our endpoint with the model stored on S3. In order to do that we need to create
+   a folder structure like the following:
+
     ```bash
     model.tar.gz/
     |- model/code/
@@ -81,7 +85,7 @@ aws_secret_access_key = [REDACTED]
       |- requirements.txt   
     ```
 
-2. Using the [SageMaker Hugging Face Inference Toolkit](https://github.com/aws/sagemaker-huggingface-inference-toolkit),
+   Using the [SageMaker Hugging Face Inference Toolkit](https://github.com/aws/sagemaker-huggingface-inference-toolkit),
    we can reference [Dolly](https://huggingface.co/databricks/dolly-v2-12b) in SageMaker by creating a function like the
    one below in the file `inference.py`. By doing this we will be overwriting the `model_fn` function:
 
@@ -101,7 +105,7 @@ aws_secret_access_key = [REDACTED]
        return instruct_pipeline
    ```
 
-3. Finally, upload model to S3:
+2. Finally, upload model to S3:
    ```bash
    task tar_model
    task upload_model
@@ -194,7 +198,93 @@ task run_playground
 
 ![](images/playground-ui.png)
 
-You will be able to access the playground on: `https://localhost/8501/`
+You will be able to access the playground on: `http://localhost/8501/`
+
+## Bonus: More sophisticated workflows
+
+You can build need more sophisticated workflows by templating the prompts
+using [langchain](https://python.langchain.com/en/latest/). The following are just a few examples of what you can do by
+combining `langchain` and `SageMaker`:
+
+```bash
+!pip install langchain
+!aws configure set aws_access_key_id [REDACTED]
+!aws configure set aws_secret_access_key [REDACTED]
+!aws configure set default.region us-east-1
+```
+
+```python
+import json
+
+from langchain import SagemakerEndpoint
+from langchain.llms.sagemaker_endpoint import LLMContentHandler
+
+
+class ContentHandler(LLMContentHandler):
+    content_type = "application/json"
+    accepts = "application/json"
+
+    def transform_input(self, prompt: str, model_kwargs) -> bytes:
+        input_str = json.dumps({prompt: prompt, **model_kwargs})
+        return input_str.encode('utf-8')
+
+    def transform_output(self, output: bytes) -> str:
+        response_json = json.loads(output.read().decode("utf-8"))
+        return response_json[0]["generated_text"]
+
+
+se = SagemakerEndpoint(
+    endpoint_name="dolly-v2-12b",
+    region_name="us-east-1",
+    credentials_profile_name="default",
+    content_handler=ContentHandler(),
+)
+
+se("Tell me a joke")
+```
+
+```python
+from langchain import PromptTemplate, LLMChain
+
+prompt_template = "Why is {vegetable} good for you?"
+llm_chain = LLMChain(llm=se, prompt=PromptTemplate.from_template(prompt_template))
+llm_chain("brocolli")["text"]
+```
+
+```python
+import time
+
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
+
+
+def generate_serially():
+    prompt = PromptTemplate(
+        input_variables=["product"],
+        template="What is a good name for a company that makes {product}?",
+    )
+    chain = LLMChain(llm=se, prompt=prompt)
+
+
+for _ in range(5):
+    resp = chain.run(product="underwear")
+    print(resp)
+
+s = time.perf_counter()
+generate_serially()
+elapsed = time.perf_counter() - s
+print('\033[1m' + f"Serial executed in {elapsed:0.2f} seconds." + '\033[0m')
+```
+
+```python
+prompt_template = "Tell me a {adjective} joke"
+llm_chain = LLMChain(
+    llm=se,
+    prompt=PromptTemplate.from_template(prompt_template)
+)
+
+llm_chain(inputs={"adjective": "corny"})
+```
 
 ### Cleaning up resources
 
