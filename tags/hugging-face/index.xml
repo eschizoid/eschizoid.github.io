@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>hugging face on Mariano Gonzalez</title>
+    <link>https://mariano-gonzalez.com/tags/hugging-face/</link>
+    <description>Recent content in hugging face on Mariano Gonzalez</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&lt;p&gt;Copyright © 2023 Mariano Gonzalez&lt;/p&gt;&lt;p xmlns:dct=&#39;http://purl.org/dc/terms/&#39; xmlns:cc=&#39;http://creativecommons.org/ns#&#39; class=&#39;license-text&#39;&gt;&lt;a rel=&#39;cc:attributionURL&#39; property=&#39;dct:title&#39; href=&#39;https://github.com/eschizoid/eschizoid.github.io/tree/main/content&#39;&gt;Content&lt;/a&gt; licensed under &lt;a rel=&#39;license&#39; href=&#39;https://creativecommons.org/licenses/by/4.0&#39;&gt;CC BY 4.0&lt;/a&gt;&lt;/p&gt;</copyright>
+    <lastBuildDate>Sun, 30 Apr 2023 14:21:17 -0500</lastBuildDate><atom:link href="https://mariano-gonzalez.com/tags/hugging-face/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Supercharge SageMaker with Deep Lake capabilities</title>
+      <link>https://mariano-gonzalez.com/posts/post-3/</link>
+      <pubDate>Sun, 30 Apr 2023 14:21:17 -0500</pubDate>
+      
+      <guid>https://mariano-gonzalez.com/posts/post-3/</guid>
+      <description>Introduction Getting Started First, we will install everything we&amp;rsquo;ll need.
+!python3 - m pip install - -upgrade langchain deeplake sagemaker tiktoken Next, let&amp;rsquo;s import the necessary packages and make sure the Activeloop and OpenAI keys are in the environmental variables ACTIVELOOP_TOKEN, OPENAI_API_KEY and define the OpenAI embeddings. For full documentation of Deep Lake please the Deep Lake LangChain docs page and the Deep Lake API reference.
+You&amp;rsquo;d need to authenticate into Deep Lake if you want to create your own dataset and publish it.</description>
+    </item>
+    
+    <item>
+      <title>Introduction to MLOps With SageMaker: Running your First LLM</title>
+      <link>https://mariano-gonzalez.com/posts/post-2/</link>
+      <pubDate>Wed, 26 Apr 2023 17:27:40 -0500</pubDate>
+      
+      <guid>https://mariano-gonzalez.com/posts/post-2/</guid>
+      <description>Introduction As the field of machine learning advances, it has become increasingly important for organizations to develop robust practices for managing their workflows. That&amp;rsquo;s where MLOps comes in - a set of best practices and tools for managing the entire lifecycle of machine learning models, from development to deployment and beyond.
+In this blog post, we&amp;rsquo;ll delve into how MLOps practices can be leveraged to deploy an LLM in AWS SageMaker, using the popular Hugging Face Transformers library.</description>
+    </item>
+    
+  </channel>
+</rss>
