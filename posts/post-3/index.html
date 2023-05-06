@@ -6,7 +6,7 @@
 	<meta itemprop="name" content="Supercharge SageMaker with Deep Lake capabilities">
 <meta itemprop="description" content="Model Training with SageMaker and Deep Lake"><meta itemprop="datePublished" content="2023-04-30T14:21:17-05:00" />
 <meta itemprop="dateModified" content="2023-04-30T14:21:17-05:00" />
-<meta itemprop="wordCount" content="471">
+<meta itemprop="wordCount" content="463">
 <meta itemprop="keywords" content="sagemaker,langchain,deep lake,aws,databricks,activeloop," /><meta property="og:title" content="Supercharge SageMaker with Deep Lake capabilities" />
 <meta property="og:description" content="Model Training with SageMaker and Deep Lake" />
 <meta property="og:type" content="article" />
@@ -97,10 +97,10 @@ from the Deep Lake platform here</p>
     ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">import</span> <span style="color:#ff7b72">os</span>
 </span></span><span style="display:flex;"><span><span style="color:#ff7b72">import</span> <span style="color:#ff7b72">getpass</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.embeddings.sagameker</span> <span style="color:#ff7b72">import</span> SageMakerEmbeddings
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.embeddings.sagemaker_endpoint</span> <span style="color:#ff7b72">import</span> SagemakerEndpointEmbeddings
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>os<span style="color:#ff7b72;font-weight:bold">.</span>environ[<span style="color:#a5d6ff">&#39;ACTIVELOOP_TOKEN&#39;</span>] <span style="color:#ff7b72;font-weight:bold">=</span> getpass<span style="color:#ff7b72;font-weight:bold">.</span>getpass(<span style="color:#a5d6ff">&#39;Activeloop Token:&#39;</span>)
-</span></span><span style="display:flex;"><span>embeddings <span style="color:#ff7b72;font-weight:bold">=</span> SageMakerEmbeddings()</span></span></code></pre>
+</span></span><span style="display:flex;"><span>embeddings <span style="color:#ff7b72;font-weight:bold">=</span> SagemakerEndpointEmbeddings()</span></span></code></pre>
 </figure><p>You can skip this part and jump right into using an already indexed dataset (just like the one in this example). To
 index the code base, first clone the repository, parse the code, break it into chunks, and apply OpenAI indexing:</p>
 <figure class="highlight">
@@ -145,11 +145,6 @@ Afterward, you can publish the dataset publicly:</p>
 </figure><p>Next, we specify an OpenAI algorithm for creating the embeddings, and create the VectorStore. This process creates an
 embedding for each element in the texts lists and stores it in Deep Lake format at the specified path.</p>
 <figure class="highlight">
-    <pre tabindex="0" class="chroma"
-    ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.embeddings.sagemaker_endpoint</span> <span style="color:#ff7b72">import</span> SagemakerEndpointEmbeddings
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>embeddings <span style="color:#ff7b72;font-weight:bold">=</span> SagemakerEndpointEmbeddings()</span></span></code></pre>
-</figure><figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.vectorstores</span> <span style="color:#ff7b72">import</span> DeepLake
 </span></span><span style="display:flex;"><span>
@@ -212,6 +207,7 @@ filename of the text, and the text itself.</p>
     ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">import</span> <span style="color:#ff7b72">json</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain</span> <span style="color:#ff7b72">import</span> SagemakerEndpoint
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.chains</span> <span style="color:#ff7b72">import</span> RetrievalQA
 </span></span><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.llms.sagemaker_endpoint</span> <span style="color:#ff7b72">import</span> LLMContentHandler
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>
@@ -235,7 +231,6 @@ filename of the text, and the text itself.</p>
 </span></span><span style="display:flex;"><span>    content_handler<span style="color:#ff7b72;font-weight:bold">=</span>ContentHandler(),
 </span></span><span style="display:flex;"><span>)
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>model <span style="color:#ff7b72;font-weight:bold">=</span> ChatOpenAI(model<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#39;gpt-4&#39;</span>) <span style="color:#8b949e;font-style:italic"># &#39;gpt-3.5-turbo&#39;,</span>
 </span></span><span style="display:flex;"><span>qa <span style="color:#ff7b72;font-weight:bold">=</span> RetrievalQA<span style="color:#ff7b72;font-weight:bold">.</span>from_llm(model, retriever<span style="color:#ff7b72;font-weight:bold">=</span>retriever)</span></span></code></pre>
 </figure>
 			</div>
