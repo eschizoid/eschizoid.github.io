@@ -6,7 +6,7 @@
 	<meta itemprop="name" content="Supercharge SageMaker with Deep Lake capabilities">
 <meta itemprop="description" content="Integrate SageMaker with a vector database"><meta itemprop="datePublished" content="2023-05-06T06:10:18-05:00" />
 <meta itemprop="dateModified" content="2023-05-06T06:10:18-05:00" />
-<meta itemprop="wordCount" content="480">
+<meta itemprop="wordCount" content="552">
 <meta itemprop="keywords" content="sagemaker,langchain,deep lake,aws,databricks,activeloop," /><meta property="og:title" content="Supercharge SageMaker with Deep Lake capabilities" />
 <meta property="og:description" content="Integrate SageMaker with a vector database" />
 <meta property="og:type" content="article" />
@@ -82,18 +82,25 @@
 					
 			<div class="markdown">
 				<h2 id="introduction">Introduction</h2>
-<p>TODO</p>
+<p>Deep Lake can be integrated with Amazon SageMaker as a vector database, providing a storage solution for &ldquo;embeddings&rdquo; -
+vector representations of data used in deep learning models. This integration empowers developers to leverage Deep
+Lake&rsquo;s vector database capabilities to accelerate the training and deployment of deep learning models. In this blog
+post, we will examine the specifics of this integration and explore how vector databases can improve the performance and
+accuracy of deep learning models.</p>
 <h2 id="getting-started">Getting Started</h2>
-<h3 id="step-1-installing-required-libraries-and-authenticating-with-deep-lake-and-open-ai">Step 1: Installing required libraries and authenticating with Deep Lake and Open AI</h3>
+<h3 id="step-1-installing-required-libraries-and-authenticating-with-deep-lake-and-sagemaker">Step 1: Installing required libraries and authenticating with Deep Lake and SageMaker</h3>
 <p>First, we will install everything we&rsquo;ll need.</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>!python3 - m pip install - -upgrade langchain deeplake sagemaker tiktoken</span></span></code></pre>
 </figure><p>Next, let&rsquo;s import the necessary packages and make sure the Activeloop key is in the environmental
-variable <code>ACTIVELOOP_TOKEN</code> and define the <code>SageMAker</code> embeddings. For full documentation of Deep Lake please the Deep
-Lake LangChain docs page and the Deep Lake API reference.</p>
+variable <code>ACTIVELOOP_TOKEN</code> and define the SageMaker embeddings. For more documentation please refer to the links below:</p>
+<ul>
+<li><a href="https://docs.activeloop.ai/tutorials/deep-lake-vector-store-in-langchain">Deep Lake and LangChain</a></li>
+<li><a href="https://docs.deeplake.ai/en/latest">Deep Lake API reference</a></li>
+</ul>
 <p>You&rsquo;d need to authenticate into Deep Lake if you want to create your own dataset and publish it. You can get an API key
-from the <a href="https://app.activeloop.ai/">Deep Lake platform here</a></p>
+from the Deep Lake platform <a href="https://app.activeloop.ai/">here</a></p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">import</span> <span style="color:#ff7b72">os</span>
@@ -214,7 +221,7 @@ filename of the text, and the text itself.</p>
 </span></span><span style="display:flex;"><span>        <span style="color:#ff7b72">return</span> <span style="color:#79c0ff">False</span>
 </span></span><span style="display:flex;"><span>    metadata <span style="color:#ff7b72;font-weight:bold">=</span> x[<span style="color:#a5d6ff">&#34;metadata&#34;</span>]<span style="color:#ff7b72;font-weight:bold">.</span>data()[<span style="color:#a5d6ff">&#34;value&#34;</span>]
 </span></span><span style="display:flex;"><span>    <span style="color:#ff7b72">return</span> <span style="color:#a5d6ff">&#34;scala&#34;</span> <span style="color:#ff7b72;font-weight:bold">in</span> metadata[<span style="color:#a5d6ff">&#34;source&#34;</span>] <span style="color:#ff7b72;font-weight:bold">or</span> <span style="color:#a5d6ff">&#34;py&#34;</span> <span style="color:#ff7b72;font-weight:bold">in</span> metadata[<span style="color:#a5d6ff">&#34;source&#34;</span>]</span></span></code></pre>
-</figure><p>Connect to GPT-4 for question answering.</p>
+</figure><p>Connect to <code>Dolly</code> for question answering.</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">import</span> <span style="color:#ff7b72">json</span>
