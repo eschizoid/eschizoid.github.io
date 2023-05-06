@@ -14,7 +14,7 @@
       <pubDate>Sat, 06 May 2023 06:10:18 -0500</pubDate>
       
       <guid>https://mariano-gonzalez.com/posts/post-3/</guid>
-      <description>Introduction Deep Lake can be integrated with Amazon SageMaker as a vector database, providing a storage solution for &amp;ldquo;embeddings&amp;rdquo; - vector representations of data used in deep learning models. This integration empowers developers to leverage Deep Lake&amp;rsquo;s vector database capabilities to accelerate the training and deployment of deep learning models. In this blog post, we will examine the specifics of this integration and explore how vector databases can improve the performance and accuracy of deep learning models.</description>
+      <description>Introduction Deep Lake serves as a vector database that can integrate with Amazon SageMaker, allowing the storage of &amp;ldquo;embeddings&amp;rdquo; which are vector representations of data used in deep learning models. By leveraging Deep Lake&amp;rsquo;s vector database capabilities, developers can accelerate the training and deployment of their deep learning models. In this blog post, we will explore the details of this integration and how the use of vector databases can enhance the performance and accuracy of deep learning models.</description>
     </item>
     
     <item>
