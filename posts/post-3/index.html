@@ -6,7 +6,7 @@
 	<meta itemprop="name" content="Supercharge SageMaker with Deep Lake capabilities">
 <meta itemprop="description" content="Integrate SageMaker with a vector database"><meta itemprop="datePublished" content="2023-05-06T06:10:18-05:00" />
 <meta itemprop="dateModified" content="2023-05-06T06:10:18-05:00" />
-<meta itemprop="wordCount" content="551">
+<meta itemprop="wordCount" content="550">
 <meta itemprop="keywords" content="sagemaker,langchain,deep lake,aws,databricks,activeloop," /><meta property="og:title" content="Supercharge SageMaker with Deep Lake capabilities" />
 <meta property="og:description" content="Integrate SageMaker with a vector database" />
 <meta property="og:type" content="article" />
@@ -137,7 +137,7 @@ from the Deep Lake platform <a href="https://app.activeloop.ai/">here</a></p>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>text_splitter <span style="color:#ff7b72;font-weight:bold">=</span> CharacterTextSplitter(chunk_size<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">1000</span>, chunk_overlap<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">0</span>)
 </span></span><span style="display:flex;"><span>texts <span style="color:#ff7b72;font-weight:bold">=</span> text_splitter<span style="color:#ff7b72;font-weight:bold">.</span>split_documents(docs)</span></span></code></pre>
-</figure><p>Perform the indexing process. This takes roughly 4 minutes to calculate embeddings and upload them to Activeloop.
+</figure><p>Performing the indexing process roughly takes 4 minutes to calculate embeddings and upload them to Activeloop.
 Afterward, you can publish the dataset publicly:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
