@@ -36,20 +36,11 @@
     </item>
     
     <item>
-      <title>dolly</title>
-      <link>https://mariano-gonzalez.com/tags/dolly/</link>
+      <title>deep lake</title>
+      <link>https://mariano-gonzalez.com/tags/deep-lake/</link>
       <pubDate>Sun, 30 Apr 2023 14:21:17 -0500</pubDate>
       
-      <guid>https://mariano-gonzalez.com/tags/dolly/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>hugging face</title>
-      <link>https://mariano-gonzalez.com/tags/hugging-face/</link>
-      <pubDate>Sun, 30 Apr 2023 14:21:17 -0500</pubDate>
-      
-      <guid>https://mariano-gonzalez.com/tags/hugging-face/</guid>
+      <guid>https://mariano-gonzalez.com/tags/deep-lake/</guid>
       <description></description>
     </item>
     
@@ -63,9 +54,36 @@
     </item>
     
     <item>
+      <title>sagemaker</title>
+      <link>https://mariano-gonzalez.com/tags/sagemaker/</link>
+      <pubDate>Sun, 30 Apr 2023 14:21:17 -0500</pubDate>
+      
+      <guid>https://mariano-gonzalez.com/tags/sagemaker/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>dolly</title>
+      <link>https://mariano-gonzalez.com/tags/dolly/</link>
+      <pubDate>Wed, 26 Apr 2023 17:27:40 -0500</pubDate>
+      
+      <guid>https://mariano-gonzalez.com/tags/dolly/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>hugging face</title>
+      <link>https://mariano-gonzalez.com/tags/hugging-face/</link>
+      <pubDate>Wed, 26 Apr 2023 17:27:40 -0500</pubDate>
+      
+      <guid>https://mariano-gonzalez.com/tags/hugging-face/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>llm</title>
       <link>https://mariano-gonzalez.com/tags/llm/</link>
-      <pubDate>Sun, 30 Apr 2023 14:21:17 -0500</pubDate>
+      <pubDate>Wed, 26 Apr 2023 17:27:40 -0500</pubDate>
       
       <guid>https://mariano-gonzalez.com/tags/llm/</guid>
       <description></description>
@@ -74,18 +92,9 @@
     <item>
       <title>mlops</title>
       <link>https://mariano-gonzalez.com/tags/mlops/</link>
-      <pubDate>Sun, 30 Apr 2023 14:21:17 -0500</pubDate>
+      <pubDate>Wed, 26 Apr 2023 17:27:40 -0500</pubDate>
       
       <guid>https://mariano-gonzalez.com/tags/mlops/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>sagemaker</title>
-      <link>https://mariano-gonzalez.com/tags/sagemaker/</link>
-      <pubDate>Sun, 30 Apr 2023 14:21:17 -0500</pubDate>
-      
-      <guid>https://mariano-gonzalez.com/tags/sagemaker/</guid>
       <description></description>
     </item>
     

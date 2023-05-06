@@ -6,8 +6,8 @@
 	<meta itemprop="name" content="Supercharge SageMaker with Deep Lake capabilities">
 <meta itemprop="description" content="Model Training with SageMaker and Deep Lake"><meta itemprop="datePublished" content="2023-04-30T14:21:17-05:00" />
 <meta itemprop="dateModified" content="2023-04-30T14:21:17-05:00" />
-<meta itemprop="wordCount" content="265">
-<meta itemprop="keywords" content="mlops,llm,dolly,langchain,sagemaker,hugging face,aws,databricks,activeloop," /><meta property="og:title" content="Supercharge SageMaker with Deep Lake capabilities" />
+<meta itemprop="wordCount" content="471">
+<meta itemprop="keywords" content="sagemaker,langchain,deep lake,aws,databricks,activeloop," /><meta property="og:title" content="Supercharge SageMaker with Deep Lake capabilities" />
 <meta property="og:description" content="Model Training with SageMaker and Deep Lake" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://mariano-gonzalez.com/posts/post-3/" /><meta property="article:section" content="posts" />
@@ -98,7 +98,6 @@ from the Deep Lake platform here</p>
 </span></span><span style="display:flex;"><span><span style="color:#ff7b72">import</span> <span style="color:#ff7b72">getpass</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.embeddings.sagameker</span> <span style="color:#ff7b72">import</span> SageMakerEmbeddings
-</span></span><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.vectorstores</span> <span style="color:#ff7b72">import</span> DeepLake
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>os<span style="color:#ff7b72;font-weight:bold">.</span>environ[<span style="color:#a5d6ff">&#39;ACTIVELOOP_TOKEN&#39;</span>] <span style="color:#ff7b72;font-weight:bold">=</span> getpass<span style="color:#ff7b72;font-weight:bold">.</span>getpass(<span style="color:#a5d6ff">&#39;Activeloop Token:&#39;</span>)
 </span></span><span style="display:flex;"><span>embeddings <span style="color:#ff7b72;font-weight:bold">=</span> SageMakerEmbeddings()</span></span></code></pre>
@@ -113,7 +112,7 @@ index the code base, first clone the repository, parse the code, break it into c
     ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">import</span> <span style="color:#ff7b72">os</span>
 </span></span><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.document_loaders</span> <span style="color:#ff7b72">import</span> TextLoader
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>root_dir <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#39;./the-algorithm&#39;</span>
+</span></span><span style="display:flex;"><span>root_dir <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#39;spark&#39;</span>
 </span></span><span style="display:flex;"><span>docs <span style="color:#ff7b72;font-weight:bold">=</span> []
 </span></span><span style="display:flex;"><span><span style="color:#ff7b72">for</span> dirpath, dirnames, filenames <span style="color:#ff7b72;font-weight:bold">in</span> os<span style="color:#ff7b72;font-weight:bold">.</span>walk(root_dir):
 </span></span><span style="display:flex;"><span>    <span style="color:#ff7b72">for</span> file <span style="color:#ff7b72;font-weight:bold">in</span> filenames:
@@ -133,9 +132,111 @@ index the code base, first clone the repository, parse the code, break it into c
 Afterward, you can publish the dataset publicly:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
-    ><code class="language-python" data-lang="python"><span style="display:flex;"><span>username <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#34;eschizoid&#34;</span>
+    ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.vectorstores</span> <span style="color:#ff7b72">import</span> DeepLake
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>username <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#34;eschizoid&#34;</span>
 </span></span><span style="display:flex;"><span>db <span style="color:#ff7b72;font-weight:bold">=</span> DeepLake(dataset_path<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#79c0ff">f</span><span style="color:#a5d6ff">&#34;hub://</span><span style="color:#a5d6ff">{</span>username<span style="color:#a5d6ff">}</span><span style="color:#a5d6ff">/spark&#34;</span>, embedding_function<span style="color:#ff7b72;font-weight:bold">=</span>embeddings, public<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#79c0ff">True</span>)
 </span></span><span style="display:flex;"><span>db<span style="color:#ff7b72;font-weight:bold">.</span>add_documents(texts)</span></span></code></pre>
+</figure><p>First, we specify a path for storing the Deep Lake dataset containing the embeddings and their metadata.</p>
+<figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-python" data-lang="python"><span style="display:flex;"><span>username <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#34;eschizoid&#34;</span>
+</span></span><span style="display:flex;"><span>dataset_path <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#39;hub://eschizoid/spark&#39;</span></span></span></code></pre>
+</figure><p>Next, we specify an OpenAI algorithm for creating the embeddings, and create the VectorStore. This process creates an
+embedding for each element in the texts lists and stores it in Deep Lake format at the specified path.</p>
+<figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.embeddings.sagemaker_endpoint</span> <span style="color:#ff7b72">import</span> SagemakerEndpointEmbeddings
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>embeddings <span style="color:#ff7b72;font-weight:bold">=</span> SagemakerEndpointEmbeddings()</span></span></code></pre>
+</figure><figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.vectorstores</span> <span style="color:#ff7b72">import</span> DeepLake
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>db <span style="color:#ff7b72;font-weight:bold">=</span> DeepLake<span style="color:#ff7b72;font-weight:bold">.</span>from_documents(texts, embeddings, dataset_path<span style="color:#ff7b72;font-weight:bold">=</span>dataset_path)</span></span></code></pre>
+</figure><p>The Deep Lake dataset serving as a VectorStore has 4 tensors including the embedding, its ids, metadata including the
+filename of the text, and the text itself.</p>
+<table>
+<thead>
+<tr>
+<th>tensor</th>
+<th>htype</th>
+<th>shape</th>
+<th>dtype</th>
+<th>compression</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>embedding</td>
+<td>generic</td>
+<td>(23156, 1536)</td>
+<td>float32</td>
+<td>None</td>
+</tr>
+<tr>
+<td>ids</td>
+<td>text</td>
+<td>(23156, 1)</td>
+<td>str</td>
+<td>None</td>
+</tr>
+<tr>
+<td>metadata</td>
+<td>json</td>
+<td>(23156, 1)</td>
+<td>str</td>
+<td>None</td>
+</tr>
+<tr>
+<td>text</td>
+<td>text</td>
+<td>(23156, 1)</td>
+<td>str</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-python" data-lang="python"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>db <span style="color:#ff7b72;font-weight:bold">=</span> DeepLake(dataset_path<span style="color:#ff7b72;font-weight:bold">=</span>dataset_path, read_only<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#79c0ff">True</span>, embedding_function<span style="color:#ff7b72;font-weight:bold">=</span>embeddings)</span></span></code></pre>
+</figure><figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-python" data-lang="python"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>retriever <span style="color:#ff7b72;font-weight:bold">=</span> db<span style="color:#ff7b72;font-weight:bold">.</span>as_retriever()
+</span></span><span style="display:flex;"><span>retriever<span style="color:#ff7b72;font-weight:bold">.</span>search_kwargs[<span style="color:#a5d6ff">&#39;distance_metric&#39;</span>] <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#39;cos&#39;</span>
+</span></span><span style="display:flex;"><span>retriever<span style="color:#ff7b72;font-weight:bold">.</span>search_kwargs[<span style="color:#a5d6ff">&#39;k&#39;</span>] <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">20</span></span></span></code></pre>
+</figure><figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">import</span> <span style="color:#ff7b72">json</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain</span> <span style="color:#ff7b72">import</span> SagemakerEndpoint
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.llms.sagemaker_endpoint</span> <span style="color:#ff7b72">import</span> LLMContentHandler
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">class</span> <span style="color:#f0883e;font-weight:bold">ContentHandler</span>(LLMContentHandler):
+</span></span><span style="display:flex;"><span>    content_type <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#34;application/json&#34;</span>
+</span></span><span style="display:flex;"><span>    accepts <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#34;application/json&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff7b72">def</span> <span style="color:#d2a8ff;font-weight:bold">transform_input</span>(self, prompt: str, model_kwargs) <span style="color:#ff7b72;font-weight:bold">-&gt;</span> bytes:
+</span></span><span style="display:flex;"><span>        input_str <span style="color:#ff7b72;font-weight:bold">=</span> json<span style="color:#ff7b72;font-weight:bold">.</span>dumps({prompt: prompt, <span style="color:#ff7b72;font-weight:bold">**</span>model_kwargs})
+</span></span><span style="display:flex;"><span>        <span style="color:#ff7b72">return</span> input_str<span style="color:#ff7b72;font-weight:bold">.</span>encode(<span style="color:#a5d6ff">&#39;utf-8&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff7b72">def</span> <span style="color:#d2a8ff;font-weight:bold">transform_output</span>(self, output: bytes) <span style="color:#ff7b72;font-weight:bold">-&gt;</span> str:
+</span></span><span style="display:flex;"><span>        response_json <span style="color:#ff7b72;font-weight:bold">=</span> json<span style="color:#ff7b72;font-weight:bold">.</span>loads(output<span style="color:#ff7b72;font-weight:bold">.</span>read()<span style="color:#ff7b72;font-weight:bold">.</span>decode(<span style="color:#a5d6ff">&#34;utf-8&#34;</span>))
+</span></span><span style="display:flex;"><span>        <span style="color:#ff7b72">return</span> response_json[<span style="color:#a5d6ff">0</span>][<span style="color:#a5d6ff">&#34;generated_text&#34;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>se <span style="color:#ff7b72;font-weight:bold">=</span> SagemakerEndpoint(
+</span></span><span style="display:flex;"><span>    endpoint_name<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#34;dolly-v2-12b&#34;</span>,
+</span></span><span style="display:flex;"><span>    region_name<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#34;us-east-1&#34;</span>,
+</span></span><span style="display:flex;"><span>    credentials_profile_name<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#34;default&#34;</span>,
+</span></span><span style="display:flex;"><span>    content_handler<span style="color:#ff7b72;font-weight:bold">=</span>ContentHandler(),
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>model <span style="color:#ff7b72;font-weight:bold">=</span> ChatOpenAI(model<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#39;gpt-4&#39;</span>) <span style="color:#8b949e;font-style:italic"># &#39;gpt-3.5-turbo&#39;,</span>
+</span></span><span style="display:flex;"><span>qa <span style="color:#ff7b72;font-weight:bold">=</span> RetrievalQA<span style="color:#ff7b72;font-weight:bold">.</span>from_llm(model, retriever<span style="color:#ff7b72;font-weight:bold">=</span>retriever)</span></span></code></pre>
 </figure>
 			</div>
 
@@ -144,17 +245,11 @@ Afterward, you can publish the dataset publicly:</p>
 					
 						<ul class="flat">
 							
-							<li><a href="/tags/mlops">mlops</a></li>
-							
-							<li><a href="/tags/llm">llm</a></li>
-							
-							<li><a href="/tags/dolly">dolly</a></li>
+							<li><a href="/tags/sagemaker">sagemaker</a></li>
 							
 							<li><a href="/tags/langchain">langchain</a></li>
 							
-							<li><a href="/tags/sagemaker">sagemaker</a></li>
-							
-							<li><a href="/tags/hugging-face">hugging face</a></li>
+							<li><a href="/tags/deep-lake">deep lake</a></li>
 							
 							<li><a href="/tags/aws">aws</a></li>
 							
