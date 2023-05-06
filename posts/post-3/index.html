@@ -6,7 +6,7 @@
 	<meta itemprop="name" content="Supercharge SageMaker with Deep Lake capabilities">
 <meta itemprop="description" content="Integrate SageMaker with a vector database"><meta itemprop="datePublished" content="2023-05-06T06:10:18-05:00" />
 <meta itemprop="dateModified" content="2023-05-06T06:10:18-05:00" />
-<meta itemprop="wordCount" content="463">
+<meta itemprop="wordCount" content="479">
 <meta itemprop="keywords" content="sagemaker,langchain,deep lake,aws,databricks,activeloop," /><meta property="og:title" content="Supercharge SageMaker with Deep Lake capabilities" />
 <meta property="og:description" content="Integrate SageMaker with a vector database" />
 <meta property="og:type" content="article" />
@@ -83,15 +83,16 @@
 			<div class="markdown">
 				<h2 id="introduction">Introduction</h2>
 <h2 id="getting-started">Getting Started</h2>
+<h3 id="step-1-installing-required-libraries-and-authenticating-with-deep-lake-and-open-ai">Step 1: Installing required libraries and authenticating with Deep Lake and Open AI</h3>
 <p>First, we will install everything we&rsquo;ll need.</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>!python3 - m pip install - -upgrade langchain deeplake sagemaker tiktoken</span></span></code></pre>
-</figure><p>Next, let&rsquo;s import the necessary packages and make sure the Activeloop and OpenAI keys are in the environmental
-variables ACTIVELOOP_TOKEN, OPENAI_API_KEY and define the OpenAI embeddings. For full documentation of Deep Lake please
-the Deep Lake LangChain docs page and the Deep Lake API reference.</p>
+</figure><p>Next, let&rsquo;s import the necessary packages and make sure the Activeloop key is in the environmental
+variable <code>ACTIVELOOP_TOKEN</code> and define the <code>SageMAker</code>Ω embeddings. For full documentation of Deep Lake please the Deep
+Lake LangChain docs page and the Deep Lake API reference.</p>
 <p>You&rsquo;d need to authenticate into Deep Lake if you want to create your own dataset and publish it. You can get an API key
-from the Deep Lake platform here</p>
+from the <a href="https://app.activeloop.ai/">Deep Lake platform here</a></p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">import</span> <span style="color:#ff7b72">os</span>
@@ -99,25 +100,25 @@ from the Deep Lake platform here</p>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.embeddings.sagemaker_endpoint</span> <span style="color:#ff7b72">import</span> SagemakerEndpointEmbeddings
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>os<span style="color:#ff7b72;font-weight:bold">.</span>environ[<span style="color:#a5d6ff">&#39;ACTIVELOOP_TOKEN&#39;</span>] <span style="color:#ff7b72;font-weight:bold">=</span> getpass<span style="color:#ff7b72;font-weight:bold">.</span>getpass(<span style="color:#a5d6ff">&#39;Activeloop Token:&#39;</span>)
+</span></span><span style="display:flex;"><span>os<span style="color:#ff7b72;font-weight:bold">.</span>environ[<span style="color:#a5d6ff">&#34;ACTIVELOOP_TOKEN&#34;</span>] <span style="color:#ff7b72;font-weight:bold">=</span> getpass<span style="color:#ff7b72;font-weight:bold">.</span>getpass(<span style="color:#a5d6ff">&#34;Activeloop Token:&#34;</span>)
 </span></span><span style="display:flex;"><span>embeddings <span style="color:#ff7b72;font-weight:bold">=</span> SagemakerEndpointEmbeddings()</span></span></code></pre>
-</figure><p>You can skip this part and jump right into using an already indexed dataset (just like the one in this example). To
-index the code base, first clone the repository, parse the code, break it into chunks, and apply OpenAI indexing:</p>
+</figure><h3 id="step-2-indexing-the-twitter-algorithm-code-base-optional">Step 2: Indexing the Twitter Algorithm Code Base (Optional)</h3>
+<p>To index the code base, first clone the repository, parse the code, break it into chunks, and apply indexing:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>!git clone https://github.com/apache/spark</span></span></code></pre>
-</figure><p>Next, load all files inside the repository. This will take a while, so feel free to grab a cup of coffee.</p>
+</figure><p>Next, load all files inside the repository:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">import</span> <span style="color:#ff7b72">os</span>
 </span></span><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.document_loaders</span> <span style="color:#ff7b72">import</span> TextLoader
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>root_dir <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#39;spark&#39;</span>
+</span></span><span style="display:flex;"><span>root_dir <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#34;spark&#34;</span>
 </span></span><span style="display:flex;"><span>docs <span style="color:#ff7b72;font-weight:bold">=</span> []
 </span></span><span style="display:flex;"><span><span style="color:#ff7b72">for</span> dirpath, dirnames, filenames <span style="color:#ff7b72;font-weight:bold">in</span> os<span style="color:#ff7b72;font-weight:bold">.</span>walk(root_dir):
 </span></span><span style="display:flex;"><span>    <span style="color:#ff7b72">for</span> file <span style="color:#ff7b72;font-weight:bold">in</span> filenames:
 </span></span><span style="display:flex;"><span>        <span style="color:#ff7b72">try</span>:
-</span></span><span style="display:flex;"><span>            loader <span style="color:#ff7b72;font-weight:bold">=</span> TextLoader(os<span style="color:#ff7b72;font-weight:bold">.</span>path<span style="color:#ff7b72;font-weight:bold">.</span>join(dirpath, file), encoding<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#39;utf-8&#39;</span>)
+</span></span><span style="display:flex;"><span>            loader <span style="color:#ff7b72;font-weight:bold">=</span> TextLoader(os<span style="color:#ff7b72;font-weight:bold">.</span>path<span style="color:#ff7b72;font-weight:bold">.</span>join(dirpath, file), encoding<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#34;utf-8&#34;</span>)
 </span></span><span style="display:flex;"><span>            docs<span style="color:#ff7b72;font-weight:bold">.</span>extend(loader<span style="color:#ff7b72;font-weight:bold">.</span>load_and_split())
 </span></span><span style="display:flex;"><span>        <span style="color:#ff7b72">except</span> <span style="color:#f0883e;font-weight:bold">Exception</span> <span style="color:#ff7b72">as</span> e:
 </span></span><span style="display:flex;"><span>            <span style="color:#ff7b72">pass</span></span></span></code></pre>
@@ -132,23 +133,22 @@ index the code base, first clone the repository, parse the code, break it into c
 Afterward, you can publish the dataset publicly:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
-    ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.vectorstores</span> <span style="color:#ff7b72">import</span> DeepLake
+    ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">import</span> <span style="color:#ff7b72">os</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.vectorstores</span> <span style="color:#ff7b72">import</span> DeepLake
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>username <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#34;eschizoid&#34;</span>
+</span></span><span style="display:flex;"><span>username <span style="color:#ff7b72;font-weight:bold">=</span> os<span style="color:#ff7b72;font-weight:bold">.</span>getenv(<span style="color:#a5d6ff">&#34;[ACTIVELOOP_USERNAME]&#34;</span>)
+</span></span><span style="display:flex;"><span>dataset_path <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#79c0ff">f</span><span style="color:#a5d6ff">&#34;hub://</span><span style="color:#a5d6ff">{</span>username<span style="color:#a5d6ff">}</span><span style="color:#a5d6ff">/spark&#34;</span>
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>db <span style="color:#ff7b72;font-weight:bold">=</span> DeepLake(dataset_path<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#79c0ff">f</span><span style="color:#a5d6ff">&#34;hub://</span><span style="color:#a5d6ff">{</span>username<span style="color:#a5d6ff">}</span><span style="color:#a5d6ff">/spark&#34;</span>, embedding_function<span style="color:#ff7b72;font-weight:bold">=</span>embeddings, public<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#79c0ff">True</span>)
 </span></span><span style="display:flex;"><span>db<span style="color:#ff7b72;font-weight:bold">.</span>add_documents(texts)</span></span></code></pre>
-</figure><p>First, we specify a path for storing the Deep Lake dataset containing the embeddings and their metadata.</p>
+</figure><p>If the dataset has been already created, you can load it later without recomputing embeddings as seen below.</p>
+<h3 id="step-3-conversational-retriever-chain">Step 3: Conversational Retriever Chain</h3>
+<p>First, load the dataset, establish the retriever, and create the Conversational Chain:</p>
+<p>A preview of the dataset would look something like this:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
-    ><code class="language-python" data-lang="python"><span style="display:flex;"><span>username <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#34;eschizoid&#34;</span>
-</span></span><span style="display:flex;"><span>dataset_path <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#39;hub://eschizoid/spark&#39;</span></span></span></code></pre>
-</figure><p>Next, we specify an OpenAI algorithm for creating the embeddings, and create the VectorStore. This process creates an
-embedding for each element in the texts lists and stores it in Deep Lake format at the specified path.</p>
-<figure class="highlight">
-    <pre tabindex="0" class="chroma"
-    ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.vectorstores</span> <span style="color:#ff7b72">import</span> DeepLake
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>db <span style="color:#ff7b72;font-weight:bold">=</span> DeepLake<span style="color:#ff7b72;font-weight:bold">.</span>from_documents(texts, embeddings, dataset_path<span style="color:#ff7b72;font-weight:bold">=</span>dataset_path)</span></span></code></pre>
+    ><code class="language-python" data-lang="python"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Dataset(path<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#79c0ff">f</span><span style="color:#a5d6ff">&#34;hub://</span><span style="color:#a5d6ff">{</span>username<span style="color:#a5d6ff">}</span><span style="color:#a5d6ff">/spark&#34;</span>, read_only<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#79c0ff">True</span>, tensors<span style="color:#ff7b72;font-weight:bold">=</span>[<span style="color:#a5d6ff">&#34;embedding&#34;</span>, <span style="color:#a5d6ff">&#34;ids&#34;</span>, <span style="color:#a5d6ff">&#34;metadata&#34;</span>, <span style="color:#a5d6ff">&#34;text&#34;</span>])</span></span></code></pre>
 </figure><p>The Deep Lake dataset serving as a VectorStore has 4 tensors including the embedding, its ids, metadata including the
 filename of the text, and the text itself.</p>
 <table>
@@ -194,15 +194,27 @@ filename of the text, and the text itself.</p>
 </table>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
-    ><code class="language-python" data-lang="python"><span style="display:flex;"><span>
+    ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.vectorstores</span> <span style="color:#ff7b72">import</span> DeepLake
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>db <span style="color:#ff7b72;font-weight:bold">=</span> DeepLake(dataset_path<span style="color:#ff7b72;font-weight:bold">=</span>dataset_path, read_only<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#79c0ff">True</span>, embedding_function<span style="color:#ff7b72;font-weight:bold">=</span>embeddings)</span></span></code></pre>
 </figure><figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-python" data-lang="python"><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>retriever <span style="color:#ff7b72;font-weight:bold">=</span> db<span style="color:#ff7b72;font-weight:bold">.</span>as_retriever()
-</span></span><span style="display:flex;"><span>retriever<span style="color:#ff7b72;font-weight:bold">.</span>search_kwargs[<span style="color:#a5d6ff">&#39;distance_metric&#39;</span>] <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#39;cos&#39;</span>
-</span></span><span style="display:flex;"><span>retriever<span style="color:#ff7b72;font-weight:bold">.</span>search_kwargs[<span style="color:#a5d6ff">&#39;k&#39;</span>] <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">20</span></span></span></code></pre>
-</figure><figure class="highlight">
+</span></span><span style="display:flex;"><span>retriever<span style="color:#ff7b72;font-weight:bold">.</span>search_kwargs[<span style="color:#a5d6ff">&#34;distance_metric&#34;</span>] <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#34;cos&#34;</span>
+</span></span><span style="display:flex;"><span>retriever<span style="color:#ff7b72;font-weight:bold">.</span>search_kwargs[<span style="color:#a5d6ff">&#34;fetch_k&#34;</span>] <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">100</span>
+</span></span><span style="display:flex;"><span>retriever<span style="color:#ff7b72;font-weight:bold">.</span>search_kwargs[<span style="color:#a5d6ff">&#34;maximal_marginal_relevance&#34;</span>] <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#79c0ff">True</span>
+</span></span><span style="display:flex;"><span>retriever<span style="color:#ff7b72;font-weight:bold">.</span>search_kwargs[<span style="color:#a5d6ff">&#34;k&#34;</span>] <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">10</span></span></span></code></pre>
+</figure><p>You can also define custom filtering functions using Deep Lake filters:</p>
+<figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">def</span> <span style="color:#d2a8ff;font-weight:bold">filter</span>(x):
+</span></span><span style="display:flex;"><span>    <span style="color:#ff7b72">if</span> <span style="color:#a5d6ff">&#34;com.google&#34;</span> <span style="color:#ff7b72;font-weight:bold">in</span> x[<span style="color:#a5d6ff">&#34;text&#34;</span>]<span style="color:#ff7b72;font-weight:bold">.</span>data()[<span style="color:#a5d6ff">&#34;value&#34;</span>]:
+</span></span><span style="display:flex;"><span>        <span style="color:#ff7b72">return</span> <span style="color:#79c0ff">False</span>
+</span></span><span style="display:flex;"><span>    metadata <span style="color:#ff7b72;font-weight:bold">=</span> x[<span style="color:#a5d6ff">&#34;metadata&#34;</span>]<span style="color:#ff7b72;font-weight:bold">.</span>data()[<span style="color:#a5d6ff">&#34;value&#34;</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#ff7b72">return</span> <span style="color:#a5d6ff">&#34;scala&#34;</span> <span style="color:#ff7b72;font-weight:bold">in</span> metadata[<span style="color:#a5d6ff">&#34;source&#34;</span>] <span style="color:#ff7b72;font-weight:bold">or</span> <span style="color:#a5d6ff">&#34;py&#34;</span> <span style="color:#ff7b72;font-weight:bold">in</span> metadata[<span style="color:#a5d6ff">&#34;source&#34;</span>]</span></span></code></pre>
+</figure><p>Connect to GPT-4 for question answering.</p>
+<figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">import</span> <span style="color:#ff7b72">json</span>
 </span></span><span style="display:flex;"><span>
@@ -217,7 +229,7 @@ filename of the text, and the text itself.</p>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#ff7b72">def</span> <span style="color:#d2a8ff;font-weight:bold">transform_input</span>(self, prompt: str, model_kwargs) <span style="color:#ff7b72;font-weight:bold">-&gt;</span> bytes:
 </span></span><span style="display:flex;"><span>        input_str <span style="color:#ff7b72;font-weight:bold">=</span> json<span style="color:#ff7b72;font-weight:bold">.</span>dumps({prompt: prompt, <span style="color:#ff7b72;font-weight:bold">**</span>model_kwargs})
-</span></span><span style="display:flex;"><span>        <span style="color:#ff7b72">return</span> input_str<span style="color:#ff7b72;font-weight:bold">.</span>encode(<span style="color:#a5d6ff">&#39;utf-8&#39;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#ff7b72">return</span> input_str<span style="color:#ff7b72;font-weight:bold">.</span>encode(<span style="color:#a5d6ff">&#34;utf-8&#34;</span>)
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#ff7b72">def</span> <span style="color:#d2a8ff;font-weight:bold">transform_output</span>(self, output: bytes) <span style="color:#ff7b72;font-weight:bold">-&gt;</span> str:
 </span></span><span style="display:flex;"><span>        response_json <span style="color:#ff7b72;font-weight:bold">=</span> json<span style="color:#ff7b72;font-weight:bold">.</span>loads(output<span style="color:#ff7b72;font-weight:bold">.</span>read()<span style="color:#ff7b72;font-weight:bold">.</span>decode(<span style="color:#a5d6ff">&#34;utf-8&#34;</span>))

@@ -14,9 +14,8 @@
       <pubDate>Sat, 06 May 2023 06:10:18 -0500</pubDate>
       
       <guid>https://mariano-gonzalez.com/posts/post-3/</guid>
-      <description>Introduction Getting Started First, we will install everything we&amp;rsquo;ll need.
-!python3 - m pip install - -upgrade langchain deeplake sagemaker tiktoken Next, let&amp;rsquo;s import the necessary packages and make sure the Activeloop and OpenAI keys are in the environmental variables ACTIVELOOP_TOKEN, OPENAI_API_KEY and define the OpenAI embeddings. For full documentation of Deep Lake please the Deep Lake LangChain docs page and the Deep Lake API reference.
-You&amp;rsquo;d need to authenticate into Deep Lake if you want to create your own dataset and publish it.</description>
+      <description>Introduction Getting Started Step 1: Installing required libraries and authenticating with Deep Lake and Open AI First, we will install everything we&amp;rsquo;ll need.
+!python3 - m pip install - -upgrade langchain deeplake sagemaker tiktoken Next, let&amp;rsquo;s import the necessary packages and make sure the Activeloop key is in the environmental variable ACTIVELOOP_TOKEN and define the SageMAkerΩ embeddings. For full documentation of Deep Lake please the Deep Lake LangChain docs page and the Deep Lake API reference.</description>
     </item>
     
   </channel>
