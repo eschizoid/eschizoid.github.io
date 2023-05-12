@@ -6,7 +6,7 @@
 	<meta itemprop="name" content="Introduction to MLOps With SageMaker: Running your First LLM">
 <meta itemprop="description" content="Deploying Dolly with SageMaker"><meta itemprop="datePublished" content="2023-04-26T17:27:40-05:00" />
 <meta itemprop="dateModified" content="2023-04-26T17:27:40-05:00" />
-<meta itemprop="wordCount" content="791">
+<meta itemprop="wordCount" content="856">
 <meta itemprop="keywords" content="mlops,llm,dolly,langchain,sagemaker,hugging face,aws,databricks,activeloop," /><meta property="og:title" content="Introduction to MLOps With SageMaker: Running your First LLM" />
 <meta property="og:description" content="Deploying Dolly with SageMaker" />
 <meta property="og:type" content="article" />
@@ -131,19 +131,20 @@ cutting-edge tools and techniques driving the field forward.</p>
     ><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>task tf_apply</span></span></code></pre>
 </figure></li>
 </ol>
-<h3 id="creating-modeltargz-file">Creating <code>model.tar.gz</code> file</h3>
+<h3 id="creating-modeltargz-for-the-amazon-sagemaker-real-time-endpoint">Creating <code>model.tar.gz</code> for the Amazon SageMaker real-time endpoint</h3>
 <ol>
 <li>
-<p>The first step is to create a folder structure like the following:</p>
+<p>There are two ways you can deploy transformers to Amazon SageMaker. You can either deploy a model from the Hugging
+Face Hub directly or deploy a model stored on S3. Since we are not using the default Transformers method we need to
+go with the second option and deploy our endpoint with the model stored on S3. In order to do that we need to create
+a folder structure like the following:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>model.tar.gz/
 </span></span><span style="display:flex;"><span>|- model/code/
 </span></span><span style="display:flex;"><span>  |- inference.py
 </span></span><span style="display:flex;"><span>  |- requirements.txt   </span></span></code></pre>
-</figure></li>
-<li>
-<p>Using the <a href="https://github.com/aws/sagemaker-huggingface-inference-toolkit">SageMaker Hugging Face Inference Toolkit</a>,
+</figure><p>Using the <a href="https://github.com/aws/sagemaker-huggingface-inference-toolkit">SageMaker Hugging Face Inference Toolkit</a>,
 we can reference <a href="https://huggingface.co/databricks/dolly-v2-12b">Dolly</a> in SageMaker by creating a function like the
 one below in the file <code>inference.py</code>. By doing this we will be overwriting the <code>model_fn</code> function:</p>
 <figure class="highlight">
