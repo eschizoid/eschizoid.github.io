@@ -6,7 +6,7 @@
 	<meta itemprop="name" content="Supercharge SageMaker with Deep Lake capabilities">
 <meta itemprop="description" content="Integrate SageMaker with a vector database"><meta itemprop="datePublished" content="2023-05-06T06:10:18-05:00" />
 <meta itemprop="dateModified" content="2023-05-06T06:10:18-05:00" />
-<meta itemprop="wordCount" content="551">
+<meta itemprop="wordCount" content="693">
 <meta itemprop="keywords" content="sagemaker,langchain,deep lake,aws,databricks,activeloop," /><meta property="og:title" content="Supercharge SageMaker with Deep Lake capabilities" />
 <meta property="og:description" content="Integrate SageMaker with a vector database" />
 <meta property="og:type" content="article" />
@@ -103,13 +103,70 @@ variable <code>ACTIVELOOP_TOKEN</code> and define the SageMaker embeddings. For 
 from the Deep Lake platform <a href="https://app.activeloop.ai/">here</a></p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
-    ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">import</span> <span style="color:#ff7b72">os</span>
-</span></span><span style="display:flex;"><span><span style="color:#ff7b72">import</span> <span style="color:#ff7b72">getpass</span>
+    ><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>!python3 -m pip install --upgrade langchain deeplake sagemaker tiktoken
+</span></span><span style="display:flex;"><span>!aws configure set aws_access_key_id <span style="color:#ff7b72;font-weight:bold">[</span>REDACTED<span style="color:#ff7b72;font-weight:bold">]</span>
+</span></span><span style="display:flex;"><span>!aws configure set aws_secret_access_key <span style="color:#ff7b72;font-weight:bold">[</span>REDACTED<span style="color:#ff7b72;font-weight:bold">]</span>
+</span></span><span style="display:flex;"><span>!aws configure set default.region us-east-1
+</span></span><span style="display:flex;"><span>!export <span style="color:#79c0ff">ACTIVELOOP_TOKEN</span><span style="color:#ff7b72;font-weight:bold">=[</span>REDACTED<span style="color:#ff7b72;font-weight:bold">]</span></span></span></code></pre>
+</figure><p>Now you can proceed to deploy the SageMaker endpoint asu usual:</p>
+<figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">import</span> <span style="color:#ff7b72">sagemaker</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.embeddings.sagemaker_endpoint</span> <span style="color:#ff7b72">import</span> SagemakerEndpointEmbeddings
+</span></span><span style="display:flex;"><span>sess <span style="color:#ff7b72;font-weight:bold">=</span> sagemaker<span style="color:#ff7b72;font-weight:bold">.</span>Session()
+</span></span><span style="display:flex;"><span>sagemaker_session_bucket <span style="color:#ff7b72;font-weight:bold">=</span> sess<span style="color:#ff7b72;font-weight:bold">.</span>default_bucket()
+</span></span><span style="display:flex;"><span>role <span style="color:#ff7b72;font-weight:bold">=</span> sagemaker<span style="color:#ff7b72;font-weight:bold">.</span>get_execution_role()
+</span></span><span style="display:flex;"><span>model_name <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#34;all-MiniLM-L6-v2&#34;</span>  <span style="color:#8b949e;font-style:italic"># &#34;mpt-7b-instruct&#34; # &#34;dolly-v2-12b&#34; &#34;flan-t5-xxl&#34;</span></span></span></code></pre>
+</figure><figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">sagemaker.huggingface.model</span> <span style="color:#ff7b72">import</span> HuggingFaceModel
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>os<span style="color:#ff7b72;font-weight:bold">.</span>environ[<span style="color:#a5d6ff">&#34;ACTIVELOOP_TOKEN&#34;</span>] <span style="color:#ff7b72;font-weight:bold">=</span> getpass<span style="color:#ff7b72;font-weight:bold">.</span>getpass(<span style="color:#a5d6ff">&#34;Activeloop Token:&#34;</span>)
-</span></span><span style="display:flex;"><span>embeddings <span style="color:#ff7b72;font-weight:bold">=</span> SagemakerEndpointEmbeddings()</span></span></code></pre>
+</span></span><span style="display:flex;"><span>huggingface_model <span style="color:#ff7b72;font-weight:bold">=</span> HuggingFaceModel(
+</span></span><span style="display:flex;"><span>    model_data<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#79c0ff">f</span><span style="color:#a5d6ff">&#34;s3://</span><span style="color:#a5d6ff">{</span>sess<span style="color:#ff7b72;font-weight:bold">.</span>default_bucket()<span style="color:#a5d6ff">}</span><span style="color:#a5d6ff">/</span><span style="color:#a5d6ff">{</span>model_name<span style="color:#a5d6ff">}</span><span style="color:#a5d6ff">/model.tar.gz&#34;</span>,
+</span></span><span style="display:flex;"><span>    role<span style="color:#ff7b72;font-weight:bold">=</span>role,
+</span></span><span style="display:flex;"><span>    transformers_version<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#34;4.26&#34;</span>,
+</span></span><span style="display:flex;"><span>    pytorch_version<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#34;1.13&#34;</span>,
+</span></span><span style="display:flex;"><span>    py_version<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#34;py39&#34;</span>,
+</span></span><span style="display:flex;"><span>    model_server_workers<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">1</span>
+</span></span><span style="display:flex;"><span>)</span></span></code></pre>
+</figure><figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-python" data-lang="python"><span style="display:flex;"><span>predictor <span style="color:#ff7b72;font-weight:bold">=</span> huggingface_model<span style="color:#ff7b72;font-weight:bold">.</span>deploy(
+</span></span><span style="display:flex;"><span>    initial_instance_count<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">1</span>,
+</span></span><span style="display:flex;"><span>    instance_type<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#34;ml.g5.8xlarge&#34;</span>,  <span style="color:#8b949e;font-style:italic"># &#34;ml.g5.4xlarge&#34;</span>
+</span></span><span style="display:flex;"><span>    endpoint_name<span style="color:#ff7b72;font-weight:bold">=</span>model_name,
+</span></span><span style="display:flex;"><span>    model_data_download_timeout<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">3600</span>,
+</span></span><span style="display:flex;"><span>    container_startup_health_check_timeout<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">3600</span>,
+</span></span><span style="display:flex;"><span>    update_endpoint<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#79c0ff">True</span>
+</span></span><span style="display:flex;"><span>)</span></span></code></pre>
+</figure><p>After the endpoint is deployed, you can use the following code to create a SageMaker endpoint embeddings object:</p>
+<figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">import</span> <span style="color:#ff7b72">json</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">typing</span> <span style="color:#ff7b72">import</span> Dict, List
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.embeddings</span> <span style="color:#ff7b72">import</span> SagemakerEndpointEmbeddings
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.llms.sagemaker_endpoint</span> <span style="color:#ff7b72">import</span> ContentHandlerBase
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">class</span> <span style="color:#f0883e;font-weight:bold">ContentHandler</span>(ContentHandlerBase):
+</span></span><span style="display:flex;"><span>    content_type <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#34;application/json&#34;</span>
+</span></span><span style="display:flex;"><span>    accepts <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#34;application/json&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff7b72">def</span> <span style="color:#d2a8ff;font-weight:bold">transform_input</span>(self, inputs: list[str], model_kwargs: Dict) <span style="color:#ff7b72;font-weight:bold">-&gt;</span> bytes:
+</span></span><span style="display:flex;"><span>        input_str <span style="color:#ff7b72;font-weight:bold">=</span> json<span style="color:#ff7b72;font-weight:bold">.</span>dumps({<span style="color:#a5d6ff">&#34;inputs&#34;</span>: inputs, <span style="color:#ff7b72;font-weight:bold">**</span>model_kwargs})
+</span></span><span style="display:flex;"><span>        <span style="color:#ff7b72">return</span> input_str<span style="color:#ff7b72;font-weight:bold">.</span>encode(<span style="color:#a5d6ff">&#39;utf-8&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff7b72">def</span> <span style="color:#d2a8ff;font-weight:bold">transform_output</span>(self, output: bytes) <span style="color:#ff7b72;font-weight:bold">-&gt;</span> List[List[float]]:
+</span></span><span style="display:flex;"><span>        response_json <span style="color:#ff7b72;font-weight:bold">=</span> json<span style="color:#ff7b72;font-weight:bold">.</span>loads(output<span style="color:#ff7b72;font-weight:bold">.</span>read()<span style="color:#ff7b72;font-weight:bold">.</span>decode(<span style="color:#a5d6ff">&#34;utf-8&#34;</span>))
+</span></span><span style="display:flex;"><span>        <span style="color:#ff7b72">return</span> response_json[<span style="color:#a5d6ff">&#34;vectors&#34;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>embeddings <span style="color:#ff7b72;font-weight:bold">=</span> SagemakerEndpointEmbeddings(
+</span></span><span style="display:flex;"><span>    endpoint_name<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#34;all-MiniLM-L6-v2&#34;</span>,
+</span></span><span style="display:flex;"><span>    region_name<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#34;us-east-1&#34;</span>,
+</span></span><span style="display:flex;"><span>    content_handler<span style="color:#ff7b72;font-weight:bold">=</span>ContentHandler()
+</span></span><span style="display:flex;"><span>)</span></span></code></pre>
 </figure><h3 id="step-2-indexing-apache-sparkhttpsgithubcomapachespark-code-base">Step 2: Indexing Apache <a href="https://github.com/apache/spark">Spark</a> Code Base</h3>
 <p>To index the code base, first clone the repository, parse the code, break it into chunks, and apply indexing:</p>
 <figure class="highlight">
@@ -221,7 +278,7 @@ filename of the text, and the text itself.</p>
 </span></span><span style="display:flex;"><span>        <span style="color:#ff7b72">return</span> <span style="color:#79c0ff">False</span>
 </span></span><span style="display:flex;"><span>    metadata <span style="color:#ff7b72;font-weight:bold">=</span> x[<span style="color:#a5d6ff">&#34;metadata&#34;</span>]<span style="color:#ff7b72;font-weight:bold">.</span>data()[<span style="color:#a5d6ff">&#34;value&#34;</span>]
 </span></span><span style="display:flex;"><span>    <span style="color:#ff7b72">return</span> <span style="color:#a5d6ff">&#34;scala&#34;</span> <span style="color:#ff7b72;font-weight:bold">in</span> metadata[<span style="color:#a5d6ff">&#34;source&#34;</span>] <span style="color:#ff7b72;font-weight:bold">or</span> <span style="color:#a5d6ff">&#34;py&#34;</span> <span style="color:#ff7b72;font-weight:bold">in</span> metadata[<span style="color:#a5d6ff">&#34;source&#34;</span>]</span></span></code></pre>
-</figure><p>Connect to <code>Dolly</code> for question answering.</p>
+</figure><p>Connect to the <code>LLM</code> for question answering.</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">import</span> <span style="color:#ff7b72">json</span>
@@ -245,7 +302,7 @@ filename of the text, and the text itself.</p>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>model <span style="color:#ff7b72;font-weight:bold">=</span> SagemakerEndpoint(
-</span></span><span style="display:flex;"><span>    endpoint_name<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#34;dolly-v2-12b&#34;</span>,
+</span></span><span style="display:flex;"><span>    endpoint_name<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#34;all-MiniLM-L6-v2&#34;</span>,
 </span></span><span style="display:flex;"><span>    region_name<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#34;us-east-1&#34;</span>,
 </span></span><span style="display:flex;"><span>    credentials_profile_name<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">&#34;default&#34;</span>,
 </span></span><span style="display:flex;"><span>    content_handler<span style="color:#ff7b72;font-weight:bold">=</span>ContentHandler(),
