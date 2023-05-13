@@ -7,11 +7,11 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&lt;p&gt;Copyright © 2023 Mariano Gonzalez&lt;/p&gt;&lt;p xmlns:dct=&#39;http://purl.org/dc/terms/&#39; xmlns:cc=&#39;http://creativecommons.org/ns#&#39; class=&#39;license-text&#39;&gt;&lt;a rel=&#39;cc:attributionURL&#39; property=&#39;dct:title&#39; href=&#39;https://github.com/eschizoid/eschizoid.github.io/tree/main/content&#39;&gt;Content&lt;/a&gt; licensed under &lt;a rel=&#39;license&#39; href=&#39;https://creativecommons.org/licenses/by/4.0&#39;&gt;CC BY 4.0&lt;/a&gt;&lt;/p&gt;</copyright>
-    <lastBuildDate>Sat, 06 May 2023 06:10:18 -0500</lastBuildDate><atom:link href="https://mariano-gonzalez.com/tags/langchain/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 13 May 2023 15:50:53 -0500</lastBuildDate><atom:link href="https://mariano-gonzalez.com/tags/langchain/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Supercharge SageMaker with Deep Lake capabilities</title>
       <link>https://mariano-gonzalez.com/posts/post-3/</link>
-      <pubDate>Sat, 06 May 2023 06:10:18 -0500</pubDate>
+      <pubDate>Sat, 13 May 2023 15:50:53 -0500</pubDate>
       
       <guid>https://mariano-gonzalez.com/posts/post-3/</guid>
       <description>Introduction Deep Lake serves as a vector database that can integrate with Amazon SageMaker, allowing the storage of &amp;ldquo;embeddings&amp;rdquo; which are vector representations of data used in deep learning models. By leveraging Deep Lake&amp;rsquo;s vector database capabilities, developers can accelerate the training and deployment of their deep learning models. In this blog post, we will explore the details of this integration and how the use of vector databases can enhance the performance and accuracy of deep learning models.</description>
