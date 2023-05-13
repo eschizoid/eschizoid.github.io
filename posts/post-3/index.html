@@ -6,7 +6,7 @@
 	<meta itemprop="name" content="Supercharge SageMaker with Deep Lake capabilities">
 <meta itemprop="description" content="Integrate SageMaker with a vector database"><meta itemprop="datePublished" content="2023-05-06T06:10:18-05:00" />
 <meta itemprop="dateModified" content="2023-05-06T06:10:18-05:00" />
-<meta itemprop="wordCount" content="679">
+<meta itemprop="wordCount" content="681">
 <meta itemprop="keywords" content="sagemaker,langchain,deep lake,aws,databricks,activeloop," /><meta property="og:title" content="Supercharge SageMaker with Deep Lake capabilities" />
 <meta property="og:description" content="Integrate SageMaker with a vector database" />
 <meta property="og:type" content="article" />
@@ -103,8 +103,8 @@ variable <code>ACTIVELOOP_TOKEN</code> and define the SageMaker embeddings. For 
 platform <a href="https://app.activeloop.ai/">here</a></p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
-    ><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>!aws configure set aws_access_key_id<span style="color:#ff7b72;font-weight:bold">[</span>REDACTED<span style="color:#ff7b72;font-weight:bold">]</span>
-</span></span><span style="display:flex;"><span>!aws configure set aws_secret_access_key<span style="color:#ff7b72;font-weight:bold">[</span>REDACTED<span style="color:#ff7b72;font-weight:bold">]</span>
+    ><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>!aws configure set aws_access_key_id <span style="color:#ff7b72;font-weight:bold">[</span>REDACTED<span style="color:#ff7b72;font-weight:bold">]</span>
+</span></span><span style="display:flex;"><span>!aws configure set aws_secret_access_key <span style="color:#ff7b72;font-weight:bold">[</span>REDACTED<span style="color:#ff7b72;font-weight:bold">]</span>
 </span></span><span style="display:flex;"><span>!aws configure set default.region us-east-1
 </span></span><span style="display:flex;"><span>!activeloop login -t <span style="color:#ff7b72;font-weight:bold">[</span>REDACTED<span style="color:#ff7b72;font-weight:bold">]</span>
 </span></span><span style="display:flex;"><span>!export <span style="color:#79c0ff">ACTIVELOOP_USERNAME</span><span style="color:#ff7b72;font-weight:bold">=[</span>REDACTED<span style="color:#ff7b72;font-weight:bold">]</span></span></span></code></pre>
