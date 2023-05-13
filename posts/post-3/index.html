@@ -6,7 +6,7 @@
 	<meta itemprop="name" content="Supercharge SageMaker with Deep Lake capabilities">
 <meta itemprop="description" content="Integrate SageMaker with a vector database"><meta itemprop="datePublished" content="2023-05-06T06:10:18-05:00" />
 <meta itemprop="dateModified" content="2023-05-06T06:10:18-05:00" />
-<meta itemprop="wordCount" content="675">
+<meta itemprop="wordCount" content="677">
 <meta itemprop="keywords" content="sagemaker,langchain,deep lake,aws,databricks,activeloop," /><meta property="og:title" content="Supercharge SageMaker with Deep Lake capabilities" />
 <meta property="og:description" content="Integrate SageMaker with a vector database" />
 <meta property="og:type" content="article" />
@@ -145,10 +145,10 @@ platform <a href="https://app.activeloop.ai/">here</a></p>
 </span></span><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">typing</span> <span style="color:#ff7b72">import</span> Dict, List
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.embeddings</span> <span style="color:#ff7b72">import</span> SagemakerEndpointEmbeddings
-</span></span><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.llms.sagemaker_endpoint</span> <span style="color:#ff7b72">import</span> ContentHandlerBase
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">from</span> <span style="color:#ff7b72">langchain.embeddings.sagemaker_endpoint</span> <span style="color:#ff7b72">import</span> EmbeddingsContentHandler
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#ff7b72">class</span> <span style="color:#f0883e;font-weight:bold">ContentHandler</span>(ContentHandlerBase):
+</span></span><span style="display:flex;"><span><span style="color:#ff7b72">class</span> <span style="color:#f0883e;font-weight:bold">ContentHandler</span>(EmbeddingsContentHandler):
 </span></span><span style="display:flex;"><span>    content_type <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#34;application/json&#34;</span>
 </span></span><span style="display:flex;"><span>    accepts <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#34;application/json&#34;</span>
 </span></span><span style="display:flex;"><span>
@@ -170,7 +170,7 @@ platform <a href="https://app.activeloop.ai/">here</a></p>
 <p>To index the code base, first clone the repository, parse the code, break it into chunks, and apply indexing:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
-    ><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>!git clone https://github.com/apache/spark</span></span></code></pre>
+    ><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>!git clone --depth <span style="color:#a5d6ff">1</span> https://github.com/apache/spark</span></span></code></pre>
 </figure><p>Next, load all files inside the repository:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
