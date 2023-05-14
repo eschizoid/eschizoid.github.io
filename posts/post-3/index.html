@@ -2,19 +2,19 @@
 <html>
 <head>
 	<meta charset="utf-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Supercharge SageMaker with Deep Lake capabilities - Mariano Gonzalez</title><meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta itemprop="name" content="Supercharge SageMaker with Deep Lake capabilities">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Supercharge SageMaker with Embeddings - Mariano Gonzalez</title><meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta itemprop="name" content="Supercharge SageMaker with Embeddings">
 <meta itemprop="description" content="Integrate SageMaker with a vector database"><meta itemprop="datePublished" content="2023-05-13T15:50:53-05:00" />
 <meta itemprop="dateModified" content="2023-05-13T15:50:53-05:00" />
-<meta itemprop="wordCount" content="638">
-<meta itemprop="keywords" content="sagemaker,langchain,deep lake,aws,databricks,activeloop," /><meta property="og:title" content="Supercharge SageMaker with Deep Lake capabilities" />
+<meta itemprop="wordCount" content="630">
+<meta itemprop="keywords" content="sagemaker,langchain,deep lake,aws,activeloop," /><meta property="og:title" content="Supercharge SageMaker with Embeddings" />
 <meta property="og:description" content="Integrate SageMaker with a vector database" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://mariano-gonzalez.com/posts/post-3/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2023-05-13T15:50:53-05:00" />
 <meta property="article:modified_time" content="2023-05-13T15:50:53-05:00" />
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Supercharge SageMaker with Deep Lake capabilities"/>
+<meta name="twitter:title" content="Supercharge SageMaker with Embeddings"/>
 <meta name="twitter:description" content="Integrate SageMaker with a vector database"/>
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css" />
@@ -76,7 +76,7 @@
 					</div>
 				
 				<div class="matter">
-					<h1 class="title">Supercharge SageMaker with Deep Lake capabilities</h1>
+					<h1 class="title">Supercharge SageMaker with Embeddings</h1>
 				</div>
 			</div>
 					
@@ -188,8 +188,7 @@ platform <a href="https://app.activeloop.ai/">here</a></p>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>text_splitter <span style="color:#ff7b72;font-weight:bold">=</span> CharacterTextSplitter(chunk_size<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">1000</span>, chunk_overlap<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#a5d6ff">0</span>)
 </span></span><span style="display:flex;"><span>texts <span style="color:#ff7b72;font-weight:bold">=</span> text_splitter<span style="color:#ff7b72;font-weight:bold">.</span>split_documents(docs)</span></span></code></pre>
-</figure><p>Performing the indexing process roughly takes 4 minutes to calculate embeddings and upload them to Activeloop.
-Afterward, you can publish the dataset publicly:</p>
+</figure><p>Performing the indexing process roughly takes 4 minutes to calculate embeddings and upload them to Activeloop.</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff7b72">import</span> <span style="color:#ff7b72">os</span>
@@ -198,7 +197,7 @@ Afterward, you can publish the dataset publicly:</p>
 </span></span><span style="display:flex;"><span>username <span style="color:#ff7b72;font-weight:bold">=</span> os<span style="color:#ff7b72;font-weight:bold">.</span>getenv(<span style="color:#a5d6ff">&#34;[ACTIVELOOP_USERNAME]&#34;</span>)
 </span></span><span style="display:flex;"><span>dataset_path <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#79c0ff">f</span><span style="color:#a5d6ff">&#34;hub://</span><span style="color:#a5d6ff">{</span>username<span style="color:#a5d6ff">}</span><span style="color:#a5d6ff">/spark&#34;</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>db <span style="color:#ff7b72;font-weight:bold">=</span> DeepLake(dataset_path<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#79c0ff">f</span><span style="color:#a5d6ff">&#34;hub://</span><span style="color:#a5d6ff">{</span>username<span style="color:#a5d6ff">}</span><span style="color:#a5d6ff">/spark&#34;</span>, embedding_function<span style="color:#ff7b72;font-weight:bold">=</span>embeddings, public<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#79c0ff">True</span>)
+</span></span><span style="display:flex;"><span>db <span style="color:#ff7b72;font-weight:bold">=</span> DeepLake(dataset_path<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#79c0ff">f</span><span style="color:#a5d6ff">&#34;hub://</span><span style="color:#a5d6ff">{</span>username<span style="color:#a5d6ff">}</span><span style="color:#a5d6ff">/spark&#34;</span>, embedding_function<span style="color:#ff7b72;font-weight:bold">=</span>embeddings)
 </span></span><span style="display:flex;"><span>db<span style="color:#ff7b72;font-weight:bold">.</span>add_documents(texts)</span></span></code></pre>
 </figure><p>If the dataset has been already created, you can load it later without recomputing embeddings as seen below.</p>
 <h3 id="step-3-conversational-retriever-chain">Step 3: Conversational Retriever Chain</h3>
@@ -316,8 +315,6 @@ filename of the text, and the text itself.</p>
 							<li><a href="/tags/deep-lake">deep lake</a></li>
 							
 							<li><a href="/tags/aws">aws</a></li>
-							
-							<li><a href="/tags/databricks">databricks</a></li>
 							
 							<li><a href="/tags/activeloop">activeloop</a></li>
 							
