@@ -206,8 +206,7 @@ Afterward, you can publish the dataset publicly:</p>
 <p>A preview of the dataset would look something like this:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
-    ><code class="language-python" data-lang="python"><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Dataset(path<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#79c0ff">f</span><span style="color:#a5d6ff">&#34;hub://</span><span style="color:#a5d6ff">{</span>username<span style="color:#a5d6ff">}</span><span style="color:#a5d6ff">/spark&#34;</span>, read_only<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#79c0ff">True</span>, tensors<span style="color:#ff7b72;font-weight:bold">=</span>[<span style="color:#a5d6ff">&#34;embedding&#34;</span>, <span style="color:#a5d6ff">&#34;ids&#34;</span>, <span style="color:#a5d6ff">&#34;metadata&#34;</span>, <span style="color:#a5d6ff">&#34;text&#34;</span>])</span></span></code></pre>
+    ><code class="language-python" data-lang="python"><span style="display:flex;"><span>Dataset(path<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#79c0ff">f</span><span style="color:#a5d6ff">&#34;hub://</span><span style="color:#a5d6ff">{</span>username<span style="color:#a5d6ff">}</span><span style="color:#a5d6ff">/spark&#34;</span>, read_only<span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#79c0ff">True</span>, tensors<span style="color:#ff7b72;font-weight:bold">=</span>[<span style="color:#a5d6ff">&#34;embedding&#34;</span>, <span style="color:#a5d6ff">&#34;ids&#34;</span>, <span style="color:#a5d6ff">&#34;metadata&#34;</span>, <span style="color:#a5d6ff">&#34;text&#34;</span>])</span></span></code></pre>
 </figure><p>The Deep Lake dataset serving as a VectorStore has 4 tensors including the embedding, its ids, metadata including the
 filename of the text, and the text itself.</p>
 <table>
@@ -258,8 +257,7 @@ filename of the text, and the text itself.</p>
 </span></span><span style="display:flex;"><span>db <span style="color:#ff7b72;font-weight:bold">=</span> DeepLake(dataset_path<span style="color:#ff7b72;font-weight:bold">=</span>dataset_path, embedding_function<span style="color:#ff7b72;font-weight:bold">=</span>embeddings)</span></span></code></pre>
 </figure><figure class="highlight">
     <pre tabindex="0" class="chroma"
-    ><code class="language-python" data-lang="python"><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>retriever <span style="color:#ff7b72;font-weight:bold">=</span> db<span style="color:#ff7b72;font-weight:bold">.</span>as_retriever()
+    ><code class="language-python" data-lang="python"><span style="display:flex;"><span>retriever <span style="color:#ff7b72;font-weight:bold">=</span> db<span style="color:#ff7b72;font-weight:bold">.</span>as_retriever()
 </span></span><span style="display:flex;"><span>retriever<span style="color:#ff7b72;font-weight:bold">.</span>search_kwargs[<span style="color:#a5d6ff">&#34;distance_metric&#34;</span>] <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">&#34;cos&#34;</span>
 </span></span><span style="display:flex;"><span>retriever<span style="color:#ff7b72;font-weight:bold">.</span>search_kwargs[<span style="color:#a5d6ff">&#34;fetch_k&#34;</span>] <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">100</span>
 </span></span><span style="display:flex;"><span>retriever<span style="color:#ff7b72;font-weight:bold">.</span>search_kwargs[<span style="color:#a5d6ff">&#34;maximal_marginal_relevance&#34;</span>] <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#79c0ff">True</span>
