@@ -2,16 +2,16 @@
 <html>
 <head>
 	<meta charset="utf-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>KPipe: lightweight Kafka consumer pipelines for modern Java - Mariano Gonzalez</title><meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Kafka consumers get messy fast. KPipe is a simpler way to structure them. - Mariano Gonzalez</title><meta name="viewport" content="width=device-width, initial-scale=1">
 	
-  <meta itemprop="name" content="KPipe: lightweight Kafka consumer pipelines for modern Java">
+  <meta itemprop="name" content="Kafka consumers get messy fast. KPipe is a simpler way to structure them.">
   <meta itemprop="description" content="A lightweight Kafka processing library for modern Java built around virtual threads, composable pipelines, and predictable consumer behavior.">
   <meta itemprop="datePublished" content="2026-04-12T00:00:00+00:00">
   <meta itemprop="dateModified" content="2026-04-12T00:00:00+00:00">
-  <meta itemprop="wordCount" content="513">
+  <meta itemprop="wordCount" content="547">
   <meta itemprop="keywords" content="Kafka,Java,Virtual-Threads,Event-Driven,Stream-Processing,Apache-Kafka"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-4/">
   <meta property="og:site_name" content="Mariano Gonzalez">
-  <meta property="og:title" content="KPipe: lightweight Kafka consumer pipelines for modern Java">
+  <meta property="og:title" content="Kafka consumers get messy fast. KPipe is a simpler way to structure them.">
   <meta property="og:description" content="A lightweight Kafka processing library for modern Java built around virtual threads, composable pipelines, and predictable consumer behavior.">
   <meta property="og:locale" content="en_us">
   <meta property="og:type" content="article">
@@ -26,7 +26,7 @@
     <meta property="article:tag" content="Apache-Kafka">
 
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="KPipe: lightweight Kafka consumer pipelines for modern Java">
+  <meta name="twitter:title" content="Kafka consumers get messy fast. KPipe is a simpler way to structure them.">
   <meta name="twitter:description" content="A lightweight Kafka processing library for modern Java built around virtual threads, composable pipelines, and predictable consumer behavior.">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css" />
@@ -88,16 +88,19 @@
 					</div>
 				
 				<div class="matter">
-					<h1 class="title">KPipe: lightweight Kafka consumer pipelines for modern Java</h1>
+					<h1 class="title">Kafka consumers get messy fast. KPipe is a simpler way to structure them.</h1>
 				</div>
 			</div>
 					
 			<div class="markdown">
-				<h2 id="why-i-built-kpipe">Why I built KPipe</h2>
+				<p>Kafka consumers start simple.</p>
+<p>Then they turn into tightly coupled, hard-to-test, side-effect-heavy code.</p>
+<p>I built KPipe to fix that.</p>
+<p>GitHub: <a href="https://github.com/eschizoid/kpipe">https://github.com/eschizoid/kpipe</a></p>
+<hr>
+<h2 id="why-i-built-kpipe">Why I built KPipe</h2>
 <p>KPipe is a lightweight Kafka processing library for modern Java.</p>
-<p>I built it for a very specific problem: most Kafka consumer services start simple, but quickly turn into tightly coupled,
-hard-to-test, side-effect-heavy code.</p>
-<p>The goal of KPipe is to keep the programming model code-first and composable, while still handling the operational
+<p>The goal is to keep the programming model code-first and composable, while still handling the operational
 concerns that real Kafka consumers need:</p>
 <ul>
 <li>retries</li>
@@ -105,7 +108,6 @@ concerns that real Kafka consumers need:</p>
 <li>metrics and observability</li>
 <li>optional backpressure</li>
 </ul>
-<p>GitHub: <a href="https://github.com/eschizoid/kpipe">https://github.com/eschizoid/kpipe</a></p>
 <hr>
 <h2 id="what-kpipe-is">What KPipe is</h2>
 <p>At a high level, KPipe focuses on:</p>
@@ -160,6 +162,15 @@ abstraction overhead.</p>
 <li>transformation services</li>
 <li>I/O-bound processing (REST calls, DB lookups)</li>
 <li>teams adopting virtual threads</li>
+</ul>
+<hr>
+<h2 id="why-not-kafka-streams">Why not Kafka Streams?</h2>
+<p>Kafka Streams is powerful, but it introduces a full processing model.</p>
+<p>KPipe is intentionally simpler:</p>
+<ul>
+<li>no topology DSL</li>
+<li>no framework lifecycle</li>
+<li>just code-first pipelines</li>
 </ul>
 <hr>
 <h2 id="single-serde-cycle">Single SerDe cycle</h2>
@@ -240,6 +251,8 @@ kpipe-metrics &lt;- kpipe-producer &lt;- kpipe-consumer</p>
     ><code class="language-kotlin" data-lang="kotlin"><span style="display:flex;"><span>implementation(<span style="color:#a5d6ff">&#34;io.github.eschizoid:kpipe:1.8.2&#34;</span>)</span></span></code></pre>
 </figure><hr>
 <h2 id="closing">Closing</h2>
+<p>Kafka itself isn’t the problem.</p>
+<p>How we structure consumers around it is.</p>
 <p>KPipe focuses on composable pipelines, modern Java concurrency, and predictable Kafka consumer behavior.</p>
 <p>GitHub: <a href="https://github.com/eschizoid/kpipe">https://github.com/eschizoid/kpipe</a></p>
 

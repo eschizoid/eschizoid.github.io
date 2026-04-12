@@ -10,11 +10,11 @@
     <lastBuildDate>Sun, 12 Apr 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://mariano-gonzalez.com/tags/event-driven/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>KPipe: lightweight Kafka consumer pipelines for modern Java</title>
+      <title>Kafka consumers get messy fast. KPipe is a simpler way to structure them.</title>
       <link>https://mariano-gonzalez.com/posts/post-4/</link>
       <pubDate>Sun, 12 Apr 2026 00:00:00 +0000</pubDate>
       <guid>https://mariano-gonzalez.com/posts/post-4/</guid>
-      <description>Why I built KPipe KPipe is a lightweight Kafka processing library for modern Java.&#xA;I built it for a very specific problem: most Kafka consumer services start simple, but quickly turn into tightly coupled, hard-to-test, side-effect-heavy code.&#xA;The goal of KPipe is to keep the programming model code-first and composable, while still handling the operational concerns that real Kafka consumers need:&#xA;retries offset tracking and safe commits metrics and observability optional backpressure GitHub: https://github.</description>
+      <description>Kafka consumers start simple.&#xA;Then they turn into tightly coupled, hard-to-test, side-effect-heavy code.&#xA;I built KPipe to fix that.&#xA;GitHub: https://github.com/eschizoid/kpipe&#xA;Why I built KPipe KPipe is a lightweight Kafka processing library for modern Java.&#xA;The goal is to keep the programming model code-first and composable, while still handling the operational concerns that real Kafka consumers need:&#xA;retries offset tracking and safe commits metrics and observability optional backpressure What KPipe is At a high level, KPipe focuses on:</description>
     </item>
   </channel>
 </rss>
