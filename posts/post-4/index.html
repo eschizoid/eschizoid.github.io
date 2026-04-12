@@ -8,7 +8,7 @@
   <meta itemprop="description" content="A lightweight Kafka processing library for modern Java built around virtual threads, composable pipelines, and predictable consumer behavior.">
   <meta itemprop="datePublished" content="2026-04-12T00:00:00+00:00">
   <meta itemprop="dateModified" content="2026-04-12T00:00:00+00:00">
-  <meta itemprop="wordCount" content="547">
+  <meta itemprop="wordCount" content="446">
   <meta itemprop="keywords" content="Kafka,Java,Virtual-Threads,Event-Driven,Stream-Processing,Apache-Kafka"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-4/">
   <meta property="og:site_name" content="Mariano Gonzalez">
   <meta property="og:title" content="Kafka consumers get messy fast. KPipe is a simpler way to structure them.">
@@ -96,12 +96,16 @@
 				<p>Kafka consumers start simple.</p>
 <p>Then they turn into tightly coupled, hard-to-test, side-effect-heavy code.</p>
 <p>I built KPipe to fix that.</p>
-<p>GitHub: <a href="https://github.com/eschizoid/kpipe">https://github.com/eschizoid/kpipe</a></p>
+<p><a href="https://github.com/eschizoid/kpipe">GitHub repo</a></p>
+<h2 id="external-write-ups">External write-ups</h2>
+<ul>
+<li><a href="https://topicigor.substack.com/p/kpipe-a-modern-high-performance-kafka">KPipe: A modern high-performance Kafka library</a></li>
+</ul>
 <hr>
 <h2 id="why-i-built-kpipe">Why I built KPipe</h2>
 <p>KPipe is a lightweight Kafka processing library for modern Java.</p>
-<p>The goal is to keep the programming model code-first and composable, while still handling the operational
-concerns that real Kafka consumers need:</p>
+<p>The goal is simple: keep Kafka consumers composable and predictable, while still handling the operational concerns that
+real systems need:</p>
 <ul>
 <li>retries</li>
 <li>offset tracking and safe commits</li>
@@ -109,22 +113,46 @@ concerns that real Kafka consumers need:</p>
 <li>optional backpressure</li>
 </ul>
 <hr>
-<h2 id="what-kpipe-is">What KPipe is</h2>
-<p>At a high level, KPipe focuses on:</p>
+<h2 id="design-goals">Design goals</h2>
+<p>KPipe is built around a few constraints:</p>
 <ul>
-<li>modern Java concurrency with virtual threads</li>
-<li>composable functional pipelines</li>
-<li>safe at-least-once processing</li>
-<li>optional backpressure</li>
-<li>high throughput without heavy framework overhead</li>
+<li>pipelines should be composable</li>
+<li>processing should be predictable</li>
+<li>concurrency should be simple</li>
+<li>operational concerns should not leak into business logic</li>
 </ul>
-<p>It is not trying to replace full streaming frameworks.</p>
-<p>It is designed for Kafka consumer services where you want direct control over code, predictable behavior, and minimal
-abstraction overhead.</p>
+<hr>
+<h2 id="what-kpipe-is">What KPipe is</h2>
+<p>At a high level, KPipe provides:</p>
+<ul>
+<li>virtual-thread-based concurrency</li>
+<li>composable processing pipelines</li>
+<li>at-least-once delivery semantics</li>
+<li>optional backpressure</li>
+<li>minimal framework overhead</li>
+</ul>
+<p>It is not a full streaming framework.</p>
+<p>It is designed for Kafka consumer services where you want direct control over code.</p>
+<hr>
+<h2 id="where-kpipe-fits">Where KPipe fits</h2>
+<p>KPipe sits between:</p>
+<ul>
+<li>raw KafkaConsumer code</li>
+<li>full frameworks like Kafka Streams</li>
+</ul>
+<p>It’s useful when Kafka Streams is too heavy, but manual consumers become hard to maintain.</p>
+<hr>
+<h2 id="when-not-to-use-kpipe">When not to use KPipe</h2>
+<p>KPipe is not meant for every Kafka use case.</p>
+<p>You probably don’t need it if:</p>
+<ul>
+<li>you are already using Kafka Streams with complex topologies</li>
+<li>you need full stateful stream processing</li>
+<li>your problem fits well into an existing framework</li>
+</ul>
 <hr>
 <h2 id="the-programming-model">The programming model</h2>
-<p>A KPipe consumer is built by composing processors into a pipeline and attaching it to a Kafka consumer.</p>
-<p>A minimal example:</p>
+<p>Instead of structuring a consumer as a single handler, KPipe builds it as a pipeline:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">var</span><span style="color:#6e7681"> </span>registry<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">new</span><span style="color:#6e7681"> </span>MessageProcessorRegistry(<span style="color:#a5d6ff">&#34;demo&#34;</span>);<span style="color:#6e7681">
@@ -150,22 +178,9 @@ abstraction overhead.</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681"></span><span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">var</span><span style="color:#6e7681"> </span>runner<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>KPipeRunner.builder(consumer).build();<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681"></span>runner.start();</span></span></code></pre>
-</figure><p>This sets up a consumer with processing pipeline, retries, offset tracking, metrics, and safe commit handling.</p>
-<hr>
-<h2 id="where-kpipe-fits">Where KPipe fits</h2>
-<p>KPipe sits between raw KafkaConsumer code and full frameworks like Kafka Streams.</p>
-<p>It’s meant for cases where Kafka Streams is too heavy, but writing everything manually becomes hard to maintain.</p>
-<p>Typical use cases:</p>
-<ul>
-<li>Kafka consumer microservices</li>
-<li>enrichment pipelines</li>
-<li>transformation services</li>
-<li>I/O-bound processing (REST calls, DB lookups)</li>
-<li>teams adopting virtual threads</li>
-</ul>
-<hr>
+</figure><hr>
 <h2 id="why-not-kafka-streams">Why not Kafka Streams?</h2>
-<p>Kafka Streams is powerful, but it introduces a full processing model.</p>
+<p>Kafka Streams is powerful, but introduces a full processing model.</p>
 <p>KPipe is intentionally simpler:</p>
 <ul>
 <li>no topology DSL</li>
@@ -174,87 +189,63 @@ abstraction overhead.</p>
 </ul>
 <hr>
 <h2 id="single-serde-cycle">Single SerDe cycle</h2>
-<p>A core design choice in KPipe is the Single SerDe Cycle.</p>
 <p>Instead of repeatedly doing:</p>
 <p>byte[] -&gt; object -&gt; byte[] -&gt; object -&gt; byte[]</p>
 <p>KPipe:</p>
 <ul>
 <li>deserializes once</li>
-<li>applies transformations on the same representation</li>
-<li>serializes once at the end</li>
+<li>transforms in place</li>
+<li>serializes once</li>
 </ul>
 <p>For JSON, this is typically a <code>Map&lt;String, Object&gt;</code>. For Avro, a <code>GenericRecord</code>.</p>
 <hr>
-<h2 id="virtual-threads-as-the-concurrency-model">Virtual threads as the concurrency model</h2>
-<p>KPipe is built for modern Java.</p>
-<p>Each message can be processed using a virtual thread, following a thread-per-record model.</p>
-<p>It also uses ScopedValue to cache heavier objects per virtual thread (parsers, buffers, encoders), instead of relying
-on ThreadLocal.</p>
+<h2 id="virtual-threads">Virtual threads</h2>
+<p>Each message is processed using a virtual thread (thread-per-record model).</p>
+<p>KPipe also uses ScopedValue for per-thread resource reuse.</p>
 <hr>
-<h2 id="delivery-guarantees-and-offset-management">Delivery guarantees and offset management</h2>
-<p>KPipe is designed around at-least-once processing.</p>
-<p>It uses a lowest-pending-offset strategy:</p>
-<ul>
-<li>messages can finish out of order</li>
-<li>commits only happen when it is safe</li>
-</ul>
-<p>It also supports pluggable offset management, including external storage.</p>
+<h2 id="delivery-guarantees">Delivery guarantees</h2>
+<p>KPipe provides at-least-once processing.</p>
+<p>Offsets are committed only when safe, using a lowest-pending-offset strategy.</p>
 <hr>
-<h2 id="parallel-vs-sequential-processing">Parallel vs sequential processing</h2>
-<p>Parallel (default):</p>
-<ul>
-<li>virtual-thread-based</li>
-<li>best for stateless processing</li>
-</ul>
-<p>Sequential:</p>
+<h2 id="processing-modes">Processing modes</h2>
+<p>Parallel (default): higher throughput
+Sequential: preserves ordering per partition</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span>.withSequentialProcessing(<span style="color:#79c0ff">true</span>)</span></span></code></pre>
-</figure><ul>
-<li>one message per partition</li>
-<li>preserves ordering</li>
-</ul>
-<hr>
+</figure><hr>
 <h2 id="backpressure">Backpressure</h2>
-<p>Backpressure is available when configured:</p>
+<p>Enabled when configured:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span>.withBackpressure(highWatermark,<span style="color:#6e7681"> </span>lowWatermark)</span></span></code></pre>
-</figure><p>Parallel mode monitors in-flight work. Sequential mode monitors consumer lag.</p>
+</figure><p>Allows slowing down consumption when downstream systems are the bottleneck.</p>
 <hr>
-<h2 id="error-handling-and-retries">Error handling and retries</h2>
+<h2 id="error-handling">Error handling</h2>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span>.withRetry(maxRetries,<span style="color:#6e7681"> </span>backoff)<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681"></span>.withDeadLetterTopic(<span style="color:#a5d6ff">&#34;events-dlq&#34;</span>)</span></span></code></pre>
-</figure><p>Custom handlers are also supported.</p>
+</figure><hr>
+<h2 id="metrics">Metrics</h2>
+<p>Built-in metrics and OpenTelemetry support included.</p>
 <hr>
-<h2 id="metrics-and-observability">Metrics and observability</h2>
-<p>Includes built-in metrics, log reporting, and OpenTelemetry support.</p>
-<hr>
-<h2 id="modular-architecture">Modular architecture</h2>
+<h2 id="modules">Modules</h2>
 <ul>
 <li>kpipe-metrics</li>
 <li>kpipe-producer</li>
 <li>kpipe-consumer</li>
 </ul>
-<p>Dependency chain:
-kpipe-metrics &lt;- kpipe-producer &lt;- kpipe-consumer</p>
-<hr>
-<h2 id="performance-notes">Performance notes</h2>
-<p>Includes JMH benchmarks for JSON, Avro, and parallel processing.</p>
 <hr>
 <h2 id="installation">Installation</h2>
-<p>Current release: v1.8.2</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-kotlin" data-lang="kotlin"><span style="display:flex;"><span>implementation(<span style="color:#a5d6ff">&#34;io.github.eschizoid:kpipe:1.8.2&#34;</span>)</span></span></code></pre>
 </figure><hr>
 <h2 id="closing">Closing</h2>
 <p>Kafka itself isn’t the problem.</p>
-<p>How we structure consumers around it is.</p>
-<p>KPipe focuses on composable pipelines, modern Java concurrency, and predictable Kafka consumer behavior.</p>
-<p>GitHub: <a href="https://github.com/eschizoid/kpipe">https://github.com/eschizoid/kpipe</a></p>
+<p>The way we structure consumers around it usually is.</p>
+<p><a href="https://github.com/eschizoid/kpipe">GitHub repo</a></p>
 
 			</div>
 

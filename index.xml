@@ -14,7 +14,7 @@
       <link>https://mariano-gonzalez.com/posts/post-4/</link>
       <pubDate>Sun, 12 Apr 2026 00:00:00 +0000</pubDate>
       <guid>https://mariano-gonzalez.com/posts/post-4/</guid>
-      <description>Kafka consumers start simple.&#xA;Then they turn into tightly coupled, hard-to-test, side-effect-heavy code.&#xA;I built KPipe to fix that.&#xA;GitHub: https://github.com/eschizoid/kpipe&#xA;Why I built KPipe KPipe is a lightweight Kafka processing library for modern Java.&#xA;The goal is to keep the programming model code-first and composable, while still handling the operational concerns that real Kafka consumers need:&#xA;retries offset tracking and safe commits metrics and observability optional backpressure What KPipe is At a high level, KPipe focuses on:</description>
+      <description>Kafka consumers start simple.&#xA;Then they turn into tightly coupled, hard-to-test, side-effect-heavy code.&#xA;I built KPipe to fix that.&#xA;GitHub repo&#xA;External write-ups KPipe: A modern high-performance Kafka library Why I built KPipe KPipe is a lightweight Kafka processing library for modern Java.&#xA;The goal is simple: keep Kafka consumers composable and predictable, while still handling the operational concerns that real systems need:&#xA;retries offset tracking and safe commits metrics and observability optional backpressure Design goals KPipe is built around a few constraints:</description>
     </item>
     <item>
       <title>Supercharge SageMaker with Embeddings</title>
