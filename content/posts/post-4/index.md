@@ -1,5 +1,5 @@
 ---
-title: "KPipe: lightweight Kafka consumer pipelines for modern Java"
+title: "Kafka consumers get messy fast. KPipe is a simpler way to structure them."
 date: 2026-04-12
 description: "A lightweight Kafka processing library for modern Java built around virtual threads, composable pipelines, and predictable consumer behavior."
 tags:
@@ -11,22 +11,27 @@ tags:
   - apache-kafka
 ---
 
+Kafka consumers start simple.
+
+Then they turn into tightly coupled, hard-to-test, side-effect-heavy code.
+
+I built KPipe to fix that.
+
+GitHub: https://github.com/eschizoid/kpipe
+
+---
+
 ## Why I built KPipe
 
 KPipe is a lightweight Kafka processing library for modern Java.
 
-I built it for a very specific problem: most Kafka consumer services start simple, but quickly turn into tightly coupled,
-hard-to-test, side-effect-heavy code.
-
-The goal of KPipe is to keep the programming model code-first and composable, while still handling the operational
+The goal is to keep the programming model code-first and composable, while still handling the operational
 concerns that real Kafka consumers need:
 
 - retries
 - offset tracking and safe commits
 - metrics and observability
 - optional backpressure
-
-GitHub: https://github.com/eschizoid/kpipe
 
 ---
 
@@ -96,6 +101,18 @@ Typical use cases:
 - transformation services
 - I/O-bound processing (REST calls, DB lookups)
 - teams adopting virtual threads
+
+---
+
+## Why not Kafka Streams?
+
+Kafka Streams is powerful, but it introduces a full processing model.
+
+KPipe is intentionally simpler:
+
+- no topology DSL
+- no framework lifecycle
+- just code-first pipelines
 
 ---
 
@@ -214,6 +231,10 @@ implementation("io.github.eschizoid:kpipe:1.8.2")
 ---
 
 ## Closing
+
+Kafka itself isn’t the problem.
+
+How we structure consumers around it is.
 
 KPipe focuses on composable pipelines, modern Java concurrency, and predictable Kafka consumer behavior.
 
