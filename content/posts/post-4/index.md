@@ -17,7 +17,11 @@ Then they turn into tightly coupled, hard-to-test, side-effect-heavy code.
 
 I built KPipe to fix that.
 
-GitHub: https://github.com/eschizoid/kpipe
+[GitHub repo](https://github.com/eschizoid/kpipe)
+
+## External write-ups
+
+- [KPipe: A modern high-performance Kafka library](https://topicigor.substack.com/p/kpipe-a-modern-high-performance-kafka)
 
 ---
 
@@ -25,8 +29,8 @@ GitHub: https://github.com/eschizoid/kpipe
 
 KPipe is a lightweight Kafka processing library for modern Java.
 
-The goal is to keep the programming model code-first and composable, while still handling the operational
-concerns that real Kafka consumers need:
+The goal is simple: keep Kafka consumers composable and predictable, while still handling the operational concerns that
+real systems need:
 
 - retries
 - offset tracking and safe commits
@@ -35,28 +39,59 @@ concerns that real Kafka consumers need:
 
 ---
 
+## Design goals
+
+KPipe is built around a few constraints:
+
+- pipelines should be composable  
+- processing should be predictable  
+- concurrency should be simple  
+- operational concerns should not leak into business logic  
+
+---
+
 ## What KPipe is
 
-At a high level, KPipe focuses on:
+At a high level, KPipe provides:
 
-- modern Java concurrency with virtual threads
-- composable functional pipelines
-- safe at-least-once processing
+- virtual-thread-based concurrency
+- composable processing pipelines
+- at-least-once delivery semantics
 - optional backpressure
-- high throughput without heavy framework overhead
+- minimal framework overhead
 
-It is not trying to replace full streaming frameworks.
+It is not a full streaming framework.
 
-It is designed for Kafka consumer services where you want direct control over code, predictable behavior, and minimal
-abstraction overhead.
+It is designed for Kafka consumer services where you want direct control over code.
+
+---
+
+## Where KPipe fits
+
+KPipe sits between:
+
+- raw KafkaConsumer code  
+- full frameworks like Kafka Streams  
+
+It’s useful when Kafka Streams is too heavy, but manual consumers become hard to maintain.
+
+---
+
+## When not to use KPipe
+
+KPipe is not meant for every Kafka use case.
+
+You probably don’t need it if:
+
+- you are already using Kafka Streams with complex topologies  
+- you need full stateful stream processing  
+- your problem fits well into an existing framework  
 
 ---
 
 ## The programming model
 
-A KPipe consumer is built by composing processors into a pipeline and attaching it to a Kafka consumer.
-
-A minimal example:
+Instead of structuring a consumer as a single handler, KPipe builds it as a pipeline:
 
 ```java
 final var registry = new MessageProcessorRegistry("demo");
@@ -84,29 +119,11 @@ final var runner = KPipeRunner.builder(consumer).build();
 runner.start();
 ```
 
-This sets up a consumer with processing pipeline, retries, offset tracking, metrics, and safe commit handling.
-
----
-
-## Where KPipe fits
-
-KPipe sits between raw KafkaConsumer code and full frameworks like Kafka Streams.
-
-It’s meant for cases where Kafka Streams is too heavy, but writing everything manually becomes hard to maintain.
-
-Typical use cases:
-
-- Kafka consumer microservices
-- enrichment pipelines
-- transformation services
-- I/O-bound processing (REST calls, DB lookups)
-- teams adopting virtual threads
-
 ---
 
 ## Why not Kafka Streams?
 
-Kafka Streams is powerful, but it introduces a full processing model.
+Kafka Streams is powerful, but introduces a full processing model.
 
 KPipe is intentionally simpler:
 
@@ -118,8 +135,6 @@ KPipe is intentionally simpler:
 
 ## Single SerDe cycle
 
-A core design choice in KPipe is the Single SerDe Cycle.
-
 Instead of repeatedly doing:
 
 byte[] -> object -> byte[] -> object -> byte[]
@@ -127,102 +142,76 @@ byte[] -> object -> byte[] -> object -> byte[]
 KPipe:
 
 - deserializes once
-- applies transformations on the same representation
-- serializes once at the end
+- transforms in place
+- serializes once
 
 For JSON, this is typically a `Map<String, Object>`. For Avro, a `GenericRecord`.
 
 ---
 
-## Virtual threads as the concurrency model
+## Virtual threads
 
-KPipe is built for modern Java.
+Each message is processed using a virtual thread (thread-per-record model).
 
-Each message can be processed using a virtual thread, following a thread-per-record model.
-
-It also uses ScopedValue to cache heavier objects per virtual thread (parsers, buffers, encoders), instead of relying
-on ThreadLocal.
+KPipe also uses ScopedValue for per-thread resource reuse.
 
 ---
 
-## Delivery guarantees and offset management
+## Delivery guarantees
 
-KPipe is designed around at-least-once processing.
+KPipe provides at-least-once processing.
 
-It uses a lowest-pending-offset strategy:
-- messages can finish out of order
-- commits only happen when it is safe
-
-It also supports pluggable offset management, including external storage.
+Offsets are committed only when safe, using a lowest-pending-offset strategy.
 
 ---
 
-## Parallel vs sequential processing
+## Processing modes
 
-Parallel (default):
-- virtual-thread-based
-- best for stateless processing
-
-Sequential:
+Parallel (default): higher throughput
+Sequential: preserves ordering per partition
 
 ```java
 .withSequentialProcessing(true)
 ```
 
-- one message per partition
-- preserves ordering
-
 ---
 
 ## Backpressure
 
-Backpressure is available when configured:
+Enabled when configured:
 
 ```java
 .withBackpressure(highWatermark, lowWatermark)
 ```
 
-Parallel mode monitors in-flight work. Sequential mode monitors consumer lag.
+Allows slowing down consumption when downstream systems are the bottleneck.
 
 ---
 
-## Error handling and retries
+## Error handling
 
 ```java
 .withRetry(maxRetries, backoff)
 .withDeadLetterTopic("events-dlq")
 ```
 
-Custom handlers are also supported.
+---
+
+## Metrics
+
+Built-in metrics and OpenTelemetry support included.
 
 ---
 
-## Metrics and observability
-
-Includes built-in metrics, log reporting, and OpenTelemetry support.
-
----
-
-## Modular architecture
+## Modules
 
 - kpipe-metrics
 - kpipe-producer
 - kpipe-consumer
 
-Dependency chain:
-kpipe-metrics <- kpipe-producer <- kpipe-consumer
-
----
-
-## Performance notes
-
-Includes JMH benchmarks for JSON, Avro, and parallel processing.
-
 ---
 
 ## Installation
-
-Current release: v1.8.2
 
 ```kotlin
 implementation("io.github.eschizoid:kpipe:1.8.2")
@@ -234,8 +223,6 @@ implementation("io.github.eschizoid:kpipe:1.8.2")
 
 Kafka itself isn’t the problem.
 
-How we structure consumers around it is.
+The way we structure consumers around it usually is.
 
-KPipe focuses on composable pipelines, modern Java concurrency, and predictable Kafka consumer behavior.
-
-GitHub: https://github.com/eschizoid/kpipe
+[GitHub repo](https://github.com/eschizoid/kpipe)
