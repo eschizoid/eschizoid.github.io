@@ -2,6 +2,36 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://mariano-gonzalez.com/tags/apache-kafka/</loc>
+    <lastmod>2026-04-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/tags/event-driven/</loc>
+    <lastmod>2026-04-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/tags/java/</loc>
+    <lastmod>2026-04-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/tags/kafka/</loc>
+    <lastmod>2026-04-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/posts/post-4/</loc>
+    <lastmod>2026-04-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/</loc>
+    <lastmod>2026-04-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/posts/</loc>
+    <lastmod>2026-04-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/tags/stream-processing/</loc>
+    <lastmod>2026-04-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/tags/</loc>
+    <lastmod>2026-04-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/tags/virtual-threads/</loc>
+    <lastmod>2026-04-12T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://mariano-gonzalez.com/tags/activeloop/</loc>
     <lastmod>2023-05-13T15:50:53-05:00</lastmod>
   </url><url>
@@ -14,19 +44,10 @@
     <loc>https://mariano-gonzalez.com/tags/langchain/</loc>
     <lastmod>2023-05-13T15:50:53-05:00</lastmod>
   </url><url>
-    <loc>https://mariano-gonzalez.com/</loc>
-    <lastmod>2023-05-13T15:50:53-05:00</lastmod>
-  </url><url>
-    <loc>https://mariano-gonzalez.com/posts/</loc>
-    <lastmod>2023-05-13T15:50:53-05:00</lastmod>
-  </url><url>
     <loc>https://mariano-gonzalez.com/tags/sagemaker/</loc>
     <lastmod>2023-05-13T15:50:53-05:00</lastmod>
   </url><url>
     <loc>https://mariano-gonzalez.com/posts/post-3/</loc>
-    <lastmod>2023-05-13T15:50:53-05:00</lastmod>
-  </url><url>
-    <loc>https://mariano-gonzalez.com/tags/</loc>
     <lastmod>2023-05-13T15:50:53-05:00</lastmod>
   </url><url>
     <loc>https://mariano-gonzalez.com/tags/databricks/</loc>
