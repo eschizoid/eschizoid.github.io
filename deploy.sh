@@ -2,7 +2,6 @@
 set -e
 
 COMMIT_MSG=${1:-"Update blog"}
-REMOTE="git@github.com:eschizoid/eschizoid.github.io.git"
 
 echo "🔨 Building site..."
 hugo
