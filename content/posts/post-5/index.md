@@ -30,12 +30,12 @@ under test and an in-process broker.
 
 Four parallel-consumer runtimes drink from the same seeded topic on the same in-process Kafka 4.2.0 broker:
 
-| Runtime | Concurrency primitive | Configured concurrency |
-| --- | --- | --- |
-| **KPipe** | Virtual thread per record (Loom) | Unbounded; in-flight watermark caps memory |
-| **Confluent Parallel Consumer** | Platform-thread pool, `UNORDERED` ordering | `maxConcurrency=100` |
-| **Reactor Kafka** | Reactor `parallel` via `Flux.parallel(N)` | `parallel(100)` to match Confluent |
-| **Raw `KafkaConsumer` + VT** | `newVirtualThreadPerTaskExecutor()` poll-loop | Unbounded |
+| Runtime                         | Concurrency primitive                         | Configured concurrency                     |
+|---------------------------------|-----------------------------------------------|--------------------------------------------|
+| **KPipe**                       | Virtual thread per record (Loom)              | Unbounded; in-flight watermark caps memory |
+| **Confluent Parallel Consumer** | Platform-thread pool, `UNORDERED` ordering    | `maxConcurrency=100`                       |
+| **Reactor Kafka**               | Reactor `parallel` via `Flux.parallel(N)`     | `parallel(100)` to match Confluent         |
+| **Raw `KafkaConsumer` + VT**    | `newVirtualThreadPerTaskExecutor()` poll-loop | Unbounded                                  |
 
 Two of the four (KPipe, raw) lean on Loom. The other two (Confluent, Reactor) lean on platform threads.
 That's the axis the benchmark exists to expose.
@@ -145,10 +145,10 @@ for one to three hours wall-clock on a quiet machine.
 Two smoke-test attempts on an Apple Silicon laptop (10c, JDK 25.0.2), KPipe-only, `workMicros=0`,
 single iteration, single fork. Neither produced a JMH-measured score:
 
-| Harness | Seeded | Processed before timeout | Result |
-| --- | ---: | ---: | --- |
+| Harness                                         |  Seeded |          Processed before timeout | Result               |
+|-------------------------------------------------|--------:|----------------------------------:|----------------------|
 | As-merged #122 (100k, 2-min timeout, sync seed) | 100,000 | 21,724 / 25,000 in `kpipe` warmup | 2-min safety timeout |
-| Tuned #128 (10k, 3-min timeout, async seed) | 10,000 | 8,908 / 10,000 in `kpipe` warmup | 3-min safety timeout |
+| Tuned #128 (10k, 3-min timeout, async seed)     |  10,000 |  8,908 / 10,000 in `kpipe` warmup | 3-min safety timeout |
 
 In both runs the JMH `results.json` came back as an empty array — no iteration completed, so no
 ops/sec figure was produced by the tool. The "records processed before the safety timeout fired" column
