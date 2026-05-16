@@ -127,42 +127,45 @@ see — does KPipe pull ahead under blocking I/O? — is testable for the first 
 
 ## When the new numbers land
 
-The bench code is on `main`:
+The bench code is on `main`. To reproduce locally:
 
-- [#122][pr-122] — competitor suite: KPipe vs Confluent PC vs Reactor Kafka vs raw `KafkaConsumer` baseline.
-- [#123][pr-123] — latency-percentile companion (p50 / p95 / p99 / p999).
-- [#124][pr-124] — methodology doc + results snapshot template.
-- [#128][pr-128] — in-process broker tuning after smoke-test findings (see below).
+```bash
+./gradlew :benchmarks:jmhJar
+JAR=$(find benchmarks/build/libs -name '*-jmh.jar')
+java -jar "$JAR" 'ParallelProcessingBenchmark' -wi 3 -i 5 -f 2 -prof gc \
+  -rf JSON -rff benchmarks/results/results.json
+```
 
-[pr-122]: https://github.com/eschizoid/kpipe/pull/122
-
-[pr-123]: https://github.com/eschizoid/kpipe/pull/123
-
-[pr-124]: https://github.com/eschizoid/kpipe/pull/124
-
-[pr-128]: https://github.com/eschizoid/kpipe/pull/128
+That runs all four runtimes (KPipe / Confluent PC / Reactor Kafka / raw `KafkaConsumer` + VT) across
+the three `workMicros` cells (0 / 100 / 1000), two forks, gc profiler enabled, results to JSON. Plan
+for one to three hours wall-clock on a quiet machine.
 
 ### What I actually observed when I tried to run it
 
-Two smoke-test attempts on Apple Silicon (10c laptop, JDK 25.0.2), KPipe-only, `workMicros=0`, single
-iteration, single fork:
+Two smoke-test attempts on an Apple Silicon laptop (10c, JDK 25.0.2), KPipe-only, `workMicros=0`,
+single iteration, single fork. Neither produced a JMH-measured score:
 
 | Harness | Seeded | Processed before timeout | Result |
 | --- | ---: | ---: | --- |
 | As-merged #122 (100k, 2-min timeout, sync seed) | 100,000 | 21,724 / 25,000 in `kpipe` warmup | 2-min safety timeout |
 | Tuned #128 (10k, 3-min timeout, async seed) | 10,000 | 8,908 / 10,000 in `kpipe` warmup | 3-min safety timeout |
 
-The same hardware happily ran the prior 10k baseline at **3,306 records/sec** end-to-end, completing a
-full iteration in three seconds. The new harness on the same hardware processes records at
-~**49 records/sec** — sixty times slower — and never finishes a warmup iteration.
+In both runs the JMH `results.json` came back as an empty array — no iteration completed, so no
+ops/sec figure was produced by the tool. The "records processed before the safety timeout fired" column
+is a wall-clock count, not a throughput measurement: it includes broker startup, topic seeding, and
+consumer-group join, none of which JMH would have included in an actual published score.
 
-That is **not** KPipe slowing down between releases. It's the in-process broker. The new bench loads
-four invocation contexts (KPipe, Confluent PC, Reactor Kafka, raw VT), increases broker chatter, and on
-a shared-core machine the broker becomes the bottleneck before any consumer can hit its real throughput.
-The broker is on the same JVM as the consumer under test; they fight for the same CPU.
+What this means is honest but mundane: **the bench harness needs a different setup than a laptop with
+an in-process broker can give it.** The broker is in the same JVM as the consumer under test, both
+fight for the same CPU cores, and a per-invocation fresh consumer-group join on the in-process broker
+takes long enough that the safety timeout fires before any iteration finishes. The framework comparison
+isn't blocked by KPipe being slow or by the bench being wrong; it's blocked by the test rig.
 
-I won't publish framework comparison numbers from a run where the framework wasn't the bottleneck. So
-the next post in this series is gated on running the suite against an **externalised** Kafka broker —
+I am explicitly **not** claiming KPipe regressed between 1.12 and 1.13 from this run. I don't have the
+data. The published 3,306 ops/sec baseline graph (at the bottom of this post) is the only real KPipe
+number we have, and the rerun on the new harness never completed an iteration.
+
+The next post is gated on running the suite against an **externalised** Kafka broker —
 Testcontainers with `--cpus` constraints, or a dedicated sidecar on a separate machine. The bench code
 is correct; the harness needs a broker that isn't fighting it for cores.
 
