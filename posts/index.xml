@@ -37,5 +37,12 @@
       <guid>https://mariano-gonzalez.com/posts/post-1/</guid>
       <description>&lt;p&gt;I&amp;rsquo;m a scala developer by trade, so let&amp;rsquo;s say hello in rust!&lt;/p&gt;&#xA;&lt;figure class=&#34;highlight&#34;&gt;&#xA;    &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&#xA;    &gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff7b72&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#d2a8ff;font-weight:bold&#34;&gt;main&lt;/span&gt;()&lt;span style=&#34;color:#6e7681&#34;&gt; &lt;/span&gt;{&lt;span style=&#34;color:#6e7681&#34;&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6e7681&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#d2a8ff;font-weight:bold&#34;&gt;println!&lt;/span&gt;(&lt;span style=&#34;color:#a5d6ff&#34;&gt;&amp;#34;Hello World!&amp;#34;&lt;/span&gt;);&lt;span style=&#34;color:#6e7681&#34;&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;/figure&gt;</description>
     </item>
+    <item>
+      <title></title>
+      <link>https://mariano-gonzalez.com/posts/post-5/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://mariano-gonzalez.com/posts/post-5/</guid>
+      <description></description>
+    </item>
   </channel>
 </rss>
