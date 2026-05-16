@@ -2,34 +2,43 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://mariano-gonzalez.com/posts/post-5/</loc>
+    <lastmod>2026-05-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/tags/benchmarks/</loc>
+    <lastmod>2026-05-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/tags/java/</loc>
+    <lastmod>2026-05-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/tags/jmh/</loc>
+    <lastmod>2026-05-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/tags/kafka/</loc>
+    <lastmod>2026-05-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/</loc>
+    <lastmod>2026-05-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/posts/</loc>
+    <lastmod>2026-05-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/tags/</loc>
+    <lastmod>2026-05-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/tags/virtual-threads/</loc>
+    <lastmod>2026-05-16T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://mariano-gonzalez.com/tags/apache-kafka/</loc>
     <lastmod>2026-04-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://mariano-gonzalez.com/tags/event-driven/</loc>
     <lastmod>2026-04-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://mariano-gonzalez.com/tags/java/</loc>
-    <lastmod>2026-04-12T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://mariano-gonzalez.com/tags/kafka/</loc>
-    <lastmod>2026-04-12T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://mariano-gonzalez.com/posts/post-4/</loc>
     <lastmod>2026-04-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://mariano-gonzalez.com/</loc>
-    <lastmod>2026-04-12T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://mariano-gonzalez.com/posts/</loc>
-    <lastmod>2026-04-12T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://mariano-gonzalez.com/tags/stream-processing/</loc>
-    <lastmod>2026-04-12T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://mariano-gonzalez.com/tags/</loc>
-    <lastmod>2026-04-12T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://mariano-gonzalez.com/tags/virtual-threads/</loc>
     <lastmod>2026-04-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://mariano-gonzalez.com/tags/activeloop/</loc>
@@ -76,7 +85,5 @@
   </url><url>
     <loc>https://mariano-gonzalez.com/about/</loc>
     <lastmod>2023-04-07T13:58:29-05:00</lastmod>
-  </url><url>
-    <loc>https://mariano-gonzalez.com/posts/post-5/</loc>
   </url>
 </urlset>

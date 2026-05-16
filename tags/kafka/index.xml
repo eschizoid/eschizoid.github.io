@@ -7,8 +7,15 @@
     <generator>Hugo</generator>
     <language>en-us</language>
     <copyright>&lt;p&gt;Copyright © 2026 Mariano Gonzalez&lt;/p&gt;&lt;p xmlns:dct=&#39;http://purl.org/dc/terms/&#39; xmlns:cc=&#39;http://creativecommons.org/ns#&#39; class=&#39;license-text&#39;&gt;&lt;a rel=&#39;cc:attributionURL&#39; property=&#39;dct:title&#39; href=&#39;https://github.com/eschizoid/eschizoid.github.io/tree/main/content&#39;&gt;Content&lt;/a&gt; licensed under &lt;a rel=&#39;license&#39; href=&#39;https://creativecommons.org/licenses/by/4.0&#39;&gt;CC BY 4.0&lt;/a&gt;&lt;/p&gt;</copyright>
-    <lastBuildDate>Sun, 12 Apr 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 16 May 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://mariano-gonzalez.com/tags/kafka/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Benchmarking KPipe against the parallel-Kafka libraries you would actually pick</title>
+      <link>https://mariano-gonzalez.com/posts/post-5/</link>
+      <pubDate>Sat, 16 May 2026 00:00:00 +0000</pubDate>
+      <guid>https://mariano-gonzalez.com/posts/post-5/</guid>
+      <description>&lt;p&gt;If you write a library that &amp;ldquo;consumes Kafka in parallel,&amp;rdquo; eventually someone will ask &amp;ldquo;compared to what?&amp;rdquo;&lt;/p&gt;&#xA;&lt;p&gt;For KPipe that question has had a partial answer. Up to v1.12 the benchmark suite compared KPipe to the&#xA;Confluent Parallel Consumer — the de-facto baseline — at 10,000 records per invocation, with no per-record&#xA;work, on a single workload.&lt;/p&gt;&#xA;&lt;p&gt;That&amp;rsquo;s not enough.&lt;/p&gt;&#xA;&lt;p&gt;This post is about the upgrade. The 1.13.x bench suite now compares KPipe to &lt;strong&gt;four runtimes&lt;/strong&gt; across&#xA;&lt;strong&gt;three workload regimes&lt;/strong&gt;, reports both &lt;strong&gt;throughput&lt;/strong&gt; and &lt;strong&gt;latency percentiles&lt;/strong&gt;, and ships a methodology&#xA;doc so the numbers can be reproduced. The previous baseline graph (KPipe vs Confluent only, no workload&#xA;parameter) is at the bottom for continuity; the new 4-runtime numbers will land in a follow-up snapshot&#xA;under &lt;code&gt;benchmarks/results/&lt;/code&gt; once the suite runs on hardware that isn&amp;rsquo;t sharing cores between the consumer&#xA;under test and an in-process broker.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Kafka consumers get messy fast. KPipe is a simpler way to structure them.</title>
       <link>https://mariano-gonzalez.com/posts/post-4/</link>
