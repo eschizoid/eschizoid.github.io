@@ -78,20 +78,20 @@ No annotations. No Spring container. No DSL.
 
 This is the comparison most people actually need.
 
-| Concern | Spring Kafka | KPipe |
-|---|---|---|
-| **Container** | Spring required | None: `kafka-clients` + Java 25 |
-| **Programming model** | `@KafkaListener` on a bean method | `Stream<T>` fluent pipeline; `UnaryOperator<T>` per step |
-| **Concurrency** | `concurrency=N` per listener (one thread per partition) | Virtual thread per record, by default |
-| **Error semantics** | `ErrorHandler`, exceptions bubble out | Sealed `Result<T>` (Passed/Filtered/Failed) |
-| **Retries** | `@RetryableTopic` or `DefaultErrorHandler` | `.withRetry(maxRetries, backoff)` |
-| **DLQ** | `DeadLetterPublishingRecoverer` | `.withDeadLetterTopic("events-dlq")` |
-| **Backpressure** | Manual pause/resume from the listener | `.withBackpressure()` with hysteresis (in-flight or lag) |
-| **Tracing** | Spring Cloud Sleuth / Micrometer Tracing | `kpipe-tracing-otel`, W3C propagation via Kafka headers |
-| **Schema Registry** | Confluent client via Spring auto-config | `kpipe-schema-registry-confluent`, plain HTTP client |
-| **Testing** | `EmbeddedKafka` + Spring context | Testcontainers; `kpipe-test` (no Kafka) on the roadmap |
-| **Health checks** | Spring Boot Actuator | `HttpHealthServer.fromEnv(...)` in `kpipe-consumer` |
-| **Java floor** | 17 | 25 |
+| Concern               | Spring Kafka                                            | KPipe                                                    |
+|-----------------------|---------------------------------------------------------|----------------------------------------------------------|
+| **Container**         | Spring required                                         | None: `kafka-clients` + Java 25                          |
+| **Programming model** | `@KafkaListener` on a bean method                       | `Stream<T>` fluent pipeline; `UnaryOperator<T>` per step |
+| **Concurrency**       | `concurrency=N` per listener (one thread per partition) | Virtual thread per record, by default                    |
+| **Error semantics**   | `ErrorHandler`, exceptions bubble out                   | Sealed `Result<T>` (Passed/Filtered/Failed)              |
+| **Retries**           | `@RetryableTopic` or `DefaultErrorHandler`              | `.withRetry(maxRetries, backoff)`                        |
+| **DLQ**               | `DeadLetterPublishingRecoverer`                         | `.withDeadLetterTopic("events-dlq")`                     |
+| **Backpressure**      | Manual pause/resume from the listener                   | `.withBackpressure()` with hysteresis (in-flight or lag) |
+| **Tracing**           | Spring Cloud Sleuth / Micrometer Tracing                | `kpipe-tracing-otel`, W3C propagation via Kafka headers  |
+| **Schema Registry**   | Confluent client via Spring auto-config                 | `kpipe-schema-registry-confluent`, plain HTTP client     |
+| **Testing**           | `EmbeddedKafka` + Spring context                        | Testcontainers; `kpipe-test` (no Kafka) on the roadmap   |
+| **Health checks**     | Spring Boot Actuator                                    | `HttpHealthServer.fromEnv(...)` in `kpipe-consumer`      |
+| **Java floor**        | 17                                                      | 25                                                       |
 
 **Pick Spring Kafka when** the rest of the app is Spring, the team already has Spring muscle memory, and
 Actuator / Sleuth integration is load-bearing.
@@ -261,20 +261,20 @@ notes in the release; the win is no `since="..."` rot.
 
 12 published artifacts on Maven Central. Pull what you need:
 
-| Module | What it gives you |
-|---|---|
-| `kpipe-api` | Fluent facade: `KPipe`, `Stream<T>`, `Sink<T>`, `Handle` |
-| `kpipe-bom` | Version-pinning BOM |
-| `kpipe-core` | Pipeline machinery: `MessageProcessorRegistry`, `MessageFormat`, `Operators`, `Result<T>` |
-| `kpipe-consumer` | `KPipeConsumer`, backpressure, circuit breaker, offset manager, health server |
-| `kpipe-producer` | Kafka producer wrapper, DLQ producer, `Tracer` SPI |
-| `kpipe-metrics` | Metrics interfaces + log-based reporters (no OTel on classpath) |
-| `kpipe-metrics-otel` | OpenTelemetry-backed metrics (opt-in) |
-| `kpipe-tracing-otel` | W3C trace context propagation (opt-in) |
-| `kpipe-schema-registry-confluent` | Confluent Schema Registry client (opt-in) |
-| `kpipe-format-json` | `JsonFormat`, `JsonConsoleSink` |
-| `kpipe-format-avro` | `AvroFormat`, `AvroSchemaCatalog`, `AvroConsoleSink` |
-| `kpipe-format-protobuf` | `ProtobufFormat`, `ProtobufDescriptorCatalog`, `ProtobufConsoleSink` |
+| Module                            | What it gives you                                                                         |
+|-----------------------------------|-------------------------------------------------------------------------------------------|
+| `kpipe-api`                       | Fluent facade: `KPipe`, `Stream<T>`, `Sink<T>`, `Handle`                                  |
+| `kpipe-bom`                       | Version-pinning BOM                                                                       |
+| `kpipe-core`                      | Pipeline machinery: `MessageProcessorRegistry`, `MessageFormat`, `Operators`, `Result<T>` |
+| `kpipe-consumer`                  | `KPipeConsumer`, backpressure, circuit breaker, offset manager, health server             |
+| `kpipe-producer`                  | Kafka producer wrapper, DLQ producer, `Tracer` SPI                                        |
+| `kpipe-metrics`                   | Metrics interfaces + log-based reporters (no OTel on classpath)                           |
+| `kpipe-metrics-otel`              | OpenTelemetry-backed metrics (opt-in)                                                     |
+| `kpipe-tracing-otel`              | W3C trace context propagation (opt-in)                                                    |
+| `kpipe-schema-registry-confluent` | Confluent Schema Registry client (opt-in)                                                 |
+| `kpipe-format-json`               | `JsonFormat`, `JsonConsoleSink`                                                           |
+| `kpipe-format-avro`               | `AvroFormat`, `AvroSchemaCatalog`, `AvroConsoleSink`                                      |
+| `kpipe-format-protobuf`           | `ProtobufFormat`, `ProtobufDescriptorCatalog`, `ProtobufConsoleSink`                      |
 
 ---
 
