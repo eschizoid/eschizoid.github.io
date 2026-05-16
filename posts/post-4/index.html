@@ -5,14 +5,14 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Kafka consumers get messy fast. KPipe is a simpler way to structure them. - Mariano Gonzalez</title><meta name="viewport" content="width=device-width, initial-scale=1">
 	
   <meta itemprop="name" content="Kafka consumers get messy fast. KPipe is a simpler way to structure them.">
-  <meta itemprop="description" content="A lightweight Kafka processing library for modern Java built around virtual threads, composable pipelines, and predictable consumer behavior.">
+  <meta itemprop="description" content="Modern Java Kafka consumer library: virtual threads, composable pipelines, predictable consumers.">
   <meta itemprop="datePublished" content="2026-04-12T00:00:00+00:00">
   <meta itemprop="dateModified" content="2026-04-12T00:00:00+00:00">
-  <meta itemprop="wordCount" content="446">
+  <meta itemprop="wordCount" content="1178">
   <meta itemprop="keywords" content="Kafka,Java,Virtual-Threads,Event-Driven,Stream-Processing,Apache-Kafka"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-4/">
   <meta property="og:site_name" content="Mariano Gonzalez">
   <meta property="og:title" content="Kafka consumers get messy fast. KPipe is a simpler way to structure them.">
-  <meta property="og:description" content="A lightweight Kafka processing library for modern Java built around virtual threads, composable pipelines, and predictable consumer behavior.">
+  <meta property="og:description" content="Modern Java Kafka consumer library: virtual threads, composable pipelines, predictable consumers.">
   <meta property="og:locale" content="en_us">
   <meta property="og:type" content="article">
     <meta property="article:section" content="posts">
@@ -27,7 +27,7 @@
 
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Kafka consumers get messy fast. KPipe is a simpler way to structure them.">
-  <meta name="twitter:description" content="A lightweight Kafka processing library for modern Java built around virtual threads, composable pipelines, and predictable consumer behavior.">
+  <meta name="twitter:description" content="Modern Java Kafka consumer library: virtual threads, composable pipelines, predictable consumers.">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css" />
@@ -99,153 +99,313 @@
 <p><a href="https://github.com/eschizoid/kpipe">GitHub repo</a></p>
 <h2 id="external-write-ups">External write-ups</h2>
 <ul>
-<li><a href="https://topicigor.substack.com/p/kpipe-a-modern-high-performance-kafka">KPipe: A modern high-performance Kafka library</a></li>
+<li><a href="https://topicigor.substack.com/p/kpipe-a-modern-high-performance-kafka">KPipe: A Modern, High-Performance Kafka Consumer in Java — Powered by Java 25 Features</a></li>
 </ul>
 <hr>
-<h2 id="why-i-built-kpipe">Why I built KPipe</h2>
-<p>KPipe is a lightweight Kafka processing library for modern Java.</p>
-<p>The goal is simple: keep Kafka consumers composable and predictable, while still handling the operational concerns that
-real systems need:</p>
-<ul>
-<li>retries</li>
-<li>offset tracking and safe commits</li>
-<li>metrics and observability</li>
-<li>optional backpressure</li>
-</ul>
-<hr>
-<h2 id="design-goals">Design goals</h2>
-<p>KPipe is built around a few constraints:</p>
-<ul>
-<li>pipelines should be composable</li>
-<li>processing should be predictable</li>
-<li>concurrency should be simple</li>
-<li>operational concerns should not leak into business logic</li>
-</ul>
-<hr>
-<h2 id="what-kpipe-is">What KPipe is</h2>
-<p>At a high level, KPipe provides:</p>
-<ul>
-<li>virtual-thread-based concurrency</li>
-<li>composable processing pipelines</li>
-<li>at-least-once delivery semantics</li>
-<li>optional backpressure</li>
-<li>minimal framework overhead</li>
-</ul>
-<p>It is not a full streaming framework.</p>
-<p>It is designed for Kafka consumer services where you want direct control over code.</p>
-<hr>
-<h2 id="where-kpipe-fits">Where KPipe fits</h2>
-<p>KPipe sits between:</p>
-<ul>
-<li>raw KafkaConsumer code</li>
-<li>full frameworks like Kafka Streams</li>
-</ul>
-<p>It’s useful when Kafka Streams is too heavy, but manual consumers become hard to maintain.</p>
-<hr>
-<h2 id="when-not-to-use-kpipe">When not to use KPipe</h2>
-<p>KPipe is not meant for every Kafka use case.</p>
-<p>You probably don’t need it if:</p>
-<ul>
-<li>you are already using Kafka Streams with complex topologies</li>
-<li>you need full stateful stream processing</li>
-<li>your problem fits well into an existing framework</li>
-</ul>
-<hr>
-<h2 id="the-programming-model">The programming model</h2>
-<p>Instead of structuring a consumer as a single handler, KPipe builds it as a pipeline:</p>
+<h2 id="what-it-looks-like">What it looks like</h2>
+<p>The 80% path is a fluent facade. Five lines from <code>main</code>:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
-    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">var</span><span style="color:#6e7681"> </span>registry<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">new</span><span style="color:#6e7681"> </span>MessageProcessorRegistry(<span style="color:#a5d6ff">&#34;demo&#34;</span>);<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681"></span><span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">var</span><span style="color:#6e7681"> </span>sanitizeKey<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>RegistryKey.json(<span style="color:#a5d6ff">&#34;sanitize&#34;</span>);<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681"></span>registry.register(sanitizeKey,<span style="color:#6e7681"> </span>JsonMessageProcessor.removeFieldsOperator(<span style="color:#a5d6ff">&#34;password&#34;</span>));<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681"></span><span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">var</span><span style="color:#6e7681"> </span>stampKey<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>RegistryKey.json(<span style="color:#a5d6ff">&#34;stamp&#34;</span>);<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681"></span>registry.register(stampKey,<span style="color:#6e7681"> </span>JsonMessageProcessor.addTimestampOperator(<span style="color:#a5d6ff">&#34;processedAt&#34;</span>));<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681"></span><span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">var</span><span style="color:#6e7681"> </span>pipeline<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>registry<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.pipeline(MessageFormat.JSON)<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.add(sanitizeKey,<span style="color:#6e7681"> </span>stampKey)<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.toSink(MessageSinkRegistry.JSON_LOGGING)<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.build();<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681"></span><span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">var</span><span style="color:#6e7681"> </span>consumer<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>KPipeConsumer.<span style="color:#ff7b72;font-weight:bold">&lt;</span><span style="color:#ff7b72">byte</span><span style="color:#ff7b72;font-weight:bold">[]</span>,<span style="color:#6e7681"> </span><span style="color:#ff7b72">byte</span><span style="color:#ff7b72;font-weight:bold">[]&gt;</span>builder()<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.withProperties(kafkaProps)<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.withTopic(<span style="color:#a5d6ff">&#34;users&#34;</span>)<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.withPipeline(pipeline)<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.withRetry(3,<span style="color:#6e7681"> </span>Duration.ofSeconds(1))<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.build();<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681"></span><span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">var</span><span style="color:#6e7681"> </span>runner<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>KPipeRunner.builder(consumer).build();<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681"></span>runner.start();</span></span></code></pre>
+    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#ff7b72">try</span><span style="color:#6e7681"> </span>(<span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">var</span><span style="color:#6e7681"> </span>handle<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>KPipe.json(<span style="color:#a5d6ff">&#34;events&#34;</span>,<span style="color:#6e7681"> </span>kafkaProps)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.pipe(Operators.addField(<span style="color:#a5d6ff">&#34;processedAt&#34;</span>,<span style="color:#6e7681"> </span>System.currentTimeMillis()))<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.pipe(Operators.removeFields(<span style="color:#a5d6ff">&#34;password&#34;</span>,<span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;ssn&#34;</span>))<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.toConsole()<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.start())<span style="color:#6e7681"> </span>{<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>handle.awaitShutdown();<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span>}</span></span></code></pre>
+</figure><p>That is a real consumer. It deserializes JSON, applies two transforms, logs the result, runs on virtual
+threads, commits offsets safely under parallel processing, and closes gracefully on JVM shutdown.</p>
+<p>Avro and Protobuf follow the same shape, with the format supplied explicitly:</p>
+<figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">var</span><span style="color:#6e7681"> </span>format<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>AvroFormat.of(schemaJson);<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#ff7b72">try</span><span style="color:#6e7681"> </span>(<span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">var</span><span style="color:#6e7681"> </span>handle<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>KPipe.avro(format,<span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;users&#34;</span>,<span style="color:#6e7681"> </span>kafkaProps)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.skipBytes(5)<span style="color:#6e7681"> </span><span style="color:#8b949e;font-style:italic">// Confluent wire envelope</span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.pipe(record<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">-&gt;</span><span style="color:#6e7681"> </span>{<span style="color:#6e7681"> </span>record.put(<span style="color:#a5d6ff">&#34;name&#34;</span>,<span style="color:#6e7681"> </span>record.get(<span style="color:#a5d6ff">&#34;name&#34;</span>).toString().toLowerCase());<span style="color:#6e7681"> </span><span style="color:#ff7b72">return</span><span style="color:#6e7681"> </span>record;<span style="color:#6e7681"> </span>})<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.toConsole()<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.start())<span style="color:#6e7681"> </span>{<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>handle.awaitShutdown();<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span>}</span></span></code></pre>
 </figure><hr>
-<h2 id="why-not-kafka-streams">Why not Kafka Streams?</h2>
-<p>Kafka Streams is powerful, but introduces a full processing model.</p>
-<p>KPipe is intentionally simpler:</p>
+<h2 id="why-i-built-it">Why I built it</h2>
+<p>For most Kafka work in a JVM service I had three options:</p>
+<ol>
+<li>Hand-roll a <code>KafkaConsumer</code> loop. Cheap to start, expensive to maintain. Every team writes a slightly
+different version of retries, offset commits, backpressure, and graceful shutdown.</li>
+<li>Spring Kafka. Powerful, but only if the rest of the app is already Spring.</li>
+<li>Kafka Streams. Full topology engine. Overkill for &ldquo;consume, transform, write somewhere.&rdquo;</li>
+</ol>
+<p>KPipe is option four. A code-first library that owns the operational concerns (offset safety, retries,
+DLQ, backpressure, metrics, tracing, circuit breaker, graceful shutdown) so the business logic stays as
+<code>UnaryOperator&lt;T&gt;</code> calls.</p>
+<p>No annotations. No Spring container. No DSL.</p>
+<hr>
+<h2 id="kpipe-vs-spring-kafka">KPipe vs Spring Kafka</h2>
+<p>This is the comparison most people actually need.</p>
+<table>
+  <thead>
+      <tr>
+          <th>Concern</th>
+          <th>Spring Kafka</th>
+          <th>KPipe</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>Container</strong></td>
+          <td>Spring required</td>
+          <td>None: <code>kafka-clients</code> + Java 25</td>
+      </tr>
+      <tr>
+          <td><strong>Programming model</strong></td>
+          <td><code>@KafkaListener</code> on a bean method</td>
+          <td><code>Stream&lt;T&gt;</code> fluent pipeline; <code>UnaryOperator&lt;T&gt;</code> per step</td>
+      </tr>
+      <tr>
+          <td><strong>Concurrency</strong></td>
+          <td><code>concurrency=N</code> per listener (one thread per partition)</td>
+          <td>Virtual thread per record, by default</td>
+      </tr>
+      <tr>
+          <td><strong>Error semantics</strong></td>
+          <td><code>ErrorHandler</code>, exceptions bubble out</td>
+          <td>Sealed <code>Result&lt;T&gt;</code> (Passed/Filtered/Failed)</td>
+      </tr>
+      <tr>
+          <td><strong>Retries</strong></td>
+          <td><code>@RetryableTopic</code> or <code>DefaultErrorHandler</code></td>
+          <td><code>.withRetry(maxRetries, backoff)</code></td>
+      </tr>
+      <tr>
+          <td><strong>DLQ</strong></td>
+          <td><code>DeadLetterPublishingRecoverer</code></td>
+          <td><code>.withDeadLetterTopic(&quot;events-dlq&quot;)</code></td>
+      </tr>
+      <tr>
+          <td><strong>Backpressure</strong></td>
+          <td>Manual pause/resume from the listener</td>
+          <td><code>.withBackpressure()</code> with hysteresis (in-flight or lag)</td>
+      </tr>
+      <tr>
+          <td><strong>Tracing</strong></td>
+          <td>Spring Cloud Sleuth / Micrometer Tracing</td>
+          <td><code>kpipe-tracing-otel</code>, W3C propagation via Kafka headers</td>
+      </tr>
+      <tr>
+          <td><strong>Schema Registry</strong></td>
+          <td>Confluent client via Spring auto-config</td>
+          <td><code>kpipe-schema-registry-confluent</code>, plain HTTP client</td>
+      </tr>
+      <tr>
+          <td><strong>Testing</strong></td>
+          <td><code>EmbeddedKafka</code> + Spring context</td>
+          <td>Testcontainers; <code>kpipe-test</code> (no Kafka) on the roadmap</td>
+      </tr>
+      <tr>
+          <td><strong>Health checks</strong></td>
+          <td>Spring Boot Actuator</td>
+          <td><code>HttpHealthServer.fromEnv(...)</code> in <code>kpipe-consumer</code></td>
+      </tr>
+      <tr>
+          <td><strong>Java floor</strong></td>
+          <td>17</td>
+          <td>25</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Pick Spring Kafka when</strong> the rest of the app is Spring, the team already has Spring muscle memory, and
+Actuator / Sleuth integration is load-bearing.</p>
+<p><strong>Pick KPipe when</strong> the service is a small focused consumer, the team values explicit code over magic
+configuration, Java 25 is on the table, or the project does not pull Spring for any other reason. Smaller
+dependency tree, smaller surface area to learn, smaller production footprint.</p>
+<hr>
+<h2 id="kpipe-vs-kafka-streams">KPipe vs Kafka Streams</h2>
+<p>Different problem.</p>
+<p>Kafka Streams is a topology engine. State stores, joins, windowed aggregations, exactly-once via
+transactions. If you need any of those, use it. KPipe will not get there and will not try.</p>
+<p>KPipe is for the case where the right code shape is &ldquo;consume a topic, transform each record, write
+somewhere else.&rdquo; Most consumer services look like that.</p>
+<hr>
+<h2 id="getting-started-in-5-minutes">Getting started in 5 minutes</h2>
+<h3 id="1-add-the-dependencies">1. Add the dependencies</h3>
+<figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-kotlin" data-lang="kotlin"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// Gradle Kotlin DSL
+</span></span></span><span style="display:flex;"><span>implementation(<span style="color:#a5d6ff">&#34;io.github.eschizoid:kpipe-api:1.13.0&#34;</span>)
+</span></span><span style="display:flex;"><span>implementation(<span style="color:#a5d6ff">&#34;io.github.eschizoid:kpipe-format-json:1.13.0&#34;</span>)</span></span></code></pre>
+</figure><p><code>kpipe-api</code> transitively pulls <code>kpipe-consumer</code> + <code>kpipe-producer</code> + <code>kpipe-core</code>. The format module is
+the only other thing you need for JSON. For Avro or Protobuf, add <code>kpipe-format-avro</code> or
+<code>kpipe-format-protobuf</code> instead.</p>
+<p>There is also a <code>kpipe-bom</code> if you prefer to pin one version across modules.</p>
+<h3 id="2-write-a-consumer">2. Write a consumer</h3>
+<figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#ff7b72">import</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">org.kpipe.KPipe</span>;<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#ff7b72">import</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">org.kpipe.registry.Operators</span>;<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#ff7b72">import</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">java.util.Properties</span>;<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#ff7b72">public</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">class</span> <span style="color:#f0883e;font-weight:bold">App</span><span style="color:#6e7681"> </span>{<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span><span style="color:#ff7b72">public</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">static</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">void</span><span style="color:#6e7681"> </span><span style="color:#d2a8ff;font-weight:bold">main</span>(<span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span>String<span style="color:#ff7b72;font-weight:bold">[]</span><span style="color:#6e7681"> </span>args)<span style="color:#6e7681"> </span>{<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span><span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">var</span><span style="color:#6e7681"> </span>props<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">new</span><span style="color:#6e7681"> </span>Properties();<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>props.setProperty(<span style="color:#a5d6ff">&#34;bootstrap.servers&#34;</span>,<span style="color:#6e7681"> </span>System.getenv(<span style="color:#a5d6ff">&#34;KAFKA_BOOTSTRAP&#34;</span>));<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>props.setProperty(<span style="color:#a5d6ff">&#34;group.id&#34;</span>,<span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;events-consumer&#34;</span>);<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>props.setProperty(<span style="color:#a5d6ff">&#34;auto.offset.reset&#34;</span>,<span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;earliest&#34;</span>);<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span><span style="color:#ff7b72">try</span><span style="color:#6e7681"> </span>(<span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">var</span><span style="color:#6e7681"> </span>handle<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>KPipe.json(<span style="color:#a5d6ff">&#34;events&#34;</span>,<span style="color:#6e7681"> </span>props)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">        </span>.pipe(Operators.addField(<span style="color:#a5d6ff">&#34;processedAt&#34;</span>,<span style="color:#6e7681"> </span>System.currentTimeMillis()))<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">        </span>.pipe(Operators.removeFields(<span style="color:#a5d6ff">&#34;password&#34;</span>,<span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;ssn&#34;</span>))<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">        </span>.toConsole()<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">        </span>.start())<span style="color:#6e7681"> </span>{<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">      </span>handle.awaitShutdown();<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>}<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>}<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span>}</span></span></code></pre>
+</figure><p>That is the whole app. Try-with-resources gives you a 5-second graceful shutdown for free.</p>
+<h3 id="3-run-kafka">3. Run Kafka</h3>
+<figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"># docker-compose.yml</span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#7ee787">services</span>:<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span><span style="color:#7ee787">kafka</span>:<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span><span style="color:#7ee787">image</span>:<span style="color:#6e7681"> </span><span style="color:#a5d6ff">apache/kafka:4.2.0</span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span><span style="color:#7ee787">ports</span>:<span style="color:#6e7681"> </span>[<span style="color:#a5d6ff">&#34;9092:9092&#34;</span>]<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span><span style="color:#7ee787">environment</span>:<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">      </span><span style="color:#7ee787">KAFKA_NODE_ID</span>:<span style="color:#6e7681"> </span><span style="color:#a5d6ff">1</span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">      </span><span style="color:#7ee787">KAFKA_PROCESS_ROLES</span>:<span style="color:#6e7681"> </span><span style="color:#a5d6ff">broker,controller</span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">      </span><span style="color:#7ee787">KAFKA_LISTENERS</span>:<span style="color:#6e7681"> </span><span style="color:#a5d6ff">PLAINTEXT://:9092,CONTROLLER://:9093</span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">      </span><span style="color:#7ee787">KAFKA_ADVERTISED_LISTENERS</span>:<span style="color:#6e7681"> </span><span style="color:#a5d6ff">PLAINTEXT://localhost:9092</span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">      </span><span style="color:#7ee787">KAFKA_CONTROLLER_LISTENER_NAMES</span>:<span style="color:#6e7681"> </span><span style="color:#a5d6ff">CONTROLLER</span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">      </span><span style="color:#7ee787">KAFKA_CONTROLLER_QUORUM_VOTERS</span>:<span style="color:#6e7681"> </span><span style="color:#a5d6ff">1</span>@<span style="color:#a5d6ff">kafka:9093</span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">      </span><span style="color:#7ee787">KAFKA_LISTENER_SECURITY_PROTOCOL_MAP</span>:<span style="color:#6e7681"> </span><span style="color:#a5d6ff">PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT</span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">      </span><span style="color:#7ee787">KAFKA_INTER_BROKER_LISTENER_NAME</span>:<span style="color:#6e7681"> </span><span style="color:#a5d6ff">PLAINTEXT</span></span></span></code></pre>
+</figure><p><code>docker compose up -d kafka</code>, set <code>KAFKA_BOOTSTRAP=localhost:9092</code>, and run the app.</p>
+<h3 id="4-add-the-operational-layer">4. Add the operational layer</h3>
+<figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-java" data-lang="java"><span style="display:flex;"><span>KPipe.json(<span style="color:#a5d6ff">&#34;events&#34;</span>,<span style="color:#6e7681"> </span>props)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.pipe(Operators.removeFields(<span style="color:#a5d6ff">&#34;password&#34;</span>))<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.withRetry(3,<span style="color:#6e7681"> </span>Duration.ofSeconds(1))<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.withDeadLetterTopic(<span style="color:#a5d6ff">&#34;events-dlq&#34;</span>)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.withBackpressure()<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.withCircuitBreaker(0.5,<span style="color:#6e7681"> </span>100,<span style="color:#6e7681"> </span>Duration.ofSeconds(30))<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.toConsole()<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.start();</span></span></code></pre>
+</figure><p>That is the full operational story for a typical consumer: three retries, DLQ on permanent failure,
+pause when 10k records are in flight, and a circuit breaker that trips at 50% failure rate over a
+100-sample window and probes after 30s.</p>
+<h3 id="5-add-opentelemetry-optional">5. Add OpenTelemetry (optional)</h3>
+<figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-kotlin" data-lang="kotlin"><span style="display:flex;"><span>implementation(<span style="color:#a5d6ff">&#34;io.github.eschizoid:kpipe-metrics-otel:1.13.0&#34;</span>)
+</span></span><span style="display:flex;"><span>implementation(<span style="color:#a5d6ff">&#34;io.github.eschizoid:kpipe-tracing-otel:1.13.0&#34;</span>)</span></span></code></pre>
+</figure><figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-java" data-lang="java"><span style="display:flex;"><span>KPipe.json(<span style="color:#a5d6ff">&#34;events&#34;</span>,<span style="color:#6e7681"> </span>props)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.withMetrics(<span style="color:#ff7b72">new</span><span style="color:#6e7681"> </span>OtelConsumerMetrics(otel,<span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;events-consumer&#34;</span>))<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.withTracer(<span style="color:#ff7b72">new</span><span style="color:#6e7681"> </span>OtelTracer(otel,<span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;events-consumer&#34;</span>))<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.pipe(Operators.addField(<span style="color:#a5d6ff">&#34;ts&#34;</span>,<span style="color:#6e7681"> </span>System.currentTimeMillis()))<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.toConsole()<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.start();</span></span></code></pre>
+</figure><p>The base library has no OTel dependency. Adding the two modules opts you in without changing the rest
+of the code.</p>
+<hr>
+<h2 id="what-you-do-not-get">What you do not get</h2>
 <ul>
-<li>no topology DSL</li>
-<li>no framework lifecycle</li>
-<li>just code-first pipelines</li>
+<li><strong>No topology DSL.</strong> No joins, no windowed aggregations, no state stores. Use Kafka Streams.</li>
+<li><strong>No annotation-driven configuration.</strong> Pipelines are values, not bean declarations.</li>
+<li><strong>No exactly-once transactions.</strong> At-least-once with idempotent processing is the contract.</li>
+<li><strong>No Spring auto-wiring</strong> (a starter is on the roadmap, gated on demand).</li>
 </ul>
+<p>If any of those is a hard requirement, KPipe is the wrong tool.</p>
 <hr>
-<h2 id="single-serde-cycle">Single SerDe cycle</h2>
-<p>Instead of repeatedly doing:</p>
-<p>byte[] -&gt; object -&gt; byte[] -&gt; object -&gt; byte[]</p>
-<p>KPipe:</p>
-<ul>
-<li>deserializes once</li>
-<li>transforms in place</li>
-<li>serializes once</li>
-</ul>
-<p>For JSON, this is typically a <code>Map&lt;String, Object&gt;</code>. For Avro, a <code>GenericRecord</code>.</p>
-<hr>
-<h2 id="virtual-threads">Virtual threads</h2>
-<p>Each message is processed using a virtual thread (thread-per-record model).</p>
-<p>KPipe also uses ScopedValue for per-thread resource reuse.</p>
-<hr>
-<h2 id="delivery-guarantees">Delivery guarantees</h2>
-<p>KPipe provides at-least-once processing.</p>
-<p>Offsets are committed only when safe, using a lowest-pending-offset strategy.</p>
-<hr>
-<h2 id="processing-modes">Processing modes</h2>
-<p>Parallel (default): higher throughput
-Sequential: preserves ordering per partition</p>
-<figure class="highlight">
-    <pre tabindex="0" class="chroma"
-    ><code class="language-java" data-lang="java"><span style="display:flex;"><span>.withSequentialProcessing(<span style="color:#79c0ff">true</span>)</span></span></code></pre>
-</figure><hr>
-<h2 id="backpressure">Backpressure</h2>
-<p>Enabled when configured:</p>
-<figure class="highlight">
-    <pre tabindex="0" class="chroma"
-    ><code class="language-java" data-lang="java"><span style="display:flex;"><span>.withBackpressure(highWatermark,<span style="color:#6e7681"> </span>lowWatermark)</span></span></code></pre>
-</figure><p>Allows slowing down consumption when downstream systems are the bottleneck.</p>
-<hr>
-<h2 id="error-handling">Error handling</h2>
-<figure class="highlight">
-    <pre tabindex="0" class="chroma"
-    ><code class="language-java" data-lang="java"><span style="display:flex;"><span>.withRetry(maxRetries,<span style="color:#6e7681"> </span>backoff)<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681"></span>.withDeadLetterTopic(<span style="color:#a5d6ff">&#34;events-dlq&#34;</span>)</span></span></code></pre>
-</figure><hr>
-<h2 id="metrics">Metrics</h2>
-<p>Built-in metrics and OpenTelemetry support included.</p>
+<h2 id="the-design-decisions-worth-knowing">The design decisions worth knowing</h2>
+<p>A few choices that shape everything else.</p>
+<p><strong>Byte boundary at the consumer entry point.</strong> <code>KPipeConsumer</code> always reads <code>byte[]</code> values from Kafka.
+SerDe is part of the pipeline, not part of the consumer config. This makes Confluent wire envelopes,
+mixed-format topics, and bring-your-own-format trivial.</p>
+<p><strong>Single SerDe cycle.</strong> A pipeline deserializes once, applies every <code>UnaryOperator&lt;T&gt;</code> against the same
+object, and serializes once. Composing five transforms costs one deserialize and one serialize, not
+five round-trips.</p>
+<p><strong>Lowest-pending-offset commits.</strong> Parallel processing produces out-of-order completions. KPipe commits
+the highest contiguous offset, never a &ldquo;gap.&rdquo; At-least-once safety survives the parallelism.</p>
+<p><strong>Result&lt;T&gt; for filter-vs-fail.</strong> <code>MessagePipeline.process()</code> returns a sealed <code>Result&lt;T&gt;</code>
+(<code>Passed | Filtered | Failed</code>). The compiler enforces exhaustive handling. The 1.12 era convention was
+&ldquo;null means filter, throw means fail&rdquo; — readable but trust-based. 1.13 moved that guarantee from
+convention to type.</p>
+<p><strong>ConsumerHealthController.</strong> One bitmask coordinates manual pause, backpressure, and circuit-breaker
+pause sources. The three can hold the consumer paused simultaneously without fighting each other on
+resume.</p>
+<p><strong>No-deprecation policy.</strong> When a public API needs to change, we delete it and migrate every caller in
+the same PR. The codebase carries no <code>@Deprecated</code> and no compatibility shims. The cost is loud break
+notes in the release; the win is no <code>since=&quot;...&quot;</code> rot.</p>
 <hr>
 <h2 id="modules">Modules</h2>
-<ul>
-<li>kpipe-metrics</li>
-<li>kpipe-producer</li>
-<li>kpipe-consumer</li>
-</ul>
+<p>12 published artifacts on Maven Central. Pull what you need:</p>
+<table>
+  <thead>
+      <tr>
+          <th>Module</th>
+          <th>What it gives you</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>kpipe-api</code></td>
+          <td>Fluent facade: <code>KPipe</code>, <code>Stream&lt;T&gt;</code>, <code>Sink&lt;T&gt;</code>, <code>Handle</code></td>
+      </tr>
+      <tr>
+          <td><code>kpipe-bom</code></td>
+          <td>Version-pinning BOM</td>
+      </tr>
+      <tr>
+          <td><code>kpipe-core</code></td>
+          <td>Pipeline machinery: <code>MessageProcessorRegistry</code>, <code>MessageFormat</code>, <code>Operators</code>, <code>Result&lt;T&gt;</code></td>
+      </tr>
+      <tr>
+          <td><code>kpipe-consumer</code></td>
+          <td><code>KPipeConsumer</code>, backpressure, circuit breaker, offset manager, health server</td>
+      </tr>
+      <tr>
+          <td><code>kpipe-producer</code></td>
+          <td>Kafka producer wrapper, DLQ producer, <code>Tracer</code> SPI</td>
+      </tr>
+      <tr>
+          <td><code>kpipe-metrics</code></td>
+          <td>Metrics interfaces + log-based reporters (no OTel on classpath)</td>
+      </tr>
+      <tr>
+          <td><code>kpipe-metrics-otel</code></td>
+          <td>OpenTelemetry-backed metrics (opt-in)</td>
+      </tr>
+      <tr>
+          <td><code>kpipe-tracing-otel</code></td>
+          <td>W3C trace context propagation (opt-in)</td>
+      </tr>
+      <tr>
+          <td><code>kpipe-schema-registry-confluent</code></td>
+          <td>Confluent Schema Registry client (opt-in)</td>
+      </tr>
+      <tr>
+          <td><code>kpipe-format-json</code></td>
+          <td><code>JsonFormat</code>, <code>JsonConsoleSink</code></td>
+      </tr>
+      <tr>
+          <td><code>kpipe-format-avro</code></td>
+          <td><code>AvroFormat</code>, <code>AvroSchemaCatalog</code>, <code>AvroConsoleSink</code></td>
+      </tr>
+      <tr>
+          <td><code>kpipe-format-protobuf</code></td>
+          <td><code>ProtobufFormat</code>, <code>ProtobufDescriptorCatalog</code>, <code>ProtobufConsoleSink</code></td>
+      </tr>
+  </tbody>
+</table>
 <hr>
-<h2 id="installation">Installation</h2>
-<figure class="highlight">
-    <pre tabindex="0" class="chroma"
-    ><code class="language-kotlin" data-lang="kotlin"><span style="display:flex;"><span>implementation(<span style="color:#a5d6ff">&#34;io.github.eschizoid:kpipe:1.8.2&#34;</span>)</span></span></code></pre>
-</figure><hr>
 <h2 id="closing">Closing</h2>
-<p>Kafka itself isn’t the problem.</p>
+<p>Kafka itself isn&rsquo;t the problem.</p>
 <p>The way we structure consumers around it usually is.</p>
-<p><a href="https://github.com/eschizoid/kpipe">GitHub repo</a></p>
+<p>If you have ever maintained a Kafka service whose <code>Consumer.poll</code> loop has slowly grown into a 400-line
+method with hand-rolled retries and a TODO about offset commits, this library is for you.</p>
+<p><a href="https://github.com/eschizoid/kpipe">GitHub repo</a> · <a href="https://central.sonatype.com/artifact/io.github.eschizoid/kpipe-api">Maven Central</a></p>
 
 			</div>
 

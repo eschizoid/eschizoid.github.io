@@ -14,14 +14,14 @@
       <link>https://mariano-gonzalez.com/posts/post-3/</link>
       <pubDate>Sat, 13 May 2023 15:50:53 -0500</pubDate>
       <guid>https://mariano-gonzalez.com/posts/post-3/</guid>
-      <description>Introduction Deep Lake serves as a vector database that can integrate with Amazon SageMaker, allowing the storage of embeddings which are vector representations of data used in deep learning models. By leveraging Deep Lake&amp;rsquo;s vector database capabilities, developers can accelerate the training and deployment of their deep learning models. In this blog post, we will explore the details of this integration and how the use of vector databases can enhance the performance and accuracy of deep learning models.</description>
+      <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;&#xA;&lt;p&gt;Deep Lake serves as a vector database that can integrate with Amazon SageMaker, allowing the storage of embeddings which&#xA;are vector representations of data used in deep learning models. By leveraging Deep Lake&amp;rsquo;s vector database capabilities,&#xA;developers can accelerate the training and deployment of their deep learning models. In this blog post, we will explore&#xA;the details of this integration and how the use of vector databases can enhance the performance and accuracy of deep&#xA;learning models.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Introduction to MLOps With SageMaker: Running your First LLM</title>
       <link>https://mariano-gonzalez.com/posts/post-2/</link>
       <pubDate>Wed, 26 Apr 2023 17:27:40 -0500</pubDate>
       <guid>https://mariano-gonzalez.com/posts/post-2/</guid>
-      <description>Introduction As the field of machine learning advances, it has become increasingly important for organizations to develop robust practices for managing their workflows. That&amp;rsquo;s where MLOps comes in - a set of best practices and tools for managing the entire lifecycle of machine learning models, from development to deployment and beyond.&#xA;In this blog post, we&amp;rsquo;ll delve into how MLOps practices can be leveraged to deploy an LLM in AWS SageMaker, using the popular Hugging Face Transformers library.</description>
+      <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;&#xA;&lt;p&gt;As the field of machine learning advances, it has become increasingly important for organizations to develop robust&#xA;practices for managing their workflows. That&amp;rsquo;s where MLOps comes in - a set of best practices and tools for managing the&#xA;entire lifecycle of machine learning models, from development to deployment and beyond.&lt;/p&gt;&#xA;&lt;p&gt;In this blog post, we&amp;rsquo;ll delve into how MLOps practices can be leveraged to deploy an LLM&#xA;in &lt;a href=&#34;https://aws.amazon.com/sagemaker/&#34;&gt;AWS SageMaker&lt;/a&gt;, using the&#xA;popular &lt;a href=&#34;https://github.com/aws/sagemaker-huggingface-inference-toolkit&#34;&gt;Hugging Face Transformers library&lt;/a&gt;. We&amp;rsquo;ll cover&#xA;everything from setting up an end-to-end pipeline for deploying a Large Language Model on SageMaker, to monitoring its&#xA;performance.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
