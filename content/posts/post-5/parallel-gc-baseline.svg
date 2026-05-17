@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1180" height="900" viewBox="0 0 1180 900" role="img" aria-label="KPipe vs Confluent PC vs Reactor Kafka vs raw KafkaConsumer + virtual threads — parallel-consumer throughput, allocation, and GC behavior">
   <defs>
     <style>
-      .bg { fill: #ffffff; }
-      .panel { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1; }
+      .bg { fill: none; }
+      .panel { fill: none; stroke: #cbd5e1; stroke-width: 1; }
       .title { fill: #111827; font: 700 24px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif; }
       .subtitle { fill: #4b5563; font: 500 14px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif; }
       .h2 { fill: #111827; font: 700 16px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif; }
