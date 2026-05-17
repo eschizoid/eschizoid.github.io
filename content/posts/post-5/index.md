@@ -11,19 +11,22 @@ tags:
   - jmh
 ---
 
-If you write a library that "consumes Kafka in parallel," eventually someone asks "compared to what?"
+KPipe is a Kafka consumer library built on Java 25 virtual threads. The pitch is that you get the
+performance of a hand-rolled `KafkaConsumer` + `Thread.ofVirtual()` loop with the operational stack
+already wired up: lowest-pending-offset commits, retry, DLQ producer, backpressure with hysteresis,
+circuit breaker, OTel metrics + tracing, batch sinks, `Result<T>` typed pipeline outcomes, graceful
+shutdown.
 
-For KPipe that question had a partial answer. Up to 1.12 the benchmark compared KPipe to the Confluent
-Parallel Consumer only, at 10,000 records per invocation, with no per-record workload. One competitor,
-one workload, one number.
+The question this post answers is what that pitch costs. KPipe is now benchmarked against three
+alternatives: **Confluent Parallel Consumer**, **Reactor Kafka**, and a hand-rolled **raw
+`KafkaConsumer` + virtual-thread executor** baseline. Three workload regimes. Real Kafka 4.2.0 broker
+(Testcontainers, not in-process). JMH-published scores, GC profiler, raw JSON committed alongside
+this post in [`benchmarks/results/`][bench-results].
 
-This post is about the upgrade and the first numbers from it. KPipe now has a four-runtime competitive
-bench: **KPipe**, **Confluent Parallel Consumer**, **Reactor Kafka**, and a hand-rolled **raw
-`KafkaConsumer` + virtual-thread executor** baseline. Three workload regimes. Real Kafka broker
-(Testcontainers, not in-process). JMH-published scores, GC profiler, raw JSON committed alongside this
-post in [`benchmarks/results/`][bench-results].
-
-The headline first. The methodology and the saga of getting here second.
+The short answer: **KPipe captures 85–95% of raw Loom throughput** and **degrades gracefully under
+blocking work**, with about a 9% drop from 0 → 1000 µs of per-record I/O. Confluent drops 35% over
+the same sweep. Reactor Kafka drops 96%. The rest of this post is the numbers, the methodology, and
+the saga of getting Reactor onto the bench at all.
 
 ## Headline
 
