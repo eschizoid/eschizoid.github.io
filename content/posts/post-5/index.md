@@ -35,12 +35,12 @@ Records / second, higher is better. `workMicros` is per-record simulated work vi
 All four runtimes run against the same Testcontainers-managed Kafka 4.2.0 broker, same 25,000-record
 seed, same eight partitions, two JMH forks × five measurement iterations.
 
-| Runtime                         |      `workMicros=0` |     `workMicros=100` |    `workMicros=1000` |
-|---------------------------------|--------------------:|---------------------:|---------------------:|
-| **Raw `KafkaConsumer` + VT**    |    542,859 ± 34,077 |     500,231 ± 40,168 |     482,639 ± 50,406 |
-| **KPipe**                       |**473,491 ± 79,218** | **461,273 ± 55,179** |**430,526 ± 117,613** |
-| **Reactor Kafka 1.3.25**        |    256,648 ± 25,508 |       77,542 ± 1,054 |        **8,979 ± 34**|
-| **Confluent Parallel Consumer** |    100,106 ± 19,160 |      108,194 ± 6,652 |       64,715 ± 3,091 |
+| Runtime                         |       `workMicros=0` |     `workMicros=100` |     `workMicros=1000` |
+|---------------------------------|---------------------:|---------------------:|----------------------:|
+| **Raw `KafkaConsumer` + VT**    |     542,859 ± 34,077 |     500,231 ± 40,168 |      482,639 ± 50,406 |
+| **KPipe**                       | **473,491 ± 79,218** | **461,273 ± 55,179** | **430,526 ± 117,613** |
+| **Reactor Kafka 1.3.25**        |     256,648 ± 25,508 |       77,542 ± 1,054 |        **8,979 ± 34** |
+| **Confluent Parallel Consumer** |     100,106 ± 19,160 |      108,194 ± 6,652 |        64,715 ± 3,091 |
 
 ![Parallel-consumer throughput, allocation, and GC profile](parallel-gc-baseline.svg)
 
