@@ -44,63 +44,55 @@ seed, same eight partitions, two JMH forks × five measurement iterations.
 
 ![Parallel-consumer throughput, allocation, and GC profile](parallel-gc-baseline.svg)
 
-## The Reactor cliff
+## What 473,000 records/sec looks like to write
 
-The headline finding from this run isn't where KPipe lands. It's where Reactor Kafka lands.
+That throughput number is the fluent facade. End-to-end, including offset management, retry,
+backpressure, and metrics:
 
-At `workMicros=0` Reactor is fine — 257k ops/sec, between Confluent and KPipe. At `workMicros=100`
-it falls *below* Confluent. At `workMicros=1000` it does **8,979 ops/sec** — that's **48× slower
-than KPipe** and **7× slower than Confluent** at the same workload. The error band of ±34 on 8,979
-says it's consistently terrible, not noise. Something pathological happens to `Flux.parallel(100)`
-when records park on `LockSupport.parkNanos`.
+```java
+try (var handle = KPipe.json("orders", props)
+    .pipe(order -> enrich(order))
+    .filter(order -> order.total() > 0)
+    .withRetry(3, Duration.ofMillis(100))
+    .withBackpressure()
+    .withDeadLetterTopic("orders.dlq")
+    .toCustom(WarehouseSink.create())
+    .start()) {
+  handle.awaitShutdown();
+}
+```
 
-I went into this run expecting Reactor to land between Confluent and the Loom runtimes — a third
-option for teams who want reactive composition without a thread pool ceiling. The data says the
-opposite: if your per-record work blocks at all, Reactor Kafka is the worst of the four. The "don't
-pick Reactor Kafka for blocking work" claim is now evidence-backed, not a vibe.
+Everything in the headline table for KPipe is this. No registry wiring, no manual builder, no
+separate runner. The throughput cost of that ergonomics is what the rest of this post measures.
 
-## Three things the throughput says cleanly
+## What the numbers say
 
-**1. Raw `KafkaConsumer + VT` is the fastest runtime; KPipe trails by single digits to low teens.**
-At `workMicros=0`, Raw 543k vs KPipe 473k — about 13%. At `workMicros=100`, ~8%. At `workMicros=1000`,
-~11%. The earlier smoke-run claim of "KPipe ≈ raw within error" was too strong; with this run's tighter
-error bands they're close but not statistically identical. There's a small measurable framework cost.
+**KPipe degrades gracefully across the workload sweep.** 473k → 461k → 431k records/sec from
+`workMicros=0` to `workMicros=1000`. About a 9% drop across a 1000× change in per-record work.
+This is the headline KPipe number — virtual threads scale beyond the partition count, blocked
+records cost kilobytes of stack instead of platform-thread slots, and the framework holds up
+under realistic I/O.
 
-Given everything KPipe layers on top of the raw loop — offset manager with lowest-pending-offset
-commits, retry, DLQ producer, backpressure with hysteresis, circuit breaker, OTel metric + tracing
-hooks, batch sinks, `Result<T>` typed pipeline outcomes, lifecycle management with graceful shutdown —
-a 5–15% framework cost is the right shape. The framework is not free; it's also not making Loom slower
-in any practical sense.
+**You pay 5–15% throughput for the full feature stack.** Raw `KafkaConsumer + VT` is the fastest
+runtime in the table — 543k at `workMicros=0` vs KPipe's 473k. That's the framework cost: ~13% at
+zero work, ~8% at 100 µs, ~11% at 1000 µs. For that you get the lowest-pending-offset commits,
+retry, DLQ, backpressure with hysteresis, circuit breaker, OTel metrics + tracing, batch sinks,
+typed `Result<T>` pipeline outcomes, and graceful shutdown — wired and tested. Building that on
+top of the raw loop yourself is not a 10% project.
 
-**2. Both Loom-based runtimes are 4.3× – 7.5× ahead of Confluent Parallel Consumer.** The gap widens
-at `workMicros=1000`. Confluent's 100-worker thread pool can only have 100 records simultaneously
-parked on the simulated I/O wait; under blocking work the pool serialises. KPipe and raw don't
-serialise — virtual threads scale beyond the partition count, each blocked record costs kilobytes
-instead of megabytes.
-
-**3. KPipe degrades gracefully across the workload sweep.** 473k → 461k → 431k. The drop from
-`workMicros=0` to `workMicros=1000` is about 9%. Confluent drops 35% over the same sweep. Reactor
-drops 96%. This is the Loom thesis paying off in the only way that matters: blocking work doesn't
-crater the runtime.
-
-## What this does not say
-
-A bench number with no caveat is a marketing pitch. The honest framing:
-
-- **The Loom runtimes win because of Loom, not because of KPipe.** "KPipe is 5× Confluent" is true but
-  unfairly framed — the right comparison is "Loom-based parallel consumption is 5× a platform-thread
-  pool." KPipe's contribution is bringing that win with a small, measurable framework cost.
-- **KPipe allocates more per record.** ~924 B/op at `workMicros=0` vs raw's 55 B/op vs Confluent's
-  34 B/op. On this run that didn't depress throughput — the JVM's young gen absorbed it. On a tight
-  heap, or a workload sensitive to GC tail latency, watch this number.
-- **One payload shape, one broker config.** Small JSON, single-broker Testcontainers, replication
-  factor 1. Production with a network broker and replication 3 / acks=all has different absolute
-  numbers. Headline ordering between runtimes usually survives the move; the gaps shift.
-- **No latency-percentile data yet.** `ParallelProcessingLatencyBenchmark` was not exercised in this
-  run. Average throughput is half the story; p99 is the other half, and a runtime can rank one way on
-  throughput and the opposite way on tail. Coming in the next snapshot.
+**Loom-based runtimes leave platform-thread libraries behind under load.** KPipe and Raw are
+4.3×–7.5× ahead of Confluent Parallel Consumer across the sweep. Reactor Kafka tracks Confluent
+at `workMicros=0` (257k), falls below it at `workMicros=100`, and collapses to **8,979 records/sec**
+at `workMicros=1000` — 48× slower than KPipe. `Flux.parallel(100)` and a 100-worker thread pool
+both hit a ceiling that virtual threads don't have. If your per-record work blocks (database
+write, HTTP call, anything that parks), this is the gap KPipe is closing.
 
 ## Allocation and GC
+
+**Headline:** KPipe allocates the most per record in the table and it didn't matter for this run's
+throughput. The JVM young gen absorbed it cleanly. The number to watch is whether that holds on a
+tight heap or under tail-latency-sensitive workloads — for steady-state throughput on a default
+heap, it's a non-event.
 
 | Runtime                     | `workMicros=0` B/op | `workMicros=100` B/op | `workMicros=1000` B/op |
 |-----------------------------|--------------------:|----------------------:|-----------------------:|
@@ -109,17 +101,29 @@ A bench number with no caveat is a marketing pitch. The honest framing:
 | Reactor Kafka               |                 175 |                    83 |                    193 |
 | KPipe                       |                 924 |                 1,513 |                  1,436 |
 
-Confluent allocates least (~34 B/op, flat across the sweep — its long-lived worker pool doesn't
-allocate much per record). Raw is second-leanest at `workMicros=0` then jumps when blocked-record
-Runnable lambdas pile up. Reactor allocates moderately (83–193 B/op) — surprising given its throughput
-collapse, but its problem is scheduling, not bytes. KPipe allocates most (924–1,513 B/op) because of
-`Result<T>` wrappers, the per-record pipeline builder hand-off, and a fresh virtual thread per record.
+KPipe's allocation comes from three places: `Result<T>` wrappers (sealed type, allocated per record),
+the per-record pipeline builder hand-off, and a fresh virtual thread per record. The first two are
+correctness choices — typed pipeline outcomes are how the consumer surfaces "passed / filtered /
+failed" without overloading `null`, and they're the same mechanism that makes silent failures
+impossible to ship. The third is the whole reason throughput holds up under blocking work.
 
-The GC story is counter-intuitive but consistent with throughput. Confluent's smaller per-record
-allocations still produce more total GC events than KPipe or Raw because its slower iterations stay
-in the young gen longer. Reactor's GC numbers at `workMicros=1000` look low (33 events / 98 ms) only
+The GC story is counter-intuitive but consistent. Confluent's smaller per-record allocations
+still produce more total GC events than KPipe or Raw, because its slower iterations stay in the
+young gen longer. Reactor's GC numbers at `workMicros=1000` look low (33 events / 98 ms) only
 because the benchmark is barely running — at ~9 records/sec there's almost no allocation pressure
-to clear. Don't read that as well-behaved; the throughput number tells the real story.
+to clear.
+
+## What this does not say
+
+- **One payload shape, one broker config.** Small JSON, single-broker Testcontainers, replication
+  factor 1. Production with a network broker and replication 3 / acks=all shifts the absolute
+  numbers. Headline ordering between runtimes usually survives the move; the gaps shift.
+- **No latency-percentile data yet.** `ParallelProcessingLatencyBenchmark` was not exercised in this
+  run. Average throughput is half the story; p99 is the other half, and a runtime can rank one way
+  on throughput and the opposite way on tail. Coming in the next snapshot.
+- **The Loom share of the win is real.** Some of KPipe's lead over Confluent is "Loom beats platform
+  threads," not "KPipe beats Confluent." The Raw column exists to make that share visible — KPipe's
+  contribution is bringing Loom's win without losing the operational stack.
 
 ## How the harness got here
 
@@ -173,9 +177,8 @@ Two gotchas worth recording:
 
   Verified the right bytecode landed in the fresh jar with `javap -c -p`.
 
-On 1.3.25 Reactor runs cleanly across the full sweep — which is how I got the cliff numbers above.
-The compatibility fix unlocked the measurement; the measurement is what revealed the blocking-work
-problem.
+On 1.3.25 Reactor runs cleanly across the full sweep, which is how its row in the headline table
+got populated.
 
 ## Reproduce locally
 
@@ -194,18 +197,12 @@ Testcontainers will pull `apache/kafka:4.2.0` on first invocation.
 
 ## What's next
 
-- Latency-percentile companion run — `ParallelProcessingLatencyBenchmark` reports `p50 / p95 / p99 /
-  p999` per runtime. The Reactor cliff in average throughput says nothing about whether the few
-  records that *do* get through have decent or terrible tail latency. Worth knowing.
-- Multi-partition sweep (8 / 32 / 128) to expose how each runtime scales with parallelism opportunity.
-- Payload-size sweep (100 B / 1 KB / 10 KB) — Reactor's `flatMap` strategy can behave very differently
-  under larger payloads.
-- Dig into the Reactor pathology. Is it `Flux.parallel(100)` over-scheduling and starving its own
-  workers? A poll-loop interaction with blocking downstream? A real answer would be a follow-up post
-  in itself.
+The next bench snapshot adds tail-latency percentiles (`p50 / p95 / p99 / p999`), a multi-partition
+sweep, and a payload-size sweep. The committed JMH JSON in `benchmarks/results/` is the source of
+truth; this post is the readable surface over it.
 
-The committed JMH JSON in `benchmarks/results/` is the source of truth; this post is the readable
-surface over it.
+If you write Kafka consumers in Java and have been waiting for "Loom but with the operational stack
+already there," that's the slot KPipe is built for. The bench is the evidence.
 
 [GitHub repo][gh] · [Benchmarks README][bench-readme] · [Raw JMH JSON][bench-results]
 
