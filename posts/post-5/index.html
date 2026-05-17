@@ -8,7 +8,7 @@
   <meta itemprop="description" content="How KPipe stacks up against Confluent Parallel Consumer, Reactor Kafka, and a hand-rolled KafkaConsumer &#43; virtual-thread executor — first published numbers from the new 4-runtime harness.">
   <meta itemprop="datePublished" content="2026-05-16T00:00:00+00:00">
   <meta itemprop="dateModified" content="2026-05-16T00:00:00+00:00">
-  <meta itemprop="wordCount" content="1560">
+  <meta itemprop="wordCount" content="1608">
   <meta itemprop="keywords" content="Kafka,Java,Benchmarks,Virtual-Threads,Jmh"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-5/">
   <meta property="og:site_name" content="Mariano Gonzalez">
   <meta property="og:title" content="Benchmarking KPipe against the parallel-Kafka libraries you would actually pick">
@@ -255,6 +255,7 @@ the right thing now.&rdquo;</p>
 cheap path; a sidecar on dedicated hardware is the production-faithful path. In-process Kafka is fine
 for &ldquo;does my code compile and run end-to-end&rdquo; tests. It is not fine for performance comparison.</p>
 <h2 id="the-reactor-kafka-saga">The Reactor Kafka saga</h2>
+<p>Getting Reactor onto the bench at all took two version bumps and a fat-jar exorcism.</p>
 <p>Reactor Kafka 1.3.23 (the latest stable on Maven Central when I first set up the bench) <strong>crashes on
 first record</strong> against <code>kafka-clients:4.x</code>:</p>
 <figure class="highlight">
@@ -283,6 +284,9 @@ jar had the 1.3.23 <code>ReceiverRecord.class</code> baked in. Force-cleaning fi
 </figure><p>Verified the right bytecode landed in the fresh jar with <code>javap -c -p</code>.</p>
 </li>
 </ul>
+<p>On 1.3.25 Reactor runs cleanly across the full sweep — which is how I got the cliff numbers above.
+The compatibility fix unlocked the measurement; the measurement is what revealed the blocking-work
+problem.</p>
 <h2 id="reproduce-locally">Reproduce locally</h2>
 <p>The bench code is on <code>main</code>:</p>
 <figure class="highlight">
