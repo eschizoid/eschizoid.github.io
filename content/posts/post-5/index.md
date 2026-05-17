@@ -11,27 +11,28 @@ tags:
   - jmh
 ---
 
-KPipe is a Kafka consumer library built on Java 25 virtual threads. The pitch is that you get the
-performance of a hand-rolled `KafkaConsumer` + `Thread.ofVirtual()` loop with the operational stack
-already wired up: lowest-pending-offset commits, retry, DLQ producer, backpressure with hysteresis,
-circuit breaker, OTel metrics + tracing, batch sinks, `Result<T>` typed pipeline outcomes, graceful
-shutdown.
+KPipe is a Java 25 Kafka consumer library that runs each record on a virtual thread. The pitch:
+the performance of a hand-rolled `KafkaConsumer` + `Thread.ofVirtual()` loop, with the operational
+stack already wired up — lowest-pending-offset commits, retry, DLQ producer, backpressure with
+hysteresis, circuit breaker, OTel metrics + tracing, batch sinks, `Result<T>` typed pipeline
+outcomes, graceful shutdown.
 
 The question this post answers is what that pitch costs. KPipe is now benchmarked against three
 alternatives: **Confluent Parallel Consumer**, **Reactor Kafka**, and a hand-rolled **raw
-`KafkaConsumer` + virtual-thread executor** baseline. Three workload regimes. Real Kafka 4.2.0 broker
-(Testcontainers, not in-process). JMH-published scores, GC profiler, raw JSON committed alongside
-this post in [`benchmarks/results/`][bench-results].
+`KafkaConsumer` + virtual-thread executor** baseline. Three workload regimes, a real Kafka 4.2.0
+broker via Testcontainers (not in-process), JMH-published scores with a GC profiler, and the raw
+JSON committed alongside this post in [`benchmarks/results/`][bench-results].
 
-The short answer: **KPipe captures 85–95% of raw Loom throughput** and **degrades gracefully under
-blocking work**, with about a 9% drop from 0 → 1000 µs of per-record I/O. Confluent drops 35% over
-the same sweep. Reactor Kafka drops 96%. The rest of this post is the numbers, the methodology, and
-the saga of getting Reactor onto the bench at all.
+**KPipe captures 85–95% of raw Loom throughput** and **degrades gracefully under blocking work**,
+with about a 9% drop from 0 to 1000 µs of per-record I/O. Confluent drops 35% over the same sweep.
+Reactor Kafka drops 96%. The rest of this post is the numbers, the methodology, and the saga of
+getting Reactor onto the bench at all.
 
 ## Headline
 
-Records / second, higher is better. `workMicros` is per-record simulated work via `LockSupport.parkNanos`
-— 0 µs is pure framework overhead, 100 µs is local enrichment, 1000 µs is a blocking I/O round trip.
+Records / second, higher is better. `workMicros` is per-record simulated work via
+`LockSupport.parkNanos`. 0 µs is pure framework overhead, 100 µs is local enrichment, and 1000 µs
+is a blocking I/O round trip.
 All four runtimes run against the same Testcontainers-managed Kafka 4.2.0 broker, same 25,000-record
 seed, same eight partitions, two JMH forks × five measurement iterations.
 
@@ -69,30 +70,29 @@ separate runner. The throughput cost of that ergonomics is what the rest of this
 
 **KPipe degrades gracefully across the workload sweep.** 473k → 461k → 431k records/sec from
 `workMicros=0` to `workMicros=1000`. About a 9% drop across a 1000× change in per-record work.
-This is the headline KPipe number — virtual threads scale beyond the partition count, blocked
-records cost kilobytes of stack instead of platform-thread slots, and the framework holds up
-under realistic I/O.
+Virtual threads scale beyond the partition count, blocked records cost kilobytes of stack instead
+of platform-thread slots, and the framework holds up under realistic I/O.
 
 **You pay 5–15% throughput for the full feature stack.** Raw `KafkaConsumer + VT` is the fastest
-runtime in the table — 543k at `workMicros=0` vs KPipe's 473k. That's the framework cost: ~13% at
+runtime in the table at 543k for `workMicros=0` vs KPipe's 473k. That's the framework cost: ~13% at
 zero work, ~8% at 100 µs, ~11% at 1000 µs. For that you get the lowest-pending-offset commits,
 retry, DLQ, backpressure with hysteresis, circuit breaker, OTel metrics + tracing, batch sinks,
-typed `Result<T>` pipeline outcomes, and graceful shutdown — wired and tested. Building that on
-top of the raw loop yourself is not a 10% project.
+typed `Result<T>` pipeline outcomes, and graceful shutdown, all wired and tested. Building that
+on top of the raw loop yourself is not a 10% project.
 
 **Loom-based runtimes leave platform-thread libraries behind under load.** KPipe and Raw are
 4.3×–7.5× ahead of Confluent Parallel Consumer across the sweep. Reactor Kafka tracks Confluent
 at `workMicros=0` (257k), falls below it at `workMicros=100`, and collapses to **8,979 records/sec**
-at `workMicros=1000` — 48× slower than KPipe. `Flux.parallel(100)` and a 100-worker thread pool
+at `workMicros=1000`, 48× slower than KPipe. `Flux.parallel(100)` and a 100-worker thread pool
 both hit a ceiling that virtual threads don't have. If your per-record work blocks (database
 write, HTTP call, anything that parks), this is the gap KPipe is closing.
 
 ## Allocation and GC
 
-**Headline:** KPipe allocates the most per record in the table and it didn't matter for this run's
-throughput. The JVM young gen absorbed it cleanly. The number to watch is whether that holds on a
-tight heap or under tail-latency-sensitive workloads — for steady-state throughput on a default
-heap, it's a non-event.
+KPipe allocates the most per record in the table and it didn't matter for this run's throughput.
+The JVM young gen absorbed it cleanly. The number to watch is whether that holds on a tight heap
+or under tail-latency-sensitive workloads. For steady-state throughput on a default heap, it's a
+non-event.
 
 | Runtime                     | `workMicros=0` B/op | `workMicros=100` B/op | `workMicros=1000` B/op |
 |-----------------------------|--------------------:|----------------------:|-----------------------:|
@@ -202,7 +202,7 @@ sweep, and a payload-size sweep. The committed JMH JSON in `benchmarks/results/`
 truth; this post is the readable surface over it.
 
 If you write Kafka consumers in Java and have been waiting for "Loom but with the operational stack
-already there," that's the slot KPipe is built for. The bench is the evidence.
+already there," KPipe is worth a look. The numbers above are the case for it.
 
 [GitHub repo][gh] · [Benchmarks README][bench-readme] · [Raw JMH JSON][bench-results]
 
