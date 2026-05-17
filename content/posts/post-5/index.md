@@ -41,8 +41,6 @@ seed, same eight partitions, two JMH forks × five measurement iterations.
 
 ![Parallel-consumer throughput, allocation, and GC profile](parallel-gc-baseline.svg)
 
-[reactor-issue]: https://github.com/reactor/reactor-kafka/issues/420
-
 ## The Reactor cliff
 
 The headline finding from this run isn't where KPipe lands. It's where Reactor Kafka lands.
@@ -142,6 +140,8 @@ for "does my code compile and run end-to-end" tests. It is not fine for performa
 
 ## The Reactor Kafka saga
 
+Getting Reactor onto the bench at all took two version bumps and a fat-jar exorcism.
+
 Reactor Kafka 1.3.23 (the latest stable on Maven Central when I first set up the bench) **crashes on
 first record** against `kafka-clients:4.x`:
 
@@ -169,6 +169,10 @@ Two gotchas worth recording:
   ```
 
   Verified the right bytecode landed in the fresh jar with `javap -c -p`.
+
+On 1.3.25 Reactor runs cleanly across the full sweep — which is how I got the cliff numbers above.
+The compatibility fix unlocked the measurement; the measurement is what revealed the blocking-work
+problem.
 
 ## Reproduce locally
 
