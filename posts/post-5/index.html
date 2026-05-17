@@ -8,7 +8,7 @@
   <meta itemprop="description" content="How KPipe stacks up against Confluent Parallel Consumer, Reactor Kafka, and a hand-rolled KafkaConsumer &#43; virtual-thread executor — first published numbers from the new 4-runtime harness.">
   <meta itemprop="datePublished" content="2026-05-16T00:00:00+00:00">
   <meta itemprop="dateModified" content="2026-05-16T00:00:00+00:00">
-  <meta itemprop="wordCount" content="1608">
+  <meta itemprop="wordCount" content="1659">
   <meta itemprop="keywords" content="Kafka,Java,Benchmarks,Virtual-Threads,Jmh"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-5/">
   <meta property="og:site_name" content="Mariano Gonzalez">
   <meta property="og:title" content="Benchmarking KPipe against the parallel-Kafka libraries you would actually pick">
@@ -92,16 +92,20 @@
 			</div>
 					
 			<div class="markdown">
-				<p>If you write a library that &ldquo;consumes Kafka in parallel,&rdquo; eventually someone asks &ldquo;compared to what?&rdquo;</p>
-<p>For KPipe that question had a partial answer. Up to 1.12 the benchmark compared KPipe to the Confluent
-Parallel Consumer only, at 10,000 records per invocation, with no per-record workload. One competitor,
-one workload, one number.</p>
-<p>This post is about the upgrade and the first numbers from it. KPipe now has a four-runtime competitive
-bench: <strong>KPipe</strong>, <strong>Confluent Parallel Consumer</strong>, <strong>Reactor Kafka</strong>, and a hand-rolled <strong>raw
-<code>KafkaConsumer</code> + virtual-thread executor</strong> baseline. Three workload regimes. Real Kafka broker
-(Testcontainers, not in-process). JMH-published scores, GC profiler, raw JSON committed alongside this
-post in <a href="https://github.com/eschizoid/kpipe/tree/main/benchmarks/results"><code>benchmarks/results/</code></a>.</p>
-<p>The headline first. The methodology and the saga of getting here second.</p>
+				<p>KPipe is a Kafka consumer library built on Java 25 virtual threads. The pitch is that you get the
+performance of a hand-rolled <code>KafkaConsumer</code> + <code>Thread.ofVirtual()</code> loop with the operational stack
+already wired up: lowest-pending-offset commits, retry, DLQ producer, backpressure with hysteresis,
+circuit breaker, OTel metrics + tracing, batch sinks, <code>Result&lt;T&gt;</code> typed pipeline outcomes, graceful
+shutdown.</p>
+<p>The question this post answers is what that pitch costs. KPipe is now benchmarked against three
+alternatives: <strong>Confluent Parallel Consumer</strong>, <strong>Reactor Kafka</strong>, and a hand-rolled <strong>raw
+<code>KafkaConsumer</code> + virtual-thread executor</strong> baseline. Three workload regimes. Real Kafka 4.2.0 broker
+(Testcontainers, not in-process). JMH-published scores, GC profiler, raw JSON committed alongside
+this post in <a href="https://github.com/eschizoid/kpipe/tree/main/benchmarks/results"><code>benchmarks/results/</code></a>.</p>
+<p>The short answer: <strong>KPipe captures 85–95% of raw Loom throughput</strong> and <strong>degrades gracefully under
+blocking work</strong>, with about a 9% drop from 0 → 1000 µs of per-record I/O. Confluent drops 35% over
+the same sweep. Reactor Kafka drops 96%. The rest of this post is the numbers, the methodology, and
+the saga of getting Reactor onto the bench at all.</p>
 <h2 id="headline">Headline</h2>
 <p>Records / second, higher is better. <code>workMicros</code> is per-record simulated work via <code>LockSupport.parkNanos</code>
 — 0 µs is pure framework overhead, 100 µs is local enrichment, 1000 µs is a blocking I/O round trip.
