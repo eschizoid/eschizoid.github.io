@@ -8,7 +8,7 @@
   <meta itemprop="description" content="How KPipe stacks up against Confluent Parallel Consumer, Reactor Kafka, and a hand-rolled KafkaConsumer &#43; virtual-thread executor — first published numbers from the new 4-runtime harness.">
   <meta itemprop="datePublished" content="2026-05-16T00:00:00+00:00">
   <meta itemprop="dateModified" content="2026-05-16T00:00:00+00:00">
-  <meta itemprop="wordCount" content="1483">
+  <meta itemprop="wordCount" content="1471">
   <meta itemprop="keywords" content="Kafka,Java,Benchmarks,Virtual-Threads,Jmh"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-5/">
   <meta property="og:site_name" content="Mariano Gonzalez">
   <meta property="og:title" content="Benchmarking KPipe against the parallel-Kafka libraries you would actually pick">
@@ -94,12 +94,12 @@
 			<div class="markdown">
 				<p>KPipe is a Java 25 Kafka consumer library that runs each record on a virtual thread. The pitch:
 the performance of a hand-rolled <code>KafkaConsumer</code> + <code>Thread.ofVirtual()</code> loop, with the operational
-stack already wired up — lowest-pending-offset commits, retry, DLQ producer, backpressure with
+stack already wired up. Lowest-pending-offset commits, retry, DLQ producer, backpressure with
 hysteresis, circuit breaker, OTel metrics + tracing, batch sinks, <code>Result&lt;T&gt;</code> typed pipeline
 outcomes, graceful shutdown.</p>
-<p>The question this post answers is what that pitch costs. KPipe is now benchmarked against three
-alternatives: <strong>Confluent Parallel Consumer</strong>, <strong>Reactor Kafka</strong>, and a hand-rolled <strong>raw
-<code>KafkaConsumer</code> + virtual-thread executor</strong> baseline. Three workload regimes, a real Kafka 4.2.0
+<p>Here&rsquo;s what that pitch costs. KPipe is now benchmarked against three alternatives:
+<strong>Confluent Parallel Consumer</strong>, <strong>Reactor Kafka</strong>, and a hand-rolled <strong>raw <code>KafkaConsumer</code> +
+virtual-thread executor</strong> baseline. Three workload regimes, a real Kafka 4.2.0
 broker via Testcontainers (not in-process), JMH-published scores with a GC profiler, and the raw
 JSON committed alongside this post in <a href="https://github.com/eschizoid/kpipe/tree/main/benchmarks/results"><code>benchmarks/results/</code></a>.</p>
 <p><strong>KPipe captures 85–95% of raw Loom throughput</strong> and <strong>degrades gracefully under blocking work</strong>,
@@ -177,14 +177,14 @@ of platform-thread slots, and the framework holds up under realistic I/O.</p>
 runtime in the table at 543k for <code>workMicros=0</code> vs KPipe&rsquo;s 473k. That&rsquo;s the framework cost: ~13% at
 zero work, ~8% at 100 µs, ~11% at 1000 µs. For that you get the lowest-pending-offset commits,
 retry, DLQ, backpressure with hysteresis, circuit breaker, OTel metrics + tracing, batch sinks,
-typed <code>Result&lt;T&gt;</code> pipeline outcomes, and graceful shutdown, all wired and tested. Building that
-on top of the raw loop yourself is not a 10% project.</p>
-<p><strong>Loom-based runtimes leave platform-thread libraries behind under load.</strong> KPipe and Raw are
-4.3×–7.5× ahead of Confluent Parallel Consumer across the sweep. Reactor Kafka tracks Confluent
-at <code>workMicros=0</code> (257k), falls below it at <code>workMicros=100</code>, and collapses to <strong>8,979 records/sec</strong>
-at <code>workMicros=1000</code>, 48× slower than KPipe. <code>Flux.parallel(100)</code> and a 100-worker thread pool
-both hit a ceiling that virtual threads don&rsquo;t have. If your per-record work blocks (database
-write, HTTP call, anything that parks), this is the gap KPipe is closing.</p>
+typed <code>Result&lt;T&gt;</code> pipeline outcomes, and graceful shutdown. Building that on top of the raw loop
+yourself is not a 10% project.</p>
+<p><strong>Loom-based runtimes leave platform-thread libraries behind under load.</strong> KPipe and Raw stay
+4.3×–7.5× ahead of Confluent Parallel Consumer across the sweep. Reactor Kafka is more dramatic:
+it tracks Confluent at <code>workMicros=0</code> (257k), falls below it at 100 µs, then collapses to
+<strong>8,979 records/sec</strong> at 1000 µs — 48× slower than KPipe. <code>Flux.parallel(100)</code> and a 100-worker
+thread pool both hit a ceiling virtual threads don&rsquo;t have. If your per-record work parks (a DB
+write, an HTTP call), this is the gap KPipe is closing.</p>
 <h2 id="allocation-and-gc">Allocation and GC</h2>
 <p>KPipe allocates the most per record in the table and it didn&rsquo;t matter for this run&rsquo;s throughput.
 The JVM young gen absorbed it cleanly. The number to watch is whether that holds on a tight heap
@@ -228,13 +228,13 @@ non-event.</p>
 </table>
 <p>KPipe&rsquo;s allocation comes from three places: <code>Result&lt;T&gt;</code> wrappers (sealed type, allocated per record),
 the per-record pipeline builder hand-off, and a fresh virtual thread per record. The first two are
-correctness choices — typed pipeline outcomes are how the consumer surfaces &ldquo;passed / filtered /
+correctness choices. Typed pipeline outcomes are how the consumer surfaces &ldquo;passed / filtered /
 failed&rdquo; without overloading <code>null</code>, and they&rsquo;re the same mechanism that makes silent failures
 impossible to ship. The third is the whole reason throughput holds up under blocking work.</p>
 <p>The GC story is counter-intuitive but consistent. Confluent&rsquo;s smaller per-record allocations
 still produce more total GC events than KPipe or Raw, because its slower iterations stay in the
 young gen longer. Reactor&rsquo;s GC numbers at <code>workMicros=1000</code> look low (33 events / 98 ms) only
-because the benchmark is barely running — at ~9 records/sec there&rsquo;s almost no allocation pressure
+because the benchmark is barely running. At ~9 records/sec there&rsquo;s almost no allocation pressure
 to clear.</p>
 <h2 id="what-this-does-not-say">What this does not say</h2>
 <ul>
@@ -245,20 +245,20 @@ numbers. Headline ordering between runtimes usually survives the move; the gaps 
 run. Average throughput is half the story; p99 is the other half, and a runtime can rank one way
 on throughput and the opposite way on tail. Coming in the next snapshot.</li>
 <li><strong>The Loom share of the win is real.</strong> Some of KPipe&rsquo;s lead over Confluent is &ldquo;Loom beats platform
-threads,&rdquo; not &ldquo;KPipe beats Confluent.&rdquo; The Raw column exists to make that share visible — KPipe&rsquo;s
+threads,&rdquo; not &ldquo;KPipe beats Confluent.&rdquo; The Raw column exists to make that share visible. KPipe&rsquo;s
 contribution is bringing Loom&rsquo;s win without losing the operational stack.</li>
 </ul>
 <h2 id="how-the-harness-got-here">How the harness got here</h2>
 <p>The first attempt at the new bench was wrong, and the wrongness was instructive.</p>
 <p><strong>Attempt 1 — in-process Kafka via <code>KafkaClusterTestKit</code>.</strong> Same approach as the prior 10k baseline.
 Worked at 10k records, didn&rsquo;t scale. At 25k records with four invocation contexts loaded, the in-process
-broker collapsed under load on a shared-core laptop — KRaft controller events, group coordinator,
-producer seed, and consumer under test all fighting for the same CPUs. Smoke tests timed out at ~50
+broker collapsed under load on a shared-core laptop. KRaft controller events, group coordinator,
+producer seed, and consumer under test all fought for the same CPUs. Smoke tests timed out at ~50
 records/sec across every framework. <strong>The bench was measuring broker contention, not framework
 throughput.</strong></p>
 <p><strong>Attempt 2 — Testcontainers Kafka.</strong> Real Kafka 4.2.0 broker in a Docker container, on its own JVM
 and own cores. Consumer is the bottleneck again. The same smoke test that got 50 records/sec on the
-in-process harness now gets 500,000+ records/sec. That&rsquo;s not a 10x improvement — that&rsquo;s &ldquo;measuring
+in-process harness now gets 500,000+ records/sec. That&rsquo;s not a 10x improvement. That&rsquo;s &ldquo;measuring
 the right thing now.&rdquo;</p>
 <p>The lesson: <strong>for parallel-consumer benchmarks, the broker has to be external.</strong> Testcontainers is the
 cheap path; a sidecar on dedicated hardware is the production-faithful path. In-process Kafka is fine
@@ -273,7 +273,7 @@ first record</strong> against <code>kafka-clients:4.x</code>:</p>
     >java.lang.NoSuchMethodError: &#39;void org.apache.kafka.clients.consumer.ConsumerRecord.&lt;init&gt;(...)&#39;
     at reactor.kafka.receiver.ReceiverRecord.&lt;init&gt;(ReceiverRecord.java:48)</code></pre>
 </figure><p>The <code>ConsumerRecord</code> ctor <code>ReceiverRecord</code> calls was removed in kafka-clients 4.0. Issue
-<a href="https://github.com/reactor/reactor-kafka/issues/420">#420</a> on the upstream tracks this — opened March
+<a href="https://github.com/reactor/reactor-kafka/issues/420">#420</a> on the upstream tracks this: opened March
 2025, fix landed November 2025 as part of 1.3.25. The fix avoids the deprecated ctor in favour of one
 that exists in both kafka-clients 3.x and 4.x.</p>
 <p>Two gotchas worth recording:</p>
@@ -304,7 +304,7 @@ got populated.</p>
 </span></span><span style="display:flex;"><span>just bench <span style="color:#79c0ff">mode</span><span style="color:#ff7b72;font-weight:bold">=</span>latency  <span style="color:#8b949e;font-style:italic"># p50 / p95 / p99 / p999 companion</span></span></span></code></pre>
 </figure><p>Output lands in <code>benchmarks/results/&lt;date&gt;.json</code> and <code>benchmarks/results/&lt;date&gt;.log</code>. The companion
 human-readable summary template is in <a href="https://github.com/eschizoid/kpipe/blob/main/benchmarks/results/TEMPLATE.md"><code>benchmarks/results/TEMPLATE.md</code></a>. Methodology + the
-runtime config matrix is in <a href="https://github.com/eschizoid/kpipe/blob/main/benchmarks/METHODOLOGY.md"><code>benchmarks/METHODOLOGY.md</code></a>. <strong>Docker must be running</strong> —
+runtime config matrix is in <a href="https://github.com/eschizoid/kpipe/blob/main/benchmarks/METHODOLOGY.md"><code>benchmarks/METHODOLOGY.md</code></a>. <strong>Docker must be running.</strong>
 Testcontainers will pull <code>apache/kafka:4.2.0</code> on first invocation.</p>
 <h2 id="whats-next">What&rsquo;s next</h2>
 <p>The next bench snapshot adds tail-latency percentiles (<code>p50 / p95 / p99 / p999</code>), a multi-partition
