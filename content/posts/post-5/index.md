@@ -2,7 +2,7 @@
 title: "Benchmarking KPipe against the parallel-Kafka libraries you would actually pick"
 date: 2026-05-16
 description: "How KPipe stacks up against Confluent Parallel Consumer, Reactor Kafka, and a hand-rolled
-  KafkaConsumer + virtual-thread executor — first published numbers from the new 4-runtime harness."
+  KafkaConsumer + virtual-thread executor. First published numbers from the new 4-runtime harness."
 tags:
   - kafka
   - java
