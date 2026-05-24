@@ -23,7 +23,7 @@ virtual-thread executor** baseline. Three workload regimes, a real Kafka 4.2.0
 broker via Testcontainers (not in-process), JMH-published scores with a GC profiler, and the raw
 JSON committed alongside this post in [`benchmarks/results/`][bench-results].
 
-**KPipe captures 85–95% of raw Loom throughput** and **degrades gracefully under blocking work**,
+**KPipe captures 87–92% of raw Loom throughput** and **degrades gracefully under blocking work**,
 with about a 9% drop from 0 to 1000 µs of per-record I/O. Confluent drops 35% over the same sweep.
 Reactor Kafka drops 96%. The rest of this post is the numbers, the methodology, and the saga of
 getting Reactor onto the bench at all.
@@ -73,7 +73,7 @@ separate runner. The throughput cost of that ergonomics is what the rest of this
 Virtual threads scale beyond the partition count, blocked records cost kilobytes of stack instead
 of platform-thread slots, and the framework holds up under realistic I/O.
 
-**You pay 5–15% throughput for the full feature stack.** Raw `KafkaConsumer + VT` is the fastest
+**You pay 8–13% throughput for the full feature stack.** Raw `KafkaConsumer + VT` is the fastest
 runtime in the table at 543k for `workMicros=0` vs KPipe's 473k. That's the framework cost: ~13% at
 zero work, ~8% at 100 µs, ~11% at 1000 µs. For that you get the lowest-pending-offset commits,
 retry, DLQ, backpressure with hysteresis, circuit breaker, OTel metrics + tracing, batch sinks,
