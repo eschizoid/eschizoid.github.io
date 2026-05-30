@@ -239,11 +239,8 @@ you do not have to terminate with `.get()` to operate at any hop:
 
 ```java
 CompanyPath.start()
-    .teams()
-    .each()
-    .users()
-    .each()
-    .updateAsync(company, svc::lookupAsync, pool); // CompletableFuture<Company>
+    .teams().each()
+    .users().each().updateAsync(company, svc::lookupAsync, pool); // CompletableFuture<Company>
 ```
 
 The `@Bridge` annotation generates a bidirectional `Iso` between any two top-level types
@@ -254,6 +251,7 @@ navigator gains an `as<Target>()` method that chains the bridge constant in:
 @Focus
 @Bridge(UserDto.class)
 record UserEntity(String id, String email) {}
+
 @Focus
 record UserDto(String id, String email) {}
 
