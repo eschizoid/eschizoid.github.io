@@ -34,7 +34,7 @@ CompanyPath.start()
   .update(company, String::toLowerCase);
 ```
 
-{{< figure src="logo.png" alt="telescope" width="320" >}}
+![telescope](logo.png)
 
 It did not start there. The first commits were a small converter registry: function-based,
 multi-hop composition, a few dozen lines. Two iterations later it had drifted into a full port of
