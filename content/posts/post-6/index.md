@@ -34,11 +34,11 @@ CompanyPath.start()
   .update(company, String::toLowerCase);
 ```
 
-![telescope](logo.png)
+<p align="center"><img src="logo.png" alt="telescope" width="320"></p>
 
 It did not start there. The first commits were a small converter registry: function-based,
 multi-hop composition, a few dozen lines. Two iterations later it had drifted into a full port of
-Scala's Monocle library, eight category-theory interfaces
+Scala's [Monocle][monocle] library, eight category-theory interfaces
 (`Iso`, `Lens`, `Prism`, `Affine`, `Traversal`, `Getter`, `Setter`, `Fold`) sitting on the public
 API, a composition lattice picking the most-specific return type at every `.then(...)`, lens laws
 verified in a test suite. Correct, complete, and unusable.
@@ -332,3 +332,4 @@ it.
 [GitHub repo][telescope]
 
 [telescope]: https://github.com/eschizoid/telescope
+[monocle]: https://www.optics.dev/Monocle/
