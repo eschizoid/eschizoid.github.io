@@ -111,12 +111,10 @@ chain on the generated navigator. Both bottom out at the same value:</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.departments().each().teams().each()<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.users().each().email()<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.update(company,<span style="color:#6e7681"> </span>String::toLowerCase);</span></span></code></pre>
-</figure><p><p class="md__image">
-    <img src="logo.png" alt="telescope"  />
-</p></p>
+</figure><!-- raw HTML omitted -->
 <p>It did not start there. The first commits were a small converter registry: function-based,
 multi-hop composition, a few dozen lines. Two iterations later it had drifted into a full port of
-Scala&rsquo;s Monocle library, eight category-theory interfaces
+Scala&rsquo;s <a href="https://www.optics.dev/Monocle/">Monocle</a> library, eight category-theory interfaces
 (<code>Iso</code>, <code>Lens</code>, <code>Prism</code>, <code>Affine</code>, <code>Traversal</code>, <code>Getter</code>, <code>Setter</code>, <code>Fold</code>) sitting on the public
 API, a composition lattice picking the most-specific return type at every <code>.then(...)</code>, lens laws
 verified in a test suite. Correct, complete, and unusable.</p>
