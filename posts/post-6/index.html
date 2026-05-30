@@ -127,7 +127,7 @@ Some of it is also a record of how often I got the shape wrong and had to start 
 <p><a href="https://github.com/eschizoid/telescope">GitHub repo</a></p>
 <h2 id="the-optics-itch-and-the-slide-into-monocle">The optics itch and the slide into Monocle</h2>
 <p>The starting problem was concrete. Deep updates to immutable graphs in Java are ergonomically
-awful. To change one field five levels down in <code>Company → Department → Team → User → Address</code>, you
+awful. To change one field five levels down in <code>Company →︎ Department →︎ Team →︎ User →︎ Address</code>, you
 write something like 25 lines of nested <code>new Company(company.name(), company.departments().stream() .map(d -&gt; new Department(...)))</code>, every constructor enumerated, every untouched field threaded
 through by hand. Streams, <code>Optional</code>, and records made this cleaner than the pre-records version
 but did not make it short.</p>
@@ -135,8 +135,8 @@ but did not make it short.</p>
 synthetic test cases and then collapsed at the third level of nesting. Composition needed real
 rules (what happens when you stack a partial-focus optic onto a many-focus one), and I was
 reinventing those rules badly. So I went to the source.</p>
-<p>Optics solve exactly this problem. A <code>Lens&lt;S, A&gt;</code> is two functions, a <code>get: S → A</code> and a
-<code>set: S → A → S</code>, plus laws that keep the two consistent (<code>set(s, get(s)) == s</code>, and so on). A
+<p>Optics solve exactly this problem. A <code>Lens&lt;S, A&gt;</code> is two functions, a <code>get: S →︎ A</code> and a
+<code>set: S →︎ A →︎ S</code>, plus laws that keep the two consistent (<code>set(s, get(s)) == s</code>, and so on). A
 <code>Prism</code> is the same trick for sealed-type cases. A <code>Traversal</code> generalises to many-focus.
 Compositions between them form a lattice: stack a <code>Lens</code> and a <code>Prism</code> and you get an <code>Affine</code>,
 stack an <code>Affine</code> and a <code>Traversal</code> and you get a <code>Traversal</code>. Decades-old rules, already proven,
@@ -326,7 +326,7 @@ you do not have to terminate with <code>.get()</code> to operate at any hop:</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.teams().each().users().each()<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.updateAsync(company,<span style="color:#6e7681"> </span>svc::lookupAsync,<span style="color:#6e7681"> </span>pool);<span style="color:#6e7681">   </span><span style="color:#ff7b72;font-weight:bold">//</span><span style="color:#6e7681"> </span>CompletableFuture<span style="color:#ff7b72;font-weight:bold">&lt;</span>Company<span style="color:#ff7b72;font-weight:bold">&gt;</span></span></span></code></pre>
 </figure><p>The <code>@Bridge</code> annotation generates a bidirectional <code>Iso</code> between any two top-level types
-(record↔record, record↔POJO, POJO↔POJO). When a type carries both <code>@Focus</code> and <code>@Bridge</code>, the
+(record↔︎record, record↔︎POJO, POJO↔︎POJO). When a type carries both <code>@Focus</code> and <code>@Bridge</code>, the
 navigator gains an <code>as&lt;Target&gt;()</code> method that chains the bridge constant in:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
@@ -339,7 +339,7 @@ navigator gains an <code>as&lt;Target&gt;()</code> method that chains the bridge
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.update(entity,<span style="color:#6e7681"> </span>String::toLowerCase);</span></span></code></pre>
 </figure><p>The Iso round-trips, so the result is a new <code>UserEntity</code>. The navigator is now one
 compile-checked, reflection-free surface that covers navigation, container traversal, sync ops,
-all four effects, and conversion. Cross-paradigm bridges (record↔POJO via <code>@Bridge</code>) work the
+all four effects, and conversion. Cross-paradigm bridges (record↔︎POJO via <code>@Bridge</code>) work the
 same way.</p>
 <h2 id="benchmarks">Benchmarks</h2>
 <p>JMH, 3 warmup + 5 measurement iterations, JDK 25, Apple Silicon. Numbers shift between runs;
@@ -388,7 +388,7 @@ the ratios are the part to read.</p>
           <td><code>mapperForwardRead</code></td>
           <td style="text-align: right">135.4</td>
           <td style="text-align: right">±90.1</td>
-          <td style="text-align: right">record→record (noisy)</td>
+          <td style="text-align: right">record→︎︎record (noisy)</td>
       </tr>
       <tr>
           <td><code>mapBeanForwardRead</code></td>
@@ -412,10 +412,10 @@ the ratios are the part to read.</p>
 </table>
 <p>A few things to read out of that:</p>
 <ul>
-<li><code>@Bridge</code> codegen at ~15 ns/op vs runtime <code>mapBean</code> at ~142 ns/op is ~9.5× on the same POJO↔POJO
+<li><code>@Bridge</code> codegen at ~15 ns/op vs runtime <code>mapBean</code> at ~142 ns/op is ~9.5× on the same POJO↔︎POJO
 conversion. That is the closest apples-to-apples comparison in the suite.</li>
 <li>Codegen field navigation at ~45 ns vs reflective at ~262 ns is ~5.8× on a 3-level deep field
-path. That is what <code>@Focus</code> → <code>*Path</code> buys.</li>
+path. That is what <code>@Focus</code> →︎ <code>*Path</code> buys.</li>
 <li>Runtime reflective conversions (<code>fromBean</code>, <code>mapper</code>, <code>mapBean</code>) cluster in the 114–142 ns
 range. Sub-microsecond, fine for ordinary use, not the path I would pick inside a tight loop.</li>
 <li>Native POJO navigation (<code>ofBean</code>) at ~488 ns is ~22× a hand-rolled bean copy. It rebuilds the
