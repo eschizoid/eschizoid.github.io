@@ -269,7 +269,7 @@ the ratios are the part to read.
 | `handRolledCopyUpdate`     |  26.4 |   ±1.9 |          record baseline |
 | `lensConstantUpdate`       |  45.2 |   ±3.4 |                     1.7× |
 | `fromBeanForwardRead`      | 114.0 |   ±1.7 |                     5.1× |
-| `mapperForwardRead`        | 135.4 |  ±90.1 |    record→︎︎record (noisy) |
+| `mapperForwardRead`        | 135.4 |  ±90.1 |    record→︎record (noisy) |
 | `mapBeanForwardRead`       | 142.5 |   ±3.7 |                     6.4× |
 | `reflectionFieldUpdate`    | 261.6 |  ±15.9 |                    11.8× |
 | `ofBeanFieldUpdate`        | 488.1 | ±139.7 |                    22.0× |
