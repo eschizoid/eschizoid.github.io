@@ -8,7 +8,7 @@
   <meta itemprop="description" content="Telescope started as a converter registry, drifted into an academic port of Scala Monocle&#39;s optic lattice, and turned — through five rewrites — into a single-type Java DSL with compile-time codegen, a generated Path navigator, and a benchmark suite that says it pays. The story of getting category theory to disappear.">
   <meta itemprop="datePublished" content="2026-05-30T00:00:00+00:00">
   <meta itemprop="dateModified" content="2026-05-30T00:00:00+00:00">
-  <meta itemprop="wordCount" content="2317">
+  <meta itemprop="wordCount" content="2314">
   <meta itemprop="keywords" content="Java,Dsl,Optics,Codegen,Records,Jmh"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-6/">
   <meta property="og:site_name" content="Mariano Gonzalez">
   <meta property="og:title" content="From a Monocle port to one fluent type: how telescope happened">
@@ -328,11 +328,8 @@ you do not have to terminate with <code>.get()</code> to operate at any hop:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span>CompanyPath.start()<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.teams()<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.each()<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.users()<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.each()<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.updateAsync(company,<span style="color:#6e7681"> </span>svc::lookupAsync,<span style="color:#6e7681"> </span>pool);<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">//</span><span style="color:#6e7681"> </span>CompletableFuture<span style="color:#ff7b72;font-weight:bold">&lt;</span>Company<span style="color:#ff7b72;font-weight:bold">&gt;</span></span></span></code></pre>
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.teams().each()<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.users().each().updateAsync(company,<span style="color:#6e7681"> </span>svc::lookupAsync,<span style="color:#6e7681"> </span>pool);<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">//</span><span style="color:#6e7681"> </span>CompletableFuture<span style="color:#ff7b72;font-weight:bold">&lt;</span>Company<span style="color:#ff7b72;font-weight:bold">&gt;</span></span></span></code></pre>
 </figure><p>The <code>@Bridge</code> annotation generates a bidirectional <code>Iso</code> between any two top-level types
 (record↔︎record, record↔︎POJO, POJO↔︎POJO). When a type carries both <code>@Focus</code> and <code>@Bridge</code>, the
 navigator gains an <code>as&lt;Target&gt;()</code> method that chains the bridge constant in:</p>
@@ -341,6 +338,7 @@ navigator gains an <code>as&lt;Target&gt;()</code> method that chains the bridge
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#d2a8ff;font-weight:bold">@Focus</span><span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#d2a8ff;font-weight:bold">@Bridge</span>(UserDto.class)<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#ff7b72">record</span> <span style="color:#f0883e;font-weight:bold">UserEntity</span>(String<span style="color:#6e7681"> </span>id,<span style="color:#6e7681"> </span>String<span style="color:#6e7681"> </span>email)<span style="color:#6e7681"> </span>{}<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#d2a8ff;font-weight:bold">@Focus</span><span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#ff7b72">record</span> <span style="color:#f0883e;font-weight:bold">UserDto</span>(String<span style="color:#6e7681"> </span>id,<span style="color:#6e7681"> </span>String<span style="color:#6e7681"> </span>email)<span style="color:#6e7681"> </span>{}<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">
