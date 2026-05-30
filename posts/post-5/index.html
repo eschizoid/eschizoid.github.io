@@ -159,14 +159,15 @@ iterations. Source numbers in <a href="https://github.com/eschizoid/kpipe/blob/m
 backpressure, and metrics:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
-    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#ff7b72">try</span><span style="color:#6e7681"> </span>(<span style="color:#ff7b72">var</span><span style="color:#6e7681"> </span>handle<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>KPipe.json(<span style="color:#a5d6ff">&#34;orders&#34;</span>,<span style="color:#6e7681"> </span>props)<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.pipe(order<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">-&gt;</span><span style="color:#6e7681"> </span>enrich(order))<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.filter(order<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">-&gt;</span><span style="color:#6e7681"> </span>order.total()<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">&gt;</span><span style="color:#6e7681"> </span>0)<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.withRetry(3,<span style="color:#6e7681"> </span>Duration.ofMillis(100))<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.withBackpressure()<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.withDeadLetterTopic(<span style="color:#a5d6ff">&#34;orders.dlq&#34;</span>)<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.toCustom(WarehouseSink.create())<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.start())<span style="color:#6e7681"> </span>{<span style="color:#6e7681">
+    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#ff7b72">try</span><span style="color:#6e7681"> </span>(<span style="color:#ff7b72">var</span><span style="color:#6e7681"> </span>handle<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>KPipe.json(<span style="color:#a5d6ff">&#34;orders&#34;</span>,<span style="color:#6e7681"> </span>props)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">        </span>.pipe(order<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">-&gt;</span><span style="color:#6e7681"> </span>enrich(order))<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">        </span>.filter(order<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">-&gt;</span><span style="color:#6e7681"> </span>order.total()<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">&gt;</span><span style="color:#6e7681"> </span>0)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">        </span>.withRetry(3,<span style="color:#6e7681"> </span>Duration.ofMillis(100))<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">        </span>.withBackpressure()<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">        </span>.withDeadLetterTopic(<span style="color:#a5d6ff">&#34;orders.dlq&#34;</span>)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">        </span>.toCustom(WarehouseSink.create())<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">        </span>.start())<span style="color:#6e7681"> </span>{<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>handle.awaitShutdown();<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span>}</span></span></code></pre>
 </figure><p>Everything in the headline table for KPipe is this. No registry wiring, no manual builder, no

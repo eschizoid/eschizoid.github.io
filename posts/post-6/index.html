@@ -8,7 +8,7 @@
   <meta itemprop="description" content="Telescope started as a converter registry, drifted into an academic port of Scala Monocle&#39;s optic lattice, and turned — through five rewrites — into a single-type Java DSL with compile-time codegen, a generated Path navigator, and a benchmark suite that says it pays. The story of getting category theory to disappear.">
   <meta itemprop="datePublished" content="2026-05-30T00:00:00+00:00">
   <meta itemprop="dateModified" content="2026-05-30T00:00:00+00:00">
-  <meta itemprop="wordCount" content="2313">
+  <meta itemprop="wordCount" content="2317">
   <meta itemprop="keywords" content="Java,Dsl,Optics,Codegen,Records,Jmh"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-6/">
   <meta property="og:site_name" content="Mariano Gonzalez">
   <meta property="og:title" content="From a Monocle port to one fluent type: how telescope happened">
@@ -104,15 +104,18 @@ chain on the generated navigator. Both bottom out at the same value:</p>
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// Reflective (runtime resolution, ~262 ns/op for a 3-level path)</span><span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span>Telescope.of(Company.class)<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.each(Company::departments).each(Department::teams)<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.each(Team::users).field(User::email)<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.update(company,<span style="color:#6e7681"> </span>String::toLowerCase);<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.each(Company::departments)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.each(Department::teams)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.each(Team::users)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.field(User::email)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.update(company,<span style="color:#6e7681"> </span>String::toLowerCase);<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// Compile-time, reflection-free (~45 ns/op — same Telescope, generator-built)</span><span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span>CompanyPath.start()<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.departments().each().teams().each()<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.users().each().email()<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.update(company,<span style="color:#6e7681"> </span>String::toLowerCase);</span></span></code></pre>
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.departments().each()<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.teams().each()<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.users().each()<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.email().update(company,<span style="color:#6e7681"> </span>String::toLowerCase);</span></span></code></pre>
 </figure><p><p class="md__image">
     <img src="logo.png" alt="telescope"  />
 </p></p>
@@ -259,11 +262,12 @@ stuck through everything that came after.</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#ff7b72">record</span> <span style="color:#f0883e;font-weight:bold">Department</span>(String<span style="color:#6e7681"> </span>name,<span style="color:#6e7681"> </span>List<span style="color:#ff7b72;font-weight:bold">&lt;</span>Team<span style="color:#ff7b72;font-weight:bold">&gt;</span><span style="color:#6e7681"> </span>teams)<span style="color:#6e7681"> </span>{}<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#ff7b72">record</span> <span style="color:#f0883e;font-weight:bold">Company</span>(String<span style="color:#6e7681"> </span>name,<span style="color:#6e7681"> </span>List<span style="color:#ff7b72;font-weight:bold">&lt;</span>Department<span style="color:#ff7b72;font-weight:bold">&gt;</span><span style="color:#6e7681"> </span>departments)<span style="color:#6e7681"> </span>{}<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span>Telescope<span style="color:#ff7b72;font-weight:bold">&lt;</span>Company,<span style="color:#6e7681"> </span>String<span style="color:#ff7b72;font-weight:bold">&gt;</span><span style="color:#6e7681"> </span>emails<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>Telescope.of(Company.class)<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.each(Company::departments)<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.each(Department::teams)<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.each(Team::users)<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.field(User::email);<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span>Telescope<span style="color:#ff7b72;font-weight:bold">&lt;</span>Company,<span style="color:#6e7681"> </span>String<span style="color:#ff7b72;font-weight:bold">&gt;</span><span style="color:#6e7681"> </span>emails<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>Telescope.of(Company.class)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">        </span>.each(Company::departments)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">        </span>.each(Department::teams)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">        </span>.each(Team::users)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">        </span>.field(User::email);<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span>Company<span style="color:#6e7681"> </span>lowered<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>emails.update(company,<span style="color:#6e7681"> </span>String::toLowerCase);<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span>List<span style="color:#ff7b72;font-weight:bold">&lt;</span>String<span style="color:#ff7b72;font-weight:bold">&gt;</span><span style="color:#6e7681"> </span>all<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>emails.toList(company);<span style="color:#6e7681">
@@ -290,26 +294,27 @@ and a fully compile-checked deep path looked like this:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span>CompanyFocus.eachDepartments<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.then(DepartmentFocus.eachTeams)<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.then(TeamFocus.eachUsers)<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.then(UserFocus.email);</span></span></code></pre>
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.then(DepartmentFocus.eachTeams)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.then(TeamFocus.eachUsers)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.then(UserFocus.email);</span></span></code></pre>
 </figure><p>Type-checked at compile time, reflection-free at runtime. It also did not read like the
 reflective DSL it was supposed to be the fast path for. The reflective version reads:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span>Telescope.of(Company.class)<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.each(Company::departments).each(Department::teams)<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.each(Team::users).field(User::email);</span></span></code></pre>
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.each(Company::departments)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.each(Department::teams)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.each(Team::users)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.field(User::email);</span></span></code></pre>
 </figure><p>The information content is the same, the reading flow is not. So the next pass replaced the
 public lens constants with a fluent typed <code>Path</code> navigator:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span>CompanyPath.start()<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.departments().each()<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.teams().each()<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.users().each()<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.email()<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.update(company,<span style="color:#6e7681"> </span>String::toLowerCase);</span></span></code></pre>
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.departments().each()<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.teams().each()<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.users().each()<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.email().update(company,<span style="color:#6e7681"> </span>String::toLowerCase);</span></span></code></pre>
 </figure><p>Per annotated type, <code>@Focus</code> now emits one parameterised navigator class (<code>&lt;X&gt;Path&lt;R&gt;</code>) plus one
 container step per collection component (<code>&lt;X&gt;&lt;Cap&gt;Step&lt;R&gt;</code>). Scalar components yield a terminal
 <code>Telescope&lt;R, T&gt;</code>. Sub-record components yield a <code>&lt;Sub&gt;Path&lt;R&gt;</code> so navigation can keep going.
@@ -323,20 +328,23 @@ you do not have to terminate with <code>.get()</code> to operate at any hop:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span>CompanyPath.start()<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.teams().each().users().each()<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.updateAsync(company,<span style="color:#6e7681"> </span>svc::lookupAsync,<span style="color:#6e7681"> </span>pool);<span style="color:#6e7681">   </span><span style="color:#ff7b72;font-weight:bold">//</span><span style="color:#6e7681"> </span>CompletableFuture<span style="color:#ff7b72;font-weight:bold">&lt;</span>Company<span style="color:#ff7b72;font-weight:bold">&gt;</span></span></span></code></pre>
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.teams()<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.each()<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.users()<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.each()<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.updateAsync(company,<span style="color:#6e7681"> </span>svc::lookupAsync,<span style="color:#6e7681"> </span>pool);<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">//</span><span style="color:#6e7681"> </span>CompletableFuture<span style="color:#ff7b72;font-weight:bold">&lt;</span>Company<span style="color:#ff7b72;font-weight:bold">&gt;</span></span></span></code></pre>
 </figure><p>The <code>@Bridge</code> annotation generates a bidirectional <code>Iso</code> between any two top-level types
 (record↔︎record, record↔︎POJO, POJO↔︎POJO). When a type carries both <code>@Focus</code> and <code>@Bridge</code>, the
 navigator gains an <code>as&lt;Target&gt;()</code> method that chains the bridge constant in:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
-    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#d2a8ff;font-weight:bold">@Focus</span><span style="color:#6e7681"> </span><span style="color:#d2a8ff;font-weight:bold">@Bridge</span>(UserDto.class)<span style="color:#6e7681"> </span><span style="color:#ff7b72">record</span> <span style="color:#d2a8ff;font-weight:bold">UserEntity</span>(String<span style="color:#6e7681"> </span>id,<span style="color:#6e7681"> </span>String<span style="color:#6e7681"> </span>email)<span style="color:#6e7681"> </span>{}<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#d2a8ff;font-weight:bold">@Focus</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">record</span> <span style="color:#d2a8ff;font-weight:bold">UserDto</span>(String<span style="color:#6e7681"> </span>id,<span style="color:#6e7681"> </span>String<span style="color:#6e7681"> </span>email)<span style="color:#6e7681"> </span>{}<span style="color:#6e7681">
+    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#d2a8ff;font-weight:bold">@Focus</span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#d2a8ff;font-weight:bold">@Bridge</span>(UserDto.class)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#ff7b72">record</span> <span style="color:#f0883e;font-weight:bold">UserEntity</span>(String<span style="color:#6e7681"> </span>id,<span style="color:#6e7681"> </span>String<span style="color:#6e7681"> </span>email)<span style="color:#6e7681"> </span>{}<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#d2a8ff;font-weight:bold">@Focus</span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#ff7b72">record</span> <span style="color:#f0883e;font-weight:bold">UserDto</span>(String<span style="color:#6e7681"> </span>id,<span style="color:#6e7681"> </span>String<span style="color:#6e7681"> </span>email)<span style="color:#6e7681"> </span>{}<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span>UserEntityPath.start()<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.asUserDto()<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.email()<span style="color:#6e7681">
-</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.update(entity,<span style="color:#6e7681"> </span>String::toLowerCase);</span></span></code></pre>
+</span></span></span><span style="display:flex;"><span>UserEntityPath.start().asUserDto().email().update(entity,<span style="color:#6e7681"> </span>String::toLowerCase);</span></span></code></pre>
 </figure><p>The Iso round-trips, so the result is a new <code>UserEntity</code>. The navigator is now one
 compile-checked, reflection-free surface that covers navigation, container traversal, sync ops,
 all four effects, and conversion. Cross-paradigm bridges (record↔︎POJO via <code>@Bridge</code>) work the
