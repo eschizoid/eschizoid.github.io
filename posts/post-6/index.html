@@ -8,7 +8,7 @@
   <meta itemprop="description" content="Telescope started as a converter registry, drifted into an academic port of Scala Monocle&#39;s optic lattice, and turned — through five rewrites — into a single-type Java DSL with compile-time codegen, a generated Path navigator, and a benchmark suite that says it pays. The story of getting category theory to disappear.">
   <meta itemprop="datePublished" content="2026-05-30T00:00:00+00:00">
   <meta itemprop="dateModified" content="2026-05-30T00:00:00+00:00">
-  <meta itemprop="wordCount" content="2303">
+  <meta itemprop="wordCount" content="2301">
   <meta itemprop="keywords" content="Java,Dsl,Optics,Codegen,Records,Jmh"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-6/">
   <meta property="og:site_name" content="Mariano Gonzalez">
   <meta property="og:title" content="From a Monocle port to one fluent type: how telescope happened">
@@ -112,7 +112,10 @@ value:</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.departments().each().teams().each()<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.users().each().email()<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.update(company,<span style="color:#6e7681"> </span>String::toLowerCase);</span></span></code></pre>
-</figure><p>That is not how it started. The first commits were a small converter registry — function-based,
+</figure><p><p class="md__image">
+    <img src="logo.png" alt="telescope"  />
+</p></p>
+<p>That is not how it started. The first commits were a small converter registry — function-based,
 multi-hop composition. Within a couple of iterations it had drifted into a full port of Scala&rsquo;s
 Monocle library: eight category-theory interfaces
 (<code>Iso</code>, <code>Lens</code>, <code>Prism</code>, <code>Affine</code>, <code>Traversal</code>, <code>Getter</code>, <code>Setter</code>, <code>Fold</code>) exposed as the
@@ -277,11 +280,12 @@ without changing it. The <code>Kind&lt;F, A&gt;</code> machinery that makes the 
 <p>The reflective DSL above resolves field names at runtime through
 <code>SerializedLambda.getImplMethodName()</code> and <code>RecordComponent.getAccessor().invoke()</code>. It works.
 It is sub-microsecond. It is also reflection, with all the costs that implies.</p>
-<p>The first codegen pass shipped <code>@Focus</code> for records and <code>@BeanFocus</code> for POJOs. Annotate a
-type, get a sibling class with per-field lens constants built from direct method-ref + canonical-
-constructor calls. No runtime reflection, no <code>SerializedLambda</code> decode, ~45 ns/op for a 3-level
-field path. Container components got generated traversal constants alongside the field lenses,
-so a <code>List&lt;User&gt; users</code> component on <code>Team</code> produced <code>TeamFocus.eachUsers : Telescope&lt;Team, User&gt;</code>, and a fully compile-checked deep path looked like this:</p>
+<p>The first codegen pass shipped <code>@Focus</code> for records and <code>@BeanFocus</code> for POJOs. Annotate a type,
+get a sibling class with per-field lens constants built from direct method-ref + canonical-constructor
+calls. No runtime reflection, no <code>SerializedLambda</code> decode, ~45 ns/op for a 3-level field path.
+Container components got generated traversal constants alongside the field lenses, so a
+<code>List&lt;User&gt; users</code> component on <code>Team</code> produced <code>TeamFocus.eachUsers : Telescope&lt;Team, User&gt;</code>, and a
+fully compile-checked deep path looked like this:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span>CompanyFocus.eachDepartments<span style="color:#6e7681">
@@ -417,8 +421,8 @@ Sub-microsecond, fine for ordinary use, not the path to pick in a tight loop.</l
 rebuilds the whole POJO at every level and re-reads every getter to carry siblings over. For
 a hot loop, bridge once to a record with <code>fromBean</code> or use <code>@BeanFocus</code> codegen.</li>
 </ul>
-<p>The codegen surface closes the 5–10× gap with hand-written code while keeping the same end-
-value the reflective DSL produces. End users pick a surface (reflective for ergonomics + zero
+<p>The codegen surface closes the 5–10× gap with hand-written code while keeping the same end-value
+the reflective DSL produces. End users pick a surface (reflective for ergonomics + zero
 codegen, navigator for compile-time guarantees + the perf number) without paying for the one
 they did not pick.</p>
 <h2 id="what-still-surprises-me">What still surprises me</h2>
