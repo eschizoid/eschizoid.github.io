@@ -35,6 +35,8 @@ CompanyPath.start()
   .update(company, String::toLowerCase);
 ```
 
+![telescope](logo.png)
+
 That is not how it started. The first commits were a small converter registry — function-based,
 multi-hop composition. Within a couple of iterations it had drifted into a full port of Scala's
 Monocle library: eight category-theory interfaces
@@ -187,12 +189,12 @@ The reflective DSL above resolves field names at runtime through
 `SerializedLambda.getImplMethodName()` and `RecordComponent.getAccessor().invoke()`. It works.
 It is sub-microsecond. It is also reflection, with all the costs that implies.
 
-The first codegen pass shipped `@Focus` for records and `@BeanFocus` for POJOs. Annotate a
-type, get a sibling class with per-field lens constants built from direct method-ref + canonical-
-constructor calls. No runtime reflection, no `SerializedLambda` decode, ~45 ns/op for a 3-level
-field path. Container components got generated traversal constants alongside the field lenses,
-so a `List<User> users` component on `Team` produced `TeamFocus.eachUsers : Telescope<Team,
-User>`, and a fully compile-checked deep path looked like this:
+The first codegen pass shipped `@Focus` for records and `@BeanFocus` for POJOs. Annotate a type,
+get a sibling class with per-field lens constants built from direct method-ref + canonical-constructor
+calls. No runtime reflection, no `SerializedLambda` decode, ~45 ns/op for a 3-level field path.
+Container components got generated traversal constants alongside the field lenses, so a
+`List<User> users` component on `Team` produced `TeamFocus.eachUsers : Telescope<Team, User>`, and a
+fully compile-checked deep path looked like this:
 
 ```java
 CompanyFocus.eachDepartments
@@ -288,8 +290,8 @@ The headline:
   rebuilds the whole POJO at every level and re-reads every getter to carry siblings over. For
   a hot loop, bridge once to a record with `fromBean` or use `@BeanFocus` codegen.
 
-The codegen surface closes the 5–10× gap with hand-written code while keeping the same end-
-value the reflective DSL produces. End users pick a surface (reflective for ergonomics + zero
+The codegen surface closes the 5–10× gap with hand-written code while keeping the same end-value
+the reflective DSL produces. End users pick a surface (reflective for ergonomics + zero
 codegen, navigator for compile-time guarantees + the perf number) without paying for the one
 they did not pick.
 
