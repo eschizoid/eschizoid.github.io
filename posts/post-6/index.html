@@ -8,7 +8,7 @@
   <meta itemprop="description" content="Telescope started as a converter registry, drifted into an academic port of Scala Monocle&#39;s optic lattice, and turned — through five rewrites — into a single-type Java DSL with compile-time codegen, a generated Path navigator, and a benchmark suite that says it pays. The story of getting category theory to disappear.">
   <meta itemprop="datePublished" content="2026-05-30T00:00:00+00:00">
   <meta itemprop="dateModified" content="2026-05-30T00:00:00+00:00">
-  <meta itemprop="wordCount" content="2301">
+  <meta itemprop="wordCount" content="2313">
   <meta itemprop="keywords" content="Java,Dsl,Optics,Codegen,Records,Jmh"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-6/">
   <meta property="og:site_name" content="Mariano Gonzalez">
   <meta property="og:title" content="From a Monocle port to one fluent type: how telescope happened">
@@ -93,12 +93,11 @@
 			</div>
 					
 			<div class="markdown">
-				<p>Telescope is a Java 25 deep-copy DSL for records and POJOs. The pitch: build a path through an
-immutable graph, then read it, write it, update it, traverse it, convert it, or thread an
-effect through it — without writing copy constructors by hand and without ever typing <code>Iso</code>,
-<code>Lens</code>, <code>Prism</code>, <code>Affine</code>, or <code>Traversal</code>. The end-state example is one method-ref chain on the
-runtime DSL or one fluent chain on the generated navigator, both bottoming out at the same
-value:</p>
+				<p>Telescope is a Java 25 deep-copy DSL for records and POJOs. You build a path through an immutable
+graph, then read it, write it, update it, traverse it, convert it, or thread an effect through it.
+No hand-written copy constructors. No mention of <code>Iso</code>, <code>Lens</code>, <code>Prism</code>, <code>Affine</code>, or <code>Traversal</code>
+anywhere in your code. The end-state is one method-ref chain on the runtime DSL, or one fluent
+chain on the generated navigator. Both bottom out at the same value:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// Reflective (runtime resolution, ~262 ns/op for a 3-level path)</span><span style="color:#6e7681">
@@ -115,32 +114,31 @@ value:</p>
 </figure><p><p class="md__image">
     <img src="logo.png" alt="telescope"  />
 </p></p>
-<p>That is not how it started. The first commits were a small converter registry — function-based,
-multi-hop composition. Within a couple of iterations it had drifted into a full port of Scala&rsquo;s
-Monocle library: eight category-theory interfaces
-(<code>Iso</code>, <code>Lens</code>, <code>Prism</code>, <code>Affine</code>, <code>Traversal</code>, <code>Getter</code>, <code>Setter</code>, <code>Fold</code>) exposed as the
-public API, a composition lattice that picked the most-specific return type at every
-<code>.then(...)</code>, and lens laws verified in a test suite. It worked. It was correct. It was also
-unusable.</p>
-<p>This post is the arc from that academic port to the DSL above, plus the codegen story that
-landed on top of it. It is also, honestly, a record of how often I got the shape wrong and had
-to start over.</p>
+<p>It did not start there. The first commits were a small converter registry: function-based,
+multi-hop composition, a few dozen lines. Two iterations later it had drifted into a full port of
+Scala&rsquo;s Monocle library, eight category-theory interfaces
+(<code>Iso</code>, <code>Lens</code>, <code>Prism</code>, <code>Affine</code>, <code>Traversal</code>, <code>Getter</code>, <code>Setter</code>, <code>Fold</code>) sitting on the public
+API, a composition lattice picking the most-specific return type at every <code>.then(...)</code>, lens laws
+verified in a test suite. Correct, complete, and unusable.</p>
+<p>This post is how it got from there to the DSL above, with the codegen story that landed on top.
+Some of it is also a record of how often I got the shape wrong and had to start over.</p>
 <p><a href="https://github.com/eschizoid/telescope">GitHub repo</a></p>
 <h2 id="the-optics-itch-and-the-slide-into-monocle">The optics itch and the slide into Monocle</h2>
-<p>The original problem was real and concrete: deep updates to immutable graphs in Java are
-ergonomically awful. To change one field five levels down in a <code>Company → Department → Team → User → Address</code>, you write 25 lines of nested <code>new Company(company.name(), company.departments() .stream().map(d -&gt; new Department(...)))</code>, every constructor enumerated, every untouched field
-threaded through by hand. Stream + Optional + records make this <em>cleaner</em> than the pre-records
-version. They do not make it short.</p>
-<p>The first version was a registry of named converters that composed in chains. It worked for the
-synthetic test cases. It collapsed at the third level of nesting because composition needed
-real rules — what happens when you compose a partial-focus optic with a many-focus one — and I
-was reinventing those rules badly. So I went to the source.</p>
-<p>Optics solve exactly this problem. A <code>Lens&lt;S, A&gt;</code> is two functions, a <code>get: S → A</code> and a <code>set: S → A → S</code>, plus laws that make those two play nicely (<code>set(s, get(s)) == s</code>, etc.). A <code>Prism</code>
-is the same trick for sealed-type cases. A <code>Traversal</code> generalises to many-focus. The
-composition rules between them form a lattice — compose a <code>Lens</code> with a <code>Prism</code> and you get an
-<code>Affine</code>, compose an <code>Affine</code> with a <code>Traversal</code> and you get a <code>Traversal</code>. Those rules are
-decades old, already proven, already implemented in Haskell <code>lens</code>, Scala Monocle, Arrow
-Optics, Higher-Kinded-J.</p>
+<p>The starting problem was concrete. Deep updates to immutable graphs in Java are ergonomically
+awful. To change one field five levels down in <code>Company → Department → Team → User → Address</code>, you
+write something like 25 lines of nested <code>new Company(company.name(), company.departments().stream() .map(d -&gt; new Department(...)))</code>, every constructor enumerated, every untouched field threaded
+through by hand. Streams, <code>Optional</code>, and records made this cleaner than the pre-records version
+but did not make it short.</p>
+<p>My first attempt was a registry of named converters that composed in chains. It worked for the
+synthetic test cases and then collapsed at the third level of nesting. Composition needed real
+rules (what happens when you stack a partial-focus optic onto a many-focus one), and I was
+reinventing those rules badly. So I went to the source.</p>
+<p>Optics solve exactly this problem. A <code>Lens&lt;S, A&gt;</code> is two functions, a <code>get: S → A</code> and a
+<code>set: S → A → S</code>, plus laws that keep the two consistent (<code>set(s, get(s)) == s</code>, and so on). A
+<code>Prism</code> is the same trick for sealed-type cases. A <code>Traversal</code> generalises to many-focus.
+Compositions between them form a lattice: stack a <code>Lens</code> and a <code>Prism</code> and you get an <code>Affine</code>,
+stack an <code>Affine</code> and a <code>Traversal</code> and you get a <code>Traversal</code>. Decades-old rules, already proven,
+already implemented in Haskell <code>lens</code>, Scala Monocle, Arrow Optics, Higher-Kinded-J.</p>
 <p>Within two refactors of the converter registry, I had a working version of the lattice. The
 test suite hit lens laws, prism partial round-trips, iso reversibility, and the diamond
 resolution rule for <code>Iso.then(Lens)</code> returning <code>Lens</code>. The composition table:</p>
@@ -198,9 +196,9 @@ resolution rule for <code>Iso.then(Lens)</code> returning <code>Lens</code>. The
       </tr>
   </tbody>
 </table>
-<p>That table is intellectually satisfying. The lattice rules drop out of category theory; the
-laws drop out of the type signatures. As a piece of academic Java, it was fine.</p>
-<p>As an API, it was a disaster.</p>
+<p>That table is intellectually satisfying. The lattice rules fall out of category theory and the
+laws fall out of the type signatures. As a piece of academic Java, it was perfectly fine. As an
+API anyone would actually use, it was unworkable.</p>
 <h2 id="why-the-academic-shape-hurt-in-java">Why the academic shape hurt in Java</h2>
 <p>Monocle lives in Scala, and Scala has three things that make optics elegant:</p>
 <ul>
@@ -214,40 +212,41 @@ be passed explicitly.</li>
 time from a single annotation. Without macros, the choice is between writing the constants
 by hand or bolting on an annotation processor and a multi-module build.</li>
 </ul>
-<p>I had none of those. So the Java port surfaced every piece of the inheritance: users had to
-import <code>Lens</code> and <code>Prism</code> and <code>Iso</code> and <code>Affine</code> and know which composition produced which.
-They had to remember that <code>Iso.then(Lens) = Lens</code> but <code>Lens.then(Prism) = Affine</code>. They had to
-think in category-theoretic vocabulary to navigate a record.</p>
-<p><strong>That is a reasonable experience for a Haskell library. It is an unshippable experience for a
-Java one.</strong> No Java team is going to learn five interfaces and a composition lattice just to
-update a nested field.</p>
+<p>Java has none of those, so the port surfaced every piece of the inheritance. Users had to import
+<code>Lens</code>, <code>Prism</code>, <code>Iso</code>, and <code>Affine</code>, and know which composition produced which. They had to
+remember that <code>Iso.then(Lens) = Lens</code> but <code>Lens.then(Prism) = Affine</code>. They had to think in
+category-theoretic vocabulary to navigate a record.</p>
+<p>That might fly in a Haskell library where the whole community has already opted in to the
+vocabulary. It does not fly in Java. No team is going to learn five interfaces and a composition
+lattice just to update a nested field, and I would not blame them.</p>
 <p>So I tried to throw the lattice away.</p>
 <h2 id="the-detour-that-taught-me-what-not-to-do">The detour that taught me what not to do</h2>
 <p>The next iteration replaced the eight interfaces with a single <code>Path&lt;S, A&gt;</code> class. <code>Path</code> had a
-<code>Function&lt;S, Stream&lt;A&gt;&gt;</code> reader and a custom <code>Updater&lt;S, A&gt;</code> updater inside it, hand-rolled.
-The composition rules were re-implemented from scratch as <code>Path</code> methods. The API surface
-collapsed to one type. The lattice was gone.</p>
+<code>Function&lt;S, Stream&lt;A&gt;&gt;</code> reader inside it, a hand-rolled <code>Updater&lt;S, A&gt;</code> for writes, and the
+composition rules re-implemented from scratch as <code>Path</code> methods. The API surface collapsed to one
+type. The lattice was gone.</p>
 <p>This felt great for about two days.</p>
-<p>Then I started adding edge cases. Iso reversibility — gone. Prism partial round-trip — gone.
-The diamond resolution that made <code>Iso.then(Lens)</code> return <code>Lens</code> instead of widening to <code>Affine</code>
-— gone. The lens laws were no longer verified by composition; they were now my problem to
-enforce by hand inside <code>Path</code>&rsquo;s update logic. The <code>Path</code> internals grew until they were a
-worse version of the lattice I had just deleted.</p>
-<p>This is the lesson: <strong>the lattice was earning its keep.</strong> The fact that users didn&rsquo;t want to
-see it didn&rsquo;t mean the implementation didn&rsquo;t need it. What needed to go away was the <em>exposure</em>
-of the lattice, not the lattice itself.</p>
+<p>Then I started adding the edge cases back. Iso reversibility, gone. Prism partial round-trip,
+gone. The diamond resolution that made <code>Iso.then(Lens)</code> return <code>Lens</code> instead of widening to
+<code>Affine</code>, gone. The lens laws were no longer verified by composition; they were now my problem to
+enforce by hand inside <code>Path</code>&rsquo;s update logic. The <code>Path</code> internals grew until they were a worse
+version of the lattice I had just deleted.</p>
+<p>The lattice, it turned out, was earning its keep. The fact that users did not want to see it did
+not mean the implementation did not need it. What needed to go away was the exposure of the
+lattice, not the lattice itself.</p>
 <p>I reverted the deletion. The lattice came back into <code>org.telescope.internal.optics</code>,
-package-private, where the compiler enforces that no user-facing code ever names it. The
+package-private, where the compiler can enforce that nothing in user code ever names it. The
 public surface became one class:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#ff7b72">public</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">class</span> <span style="color:#f0883e;font-weight:bold">Telescope</span><span style="color:#ff7b72;font-weight:bold">&lt;</span>S,<span style="color:#6e7681"> </span>A<span style="color:#ff7b72;font-weight:bold">&gt;</span></span></span></code></pre>
-</figure><p><code>Telescope</code> wraps a <code>Traversal&lt;S, A&gt;</code> from the internal lattice. Every navigation method
-(<code>field</code>, <code>each</code>, <code>as</code>, <code>filter</code>) builds the appropriate optic and composes it via the
-lattice&rsquo;s rules. Every read/write operation (<code>read</code>, <code>update</code>, <code>toList</code>, <code>set</code>, &hellip;) delegates.
-Users never type <code>Lens</code>, <code>Prism</code>, <code>Iso</code>, <code>Affine</code>, <code>Traversal</code>, <code>Getter</code>, <code>Setter</code>, or <code>Fold</code>.</p>
-<p>Two layers. Proven concepts internally, convenient DSL externally. That is the shape that
-stuck.</p>
+</figure><p><code>Telescope</code> wraps a <code>Traversal&lt;S, A&gt;</code> from the internal lattice. Every navigation method (<code>field</code>,
+<code>each</code>, <code>as</code>, <code>filter</code>) builds the appropriate optic and composes it via the lattice&rsquo;s rules.
+Every read/write operation (<code>read</code>, <code>update</code>, <code>toList</code>, <code>set</code>, &hellip;) delegates down. Users never
+type <code>Lens</code>, <code>Prism</code>, <code>Iso</code>, <code>Affine</code>, <code>Traversal</code>, <code>Getter</code>, <code>Setter</code>, or <code>Fold</code> and have no
+reason to learn what those words mean.</p>
+<p>Two layers: proven concepts internally, convenient DSL externally. That is the shape that has
+stuck through everything that came after.</p>
 <h2 id="what-the-dsl-looks-like">What the DSL looks like</h2>
 <p>The 30-second pitch is one path against a domain:</p>
 <figure class="highlight">
@@ -267,40 +266,40 @@ stuck.</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span>Company<span style="color:#6e7681"> </span>lowered<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>emails.update(company,<span style="color:#6e7681"> </span>String::toLowerCase);<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span>List<span style="color:#ff7b72;font-weight:bold">&lt;</span>String<span style="color:#ff7b72;font-weight:bold">&gt;</span><span style="color:#6e7681"> </span>all<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>emails.toList(company);<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">long</span><span style="color:#6e7681"> </span>count<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>emails.count(company);</span></span></code></pre>
-</figure><p>One path, build once, use many ways. The vanilla equivalent is about 25 lines of nested
-<code>new Company(company.name(), company.departments().stream().map(d -&gt; new Department(...)))</code> —
-every constructor enumerated by hand, every untouched field threaded through.</p>
-<p>Everything past that — sealed-type narrowing with <code>.as(...)</code>, <code>Optional</code> traversal with
-<code>.whenPresent(...)</code>, indexed traversals, type conversion between records via <code>from / to / using</code>
-and <code>map / to / field / build</code>, the four effectful update methods (<code>updateAsync</code>,
-<code>updateOptional</code>, <code>updateEither</code>, <code>updateValidated</code>) — was added on top of this substrate
-without changing it. The <code>Kind&lt;F, A&gt;</code> machinery that makes the four effects work lives in
-<code>internal.optics</code>. It never appears in user code.</p>
+</figure><p>One path, built once, used many ways. The vanilla equivalent is about 25 lines of nested
+<code>new Company(company.name(), company.departments().stream().map(d -&gt; new Department(...)))</code>, every
+constructor enumerated by hand, every untouched field threaded through.</p>
+<p>Everything past that landed on the same substrate without changing it: sealed-type narrowing with
+<code>.as(...)</code>, <code>Optional</code> traversal with <code>.whenPresent(...)</code>, indexed traversals, type conversion
+between records via <code>from / to / using</code> and <code>map / to / field / build</code>, and the four effectful
+update methods (<code>updateAsync</code>, <code>updateOptional</code>, <code>updateEither</code>, <code>updateValidated</code>). The
+<code>Kind&lt;F, A&gt;</code> machinery that makes the four effects work lives in <code>internal.optics</code> and never
+appears in user code.</p>
 <h2 id="then-codegen-happened-twice">Then codegen happened, twice</h2>
 <p>The reflective DSL above resolves field names at runtime through
-<code>SerializedLambda.getImplMethodName()</code> and <code>RecordComponent.getAccessor().invoke()</code>. It works.
-It is sub-microsecond. It is also reflection, with all the costs that implies.</p>
-<p>The first codegen pass shipped <code>@Focus</code> for records and <code>@BeanFocus</code> for POJOs. Annotate a type,
-get a sibling class with per-field lens constants built from direct method-ref + canonical-constructor
-calls. No runtime reflection, no <code>SerializedLambda</code> decode, ~45 ns/op for a 3-level field path.
-Container components got generated traversal constants alongside the field lenses, so a
-<code>List&lt;User&gt; users</code> component on <code>Team</code> produced <code>TeamFocus.eachUsers : Telescope&lt;Team, User&gt;</code>, and a
-fully compile-checked deep path looked like this:</p>
+<code>SerializedLambda.getImplMethodName()</code> and <code>RecordComponent.getAccessor().invoke()</code>. It works, it
+is sub-microsecond, and it is still reflection with all the costs that implies.</p>
+<p>The first codegen pass shipped <code>@Focus</code> for records and <code>@BeanFocus</code> for POJOs. Annotate a type
+and get a sibling class with per-field lens constants built from direct method-ref + canonical
+constructor calls. No runtime reflection, no <code>SerializedLambda</code> decode, ~45 ns/op for a 3-level
+field path. Container components got generated traversal constants alongside the field lenses, so
+a <code>List&lt;User&gt; users</code> component on <code>Team</code> produced <code>TeamFocus.eachUsers : Telescope&lt;Team, User&gt;</code>,
+and a fully compile-checked deep path looked like this:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span>CompanyFocus.eachDepartments<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.then(DepartmentFocus.eachTeams)<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.then(TeamFocus.eachUsers)<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.then(UserFocus.email);</span></span></code></pre>
-</figure><p>Correct. Type-checked. Reflection-free. It also did not read at all like the reflective DSL it
-was supposed to be the fast path for. The reflective version reads:</p>
+</figure><p>Type-checked at compile time, reflection-free at runtime. It also did not read like the
+reflective DSL it was supposed to be the fast path for. The reflective version reads:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span>Telescope.of(Company.class)<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.each(Company::departments).each(Department::teams)<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.each(Team::users).field(User::email);</span></span></code></pre>
-</figure><p>The information content is identical. The reading flow is not. So the next pass replaced the
-public lens constants with a <strong>fluent typed Path navigator</strong>:</p>
+</figure><p>The information content is the same, the reading flow is not. So the next pass replaced the
+public lens constants with a fluent typed <code>Path</code> navigator:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span>CompanyPath.start()<span style="color:#6e7681">
@@ -309,16 +308,16 @@ public lens constants with a <strong>fluent typed Path navigator</strong>:</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.users().each()<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.email()<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.update(company,<span style="color:#6e7681"> </span>String::toLowerCase);</span></span></code></pre>
-</figure><p>Per annotated type, <code>@Focus</code> now emits one parameterised navigator class (<code>&lt;X&gt;Path&lt;R&gt;</code>) plus
-one container step per collection component (<code>&lt;X&gt;&lt;Cap&gt;Step&lt;R&gt;</code>). Each scalar component yields a
-terminal <code>Telescope&lt;R, T&gt;</code>; each sub-record component yields a <code>&lt;Sub&gt;Path&lt;R&gt;</code> so navigation
-continues; each container component (<code>List</code> / <code>Set</code> / <code>Iterable</code>, <code>Map</code> values, <code>Optional</code>)
-yields a step whose <code>.each()</code> / <code>.eachValue()</code> / <code>.whenPresent()</code> returns the element&rsquo;s <code>Path</code>
-when the element is itself annotated, or a terminal <code>Telescope</code> otherwise. The method bodies
-all build <code>Telescope.lens(getter, setter)</code> directly — no reflection at any hop.</p>
-<p>Every <code>Path</code> and <code>Step</code> also forwards the full <code>Telescope</code> operation surface — <code>read</code>, <code>find</code>,
-<code>toList</code>, <code>count</code>, <code>exists</code>, <code>set</code>, <code>update</code>, <code>updateIndexed</code>, plus the four effect variants —
-so you do not need to terminate with <code>.get()</code> to operate at any hop:</p>
+</figure><p>Per annotated type, <code>@Focus</code> now emits one parameterised navigator class (<code>&lt;X&gt;Path&lt;R&gt;</code>) plus one
+container step per collection component (<code>&lt;X&gt;&lt;Cap&gt;Step&lt;R&gt;</code>). Scalar components yield a terminal
+<code>Telescope&lt;R, T&gt;</code>. Sub-record components yield a <code>&lt;Sub&gt;Path&lt;R&gt;</code> so navigation can keep going.
+Container components (<code>List</code> / <code>Set</code> / <code>Iterable</code>, <code>Map</code> values, <code>Optional</code>) yield a step whose
+<code>.each()</code> / <code>.eachValue()</code> / <code>.whenPresent()</code> returns the element&rsquo;s <code>Path</code> when the element type
+is itself annotated, or a terminal <code>Telescope</code> when it is not. The method bodies all build
+<code>Telescope.lens(getter, setter)</code> directly, with no reflection at any hop.</p>
+<p>Every <code>Path</code> and <code>Step</code> also forwards the full <code>Telescope</code> operation surface (<code>read</code>, <code>find</code>,
+<code>toList</code>, <code>count</code>, <code>exists</code>, <code>set</code>, <code>update</code>, <code>updateIndexed</code>, and the four effect variants), so
+you do not have to terminate with <code>.get()</code> to operate at any hop:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span>CompanyPath.start()<span style="color:#6e7681">
@@ -336,10 +335,10 @@ navigator gains an <code>as&lt;Target&gt;()</code> method that chains the bridge
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.asUserDto()<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.email()<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>.update(entity,<span style="color:#6e7681"> </span>String::toLowerCase);</span></span></code></pre>
-</figure><p>The Iso round-trips, so the result is a new <code>UserEntity</code>. The navigator is now a single
-compile-checked, reflection-free surface for navigation, container traversal, sync ops, all
-four effects, and conversion — including across paradigms (record↔POJO via <code>@Bridge</code> works
-the same way).</p>
+</figure><p>The Iso round-trips, so the result is a new <code>UserEntity</code>. The navigator is now one
+compile-checked, reflection-free surface that covers navigation, container traversal, sync ops,
+all four effects, and conversion. Cross-paradigm bridges (record↔POJO via <code>@Bridge</code>) work the
+same way.</p>
 <h2 id="benchmarks">Benchmarks</h2>
 <p>JMH, 3 warmup + 5 measurement iterations, JDK 25, Apple Silicon. Numbers shift between runs;
 the ratios are the part to read.</p>
@@ -409,55 +408,50 @@ the ratios are the part to read.</p>
       </tr>
   </tbody>
 </table>
-<p>The headline:</p>
+<p>A few things to read out of that:</p>
 <ul>
-<li><strong><code>@Bridge</code> codegen at ~15 ns/op vs runtime <code>mapBean</code> at ~142 ns/op — ~9.5× for the same
-POJO↔POJO conversion.</strong> That is the closest apples-to-apples comparison in the suite.</li>
-<li><strong>Codegen field navigation at ~45 ns vs reflective at ~262 ns — ~5.8× for a 3-level deep
-field path.</strong> That is what <code>@Focus</code> → <code>*Path</code> buys.</li>
-<li><strong>Runtime reflective conversions (<code>fromBean</code>, <code>mapper</code>, <code>mapBean</code>) cluster in 114–142 ns.</strong>
-Sub-microsecond, fine for ordinary use, not the path to pick in a tight loop.</li>
-<li><strong>Native POJO navigation (<code>ofBean</code>) at ~488 ns — ~22× a hand-rolled bean copy.</strong> It
-rebuilds the whole POJO at every level and re-reads every getter to carry siblings over. For
-a hot loop, bridge once to a record with <code>fromBean</code> or use <code>@BeanFocus</code> codegen.</li>
+<li><code>@Bridge</code> codegen at ~15 ns/op vs runtime <code>mapBean</code> at ~142 ns/op is ~9.5× on the same POJO↔POJO
+conversion. That is the closest apples-to-apples comparison in the suite.</li>
+<li>Codegen field navigation at ~45 ns vs reflective at ~262 ns is ~5.8× on a 3-level deep field
+path. That is what <code>@Focus</code> → <code>*Path</code> buys.</li>
+<li>Runtime reflective conversions (<code>fromBean</code>, <code>mapper</code>, <code>mapBean</code>) cluster in the 114–142 ns
+range. Sub-microsecond, fine for ordinary use, not the path I would pick inside a tight loop.</li>
+<li>Native POJO navigation (<code>ofBean</code>) at ~488 ns is ~22× a hand-rolled bean copy. It rebuilds the
+whole POJO at every level and re-reads every getter to carry siblings over. For a hot loop,
+bridge once to a record with <code>fromBean</code> or use <code>@BeanFocus</code> codegen.</li>
 </ul>
 <p>The codegen surface closes the 5–10× gap with hand-written code while keeping the same end-value
-the reflective DSL produces. End users pick a surface (reflective for ergonomics + zero
-codegen, navigator for compile-time guarantees + the perf number) without paying for the one
-they did not pick.</p>
+the reflective DSL produces. You pick a surface (reflective for ergonomics and zero codegen,
+navigator for compile-time guarantees and the perf number) and you do not pay for the one you did
+not pick.</p>
 <h2 id="what-still-surprises-me">What still surprises me</h2>
-<p>A few honest observations after living with this codebase for a while:</p>
-<ul>
-<li><strong>The lattice was right.</strong> The detour where I tried to delete it cost more LOC than I saved.
-The &ldquo;trust the proven implementation&rdquo; lesson keeps recurring. The lattice doing the work
-internally is why the DSL never needed to expand its public surface to handle effectful
-update or codegen or bridge hops — those each landed as a few methods on <code>Telescope</code> plus
-helpers in <code>internal.optics</code>, never a restructuring.</li>
-<li><strong>Codegen is a behaviour multiplier, not a perf trick.</strong> The first version of <code>@Focus</code> was
-sold internally as &ldquo;make <code>.field(...)</code> faster.&rdquo; The actual win was different: the navigator
-makes paths <em>type-checked at javac</em>. A typo in <code>Company.teams</code> is a compile error, not a
-runtime exception. The ~5.8× speedup is the consolation prize.</li>
-<li><strong>Bridge hops are the most underrated feature.</strong> A record&rsquo;s navigator can convert to its DTO
-navigator in one fluent step, reflection-free, with the Iso round-trip handling the reverse
-for free. That is not in any other Java lens library I have seen. It dropped out of having
-<code>@Bridge</code> already shipped — the codegen pattern is &ldquo;if the source has both annotations, one
-extra method on the <code>Path</code>.&rdquo; Two days of work for what feels like a step-change in
-ergonomics.</li>
-<li><strong>The reflective DSL stayed honest.</strong> I expected it to feel obsolete after codegen landed.
-It has not. Anyone who wants to use telescope without wiring an annotation processor still
-has the full DSL, sub-microsecond, with build-time fail-fast validation that catches bad
-method refs at path construction. Codegen is the opt-in that pays back tight loops; the
-reflective path is the default that just works.</li>
-</ul>
-<p>Five rewrites in. The thing that started as a converter registry, drifted into an academic
-Monocle port, almost got deleted, and came back as two layers is now a Java DSL with a single
-public type, a fluent generated navigator, four effect variants, three styles of type
-conversion, and a benchmark suite that says it pays its way. None of the rewrites felt obvious
-at the time. The one that mattered was the one where I admitted the academic library was the
-wrong public surface and pushed it under the floorboards twice over — first behind <code>Telescope</code>,
-then behind the generated <code>*Path</code> navigators.</p>
-<p>The category theory is still doing the work. You just do not have to know the vocabulary to
-use it.</p>
+<p>A few things that have not stopped feeling notable after spending real time inside this codebase.</p>
+<p>The lattice was right. The detour where I tried to delete it cost more lines than it saved, and
+the &ldquo;trust the proven implementation&rdquo; lesson keeps coming back around. Having the lattice do the
+work internally is why the DSL has not needed to expand its public surface to absorb effectful
+update, codegen, or bridge hops. Each one landed as a handful of methods on <code>Telescope</code> plus
+helpers in <code>internal.optics</code>, never a restructuring.</p>
+<p>Codegen turned out to be a behaviour multiplier more than a perf trick. The first version of
+<code>@Focus</code> was sold internally as &ldquo;make <code>.field(...)</code> faster.&rdquo; The actual win was different: the
+navigator makes paths <em>type-checked at javac</em>. A typo in <code>Company.teams</code> is now a compile error
+instead of a runtime exception. The ~5.8× speedup is almost a side effect.</p>
+<p>Bridge hops are probably the most underrated feature. A record&rsquo;s navigator can convert into its
+DTO navigator in one fluent step, reflection-free, and the Iso round-trip handles the reverse for
+free. I have not seen that in another Java lens library. It fell out of having <code>@Bridge</code> already
+shipped: the codegen pattern is &ldquo;if the source has both annotations, emit one extra method on the
+<code>Path</code>.&rdquo; Two days of work for what genuinely feels like a step-change in ergonomics.</p>
+<p>And the reflective DSL stayed honest. I expected it to feel obsolete once codegen landed, and it
+has not. Anyone who wants to use telescope without wiring up an annotation processor still has the
+full DSL, sub-microsecond, with build-time fail-fast validation that catches bad method refs at
+path construction. Codegen is the opt-in that pays back in tight loops; the reflective path is the
+default that just works.</p>
+<p>Five rewrites in, the library is a single public type, a fluent generated navigator, four effect
+variants, three styles of type conversion, and a benchmark suite that puts numbers on the
+tradeoffs. Looking back, none of the rewrites felt obvious in advance. The one that mattered was
+admitting the academic library was the wrong public surface and pushing it under the floorboards
+twice: first behind <code>Telescope</code>, then behind the generated <code>*Path</code> navigators.</p>
+<p>The category theory is still doing the work. You just do not have to know the vocabulary to use
+it.</p>
 <hr>
 <p><a href="https://github.com/eschizoid/telescope">GitHub repo</a></p>
 

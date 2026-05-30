@@ -14,7 +14,7 @@
       <link>https://mariano-gonzalez.com/posts/post-6/</link>
       <pubDate>Sat, 30 May 2026 00:00:00 +0000</pubDate>
       <guid>https://mariano-gonzalez.com/posts/post-6/</guid>
-      <description>&lt;p&gt;Telescope is a Java 25 deep-copy DSL for records and POJOs. The pitch: build a path through an&#xA;immutable graph, then read it, write it, update it, traverse it, convert it, or thread an&#xA;effect through it — without writing copy constructors by hand and without ever typing &lt;code&gt;Iso&lt;/code&gt;,&#xA;&lt;code&gt;Lens&lt;/code&gt;, &lt;code&gt;Prism&lt;/code&gt;, &lt;code&gt;Affine&lt;/code&gt;, or &lt;code&gt;Traversal&lt;/code&gt;. The end-state example is one method-ref chain on the&#xA;runtime DSL or one fluent chain on the generated navigator, both bottoming out at the same&#xA;value:&lt;/p&gt;</description>
+      <description>&lt;p&gt;Telescope is a Java 25 deep-copy DSL for records and POJOs. You build a path through an immutable&#xA;graph, then read it, write it, update it, traverse it, convert it, or thread an effect through it.&#xA;No hand-written copy constructors. No mention of &lt;code&gt;Iso&lt;/code&gt;, &lt;code&gt;Lens&lt;/code&gt;, &lt;code&gt;Prism&lt;/code&gt;, &lt;code&gt;Affine&lt;/code&gt;, or &lt;code&gt;Traversal&lt;/code&gt;&#xA;anywhere in your code. The end-state is one method-ref chain on the runtime DSL, or one fluent&#xA;chain on the generated navigator. Both bottom out at the same value:&lt;/p&gt;</description>
     </item>
     <item>
       <title>Benchmarking KPipe against the parallel-Kafka libraries you would actually pick</title>
