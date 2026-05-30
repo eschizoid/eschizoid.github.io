@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Records on Mariano Gonzalez</title>
+    <link>https://mariano-gonzalez.com/tags/records/</link>
+    <description>Recent content in Records on Mariano Gonzalez</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <copyright>&lt;p&gt;Copyright © 2026 Mariano Gonzalez&lt;/p&gt;&lt;p xmlns:dct=&#39;http://purl.org/dc/terms/&#39; xmlns:cc=&#39;http://creativecommons.org/ns#&#39; class=&#39;license-text&#39;&gt;&lt;a rel=&#39;cc:attributionURL&#39; property=&#39;dct:title&#39; href=&#39;https://github.com/eschizoid/eschizoid.github.io/tree/main/content&#39;&gt;Content&lt;/a&gt; licensed under &lt;a rel=&#39;license&#39; href=&#39;https://creativecommons.org/licenses/by/4.0&#39;&gt;CC BY 4.0&lt;/a&gt;&lt;/p&gt;</copyright>
+    <lastBuildDate>Sat, 30 May 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://mariano-gonzalez.com/tags/records/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>From a Monocle port to one fluent type: how telescope happened</title>
+      <link>https://mariano-gonzalez.com/posts/post-6/</link>
+      <pubDate>Sat, 30 May 2026 00:00:00 +0000</pubDate>
+      <guid>https://mariano-gonzalez.com/posts/post-6/</guid>
+      <description>&lt;p&gt;Telescope is a Java 25 deep-copy DSL for records and POJOs. The pitch: build a path through an&#xA;immutable graph, then read it, write it, update it, traverse it, convert it, or thread an&#xA;effect through it — without writing copy constructors by hand and without ever typing &lt;code&gt;Iso&lt;/code&gt;,&#xA;&lt;code&gt;Lens&lt;/code&gt;, &lt;code&gt;Prism&lt;/code&gt;, &lt;code&gt;Affine&lt;/code&gt;, or &lt;code&gt;Traversal&lt;/code&gt;. The end-state example is one method-ref chain on the&#xA;runtime DSL or one fluent chain on the generated navigator, both bottoming out at the same&#xA;value:&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
