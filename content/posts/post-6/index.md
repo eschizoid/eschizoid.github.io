@@ -51,7 +51,7 @@ Some of it is also a record of how often I got the shape wrong and had to start 
 ## The optics itch and the slide into Monocle
 
 The starting problem was concrete. Deep updates to immutable graphs in Java are ergonomically
-awful. To change one field five levels down in `Company → Department → Team → User → Address`, you
+awful. To change one field five levels down in `Company →︎ Department →︎ Team →︎ User →︎ Address`, you
 write something like 25 lines of nested `new Company(company.name(), company.departments().stream()
 .map(d -> new Department(...)))`, every constructor enumerated, every untouched field threaded
 through by hand. Streams, `Optional`, and records made this cleaner than the pre-records version
@@ -62,8 +62,8 @@ synthetic test cases and then collapsed at the third level of nesting. Compositi
 rules (what happens when you stack a partial-focus optic onto a many-focus one), and I was
 reinventing those rules badly. So I went to the source.
 
-Optics solve exactly this problem. A `Lens<S, A>` is two functions, a `get: S → A` and a
-`set: S → A → S`, plus laws that keep the two consistent (`set(s, get(s)) == s`, and so on). A
+Optics solve exactly this problem. A `Lens<S, A>` is two functions, a `get: S →︎ A` and a
+`set: S →︎ A →︎ S`, plus laws that keep the two consistent (`set(s, get(s)) == s`, and so on). A
 `Prism` is the same trick for sealed-type cases. A `Traversal` generalises to many-focus.
 Compositions between them form a lattice: stack a `Lens` and a `Prism` and you get an `Affine`,
 stack an `Affine` and a `Traversal` and you get a `Traversal`. Decades-old rules, already proven,
@@ -239,7 +239,7 @@ CompanyPath.start()
 ```
 
 The `@Bridge` annotation generates a bidirectional `Iso` between any two top-level types
-(record↔record, record↔POJO, POJO↔POJO). When a type carries both `@Focus` and `@Bridge`, the
+(record↔︎record, record↔︎POJO, POJO↔︎POJO). When a type carries both `@Focus` and `@Bridge`, the
 navigator gains an `as<Target>()` method that chains the bridge constant in:
 
 ```java
@@ -254,7 +254,7 @@ UserEntityPath.start()
 
 The Iso round-trips, so the result is a new `UserEntity`. The navigator is now one
 compile-checked, reflection-free surface that covers navigation, container traversal, sync ops,
-all four effects, and conversion. Cross-paradigm bridges (record↔POJO via `@Bridge`) work the
+all four effects, and conversion. Cross-paradigm bridges (record↔︎POJO via `@Bridge`) work the
 same way.
 
 ## Benchmarks
@@ -269,17 +269,17 @@ the ratios are the part to read.
 | `handRolledCopyUpdate`     |  26.4 |   ±1.9 |          record baseline |
 | `lensConstantUpdate`       |  45.2 |   ±3.4 |                     1.7× |
 | `fromBeanForwardRead`      | 114.0 |   ±1.7 |                     5.1× |
-| `mapperForwardRead`        | 135.4 |  ±90.1 |    record→record (noisy) |
+| `mapperForwardRead`        | 135.4 |  ±90.1 |    record→︎︎record (noisy) |
 | `mapBeanForwardRead`       | 142.5 |   ±3.7 |                     6.4× |
 | `reflectionFieldUpdate`    | 261.6 |  ±15.9 |                    11.8× |
 | `ofBeanFieldUpdate`        | 488.1 | ±139.7 |                    22.0× |
 
 A few things to read out of that:
 
-- `@Bridge` codegen at ~15 ns/op vs runtime `mapBean` at ~142 ns/op is ~9.5× on the same POJO↔POJO
+- `@Bridge` codegen at ~15 ns/op vs runtime `mapBean` at ~142 ns/op is ~9.5× on the same POJO↔︎POJO
   conversion. That is the closest apples-to-apples comparison in the suite.
 - Codegen field navigation at ~45 ns vs reflective at ~262 ns is ~5.8× on a 3-level deep field
-  path. That is what `@Focus` → `*Path` buys.
+  path. That is what `@Focus` →︎ `*Path` buys.
 - Runtime reflective conversions (`fromBean`, `mapper`, `mapBean`) cluster in the 114–142 ns
   range. Sub-microsecond, fine for ordinary use, not the path I would pick inside a tight loop.
 - Native POJO navigation (`ofBean`) at ~488 ns is ~22× a hand-rolled bean copy. It rebuilds the
