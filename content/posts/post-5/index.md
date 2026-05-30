@@ -52,14 +52,15 @@ That throughput number is the fluent facade. End-to-end, including offset manage
 backpressure, and metrics:
 
 ```java
-try (var handle = KPipe.json("orders", props)
-    .pipe(order -> enrich(order))
-    .filter(order -> order.total() > 0)
-    .withRetry(3, Duration.ofMillis(100))
-    .withBackpressure()
-    .withDeadLetterTopic("orders.dlq")
-    .toCustom(WarehouseSink.create())
-    .start()) {
+try (var handle =
+    KPipe.json("orders", props)
+        .pipe(order -> enrich(order))
+        .filter(order -> order.total() > 0)
+        .withRetry(3, Duration.ofMillis(100))
+        .withBackpressure()
+        .withDeadLetterTopic("orders.dlq")
+        .toCustom(WarehouseSink.create())
+        .start()) {
   handle.awaitShutdown();
 }
 ```

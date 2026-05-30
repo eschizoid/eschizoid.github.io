@@ -30,11 +30,12 @@ I built KPipe to fix that.
 The 80% path is a fluent facade. Five lines from `main`:
 
 ```java
-try (final var handle = KPipe.json("events", kafkaProps)
-    .pipe(Operators.addField("processedAt", System.currentTimeMillis()))
-    .pipe(Operators.removeFields("password", "ssn"))
-    .toConsole()
-    .start()) {
+try (final var handle =
+    KPipe.json("events", kafkaProps)
+        .pipe(Operators.addField("processedAt", System.currentTimeMillis()))
+        .pipe(Operators.removeFields("password", "ssn"))
+        .toConsole()
+        .start()) {
   handle.awaitShutdown();
 }
 ```
@@ -46,11 +47,16 @@ Avro and Protobuf follow the same shape, with the format supplied explicitly:
 
 ```java
 final var format = AvroFormat.of(schemaJson);
-try (final var handle = KPipe.avro(format, "users", kafkaProps)
-    .skipBytes(5) // Confluent wire envelope
-    .pipe(record -> { record.put("name", record.get("name").toString().toLowerCase()); return record; })
-    .toConsole()
-    .start()) {
+try (final var handle =
+    KPipe.avro(format, "users", kafkaProps)
+        .skipBytes(5) // Confluent wire envelope
+        .pipe(
+            record -> {
+              record.put("name", record.get("name").toString().toLowerCase());
+              return record;
+            })
+        .toConsole()
+        .start()) {
   handle.awaitShutdown();
 }
 ```
@@ -133,9 +139,9 @@ There is also a `kpipe-bom` if you prefer to pin one version across modules.
 ### 2. Write a consumer
 
 ```java
+import java.util.Properties;
 import org.kpipe.KPipe;
 import org.kpipe.registry.Operators;
-import java.util.Properties;
 
 public final class App {
   public static void main(final String[] args) {
@@ -144,11 +150,12 @@ public final class App {
     props.setProperty("group.id", "events-consumer");
     props.setProperty("auto.offset.reset", "earliest");
 
-    try (final var handle = KPipe.json("events", props)
-        .pipe(Operators.addField("processedAt", System.currentTimeMillis()))
-        .pipe(Operators.removeFields("password", "ssn"))
-        .toConsole()
-        .start()) {
+    try (final var handle =
+        KPipe.json("events", props)
+            .pipe(Operators.addField("processedAt", System.currentTimeMillis()))
+            .pipe(Operators.removeFields("password", "ssn"))
+            .toConsole()
+            .start()) {
       handle.awaitShutdown();
     }
   }

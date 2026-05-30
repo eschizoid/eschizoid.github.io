@@ -23,15 +23,18 @@ chain on the generated navigator. Both bottom out at the same value:
 ```java
 // Reflective (runtime resolution, ~262 ns/op for a 3-level path)
 Telescope.of(Company.class)
-  .each(Company::departments).each(Department::teams)
-  .each(Team::users).field(User::email)
-  .update(company, String::toLowerCase);
+    .each(Company::departments)
+    .each(Department::teams)
+    .each(Team::users)
+    .field(User::email)
+    .update(company, String::toLowerCase);
 
 // Compile-time, reflection-free (~45 ns/op — same Telescope, generator-built)
 CompanyPath.start()
-  .departments().each().teams().each()
-  .users().each().email()
-  .update(company, String::toLowerCase);
+    .departments().each()
+    .teams().each()
+    .users().each()
+    .email().update(company, String::toLowerCase);
 ```
 
 ![telescope](logo.png)
@@ -157,11 +160,12 @@ record Team(String name, List<User> users) {}
 record Department(String name, List<Team> teams) {}
 record Company(String name, List<Department> departments) {}
 
-final Telescope<Company, String> emails = Telescope.of(Company.class)
-  .each(Company::departments)
-  .each(Department::teams)
-  .each(Team::users)
-  .field(User::email);
+final Telescope<Company, String> emails =
+    Telescope.of(Company.class)
+        .each(Company::departments)
+        .each(Department::teams)
+        .each(Team::users)
+        .field(User::email);
 
 final Company lowered = emails.update(company, String::toLowerCase);
 final List<String> all = emails.toList(company);
@@ -194,9 +198,9 @@ and a fully compile-checked deep path looked like this:
 
 ```java
 CompanyFocus.eachDepartments
-  .then(DepartmentFocus.eachTeams)
-  .then(TeamFocus.eachUsers)
-  .then(UserFocus.email);
+    .then(DepartmentFocus.eachTeams)
+    .then(TeamFocus.eachUsers)
+    .then(UserFocus.email);
 ```
 
 Type-checked at compile time, reflection-free at runtime. It also did not read like the
@@ -204,8 +208,10 @@ reflective DSL it was supposed to be the fast path for. The reflective version r
 
 ```java
 Telescope.of(Company.class)
-  .each(Company::departments).each(Department::teams)
-  .each(Team::users).field(User::email);
+    .each(Company::departments)
+    .each(Department::teams)
+    .each(Team::users)
+    .field(User::email);
 ```
 
 The information content is the same, the reading flow is not. So the next pass replaced the
@@ -213,11 +219,10 @@ public lens constants with a fluent typed `Path` navigator:
 
 ```java
 CompanyPath.start()
-  .departments().each()
-  .teams().each()
-  .users().each()
-  .email()
-  .update(company, String::toLowerCase);
+    .departments().each()
+    .teams().each()
+    .users().each()
+    .email().update(company, String::toLowerCase);
 ```
 
 Per annotated type, `@Focus` now emits one parameterised navigator class (`<X>Path<R>`) plus one
@@ -234,8 +239,11 @@ you do not have to terminate with `.get()` to operate at any hop:
 
 ```java
 CompanyPath.start()
-  .teams().each().users().each()
-  .updateAsync(company, svc::lookupAsync, pool);   // CompletableFuture<Company>
+    .teams()
+    .each()
+    .users()
+    .each()
+    .updateAsync(company, svc::lookupAsync, pool); // CompletableFuture<Company>
 ```
 
 The `@Bridge` annotation generates a bidirectional `Iso` between any two top-level types
@@ -243,13 +251,13 @@ The `@Bridge` annotation generates a bidirectional `Iso` between any two top-lev
 navigator gains an `as<Target>()` method that chains the bridge constant in:
 
 ```java
-@Focus @Bridge(UserDto.class) record UserEntity(String id, String email) {}
-@Focus record UserDto(String id, String email) {}
+@Focus
+@Bridge(UserDto.class)
+record UserEntity(String id, String email) {}
+@Focus
+record UserDto(String id, String email) {}
 
-UserEntityPath.start()
-  .asUserDto()
-  .email()
-  .update(entity, String::toLowerCase);
+UserEntityPath.start().asUserDto().email().update(entity, String::toLowerCase);
 ```
 
 The Iso round-trips, so the result is a new `UserEntity`. The navigator is now one
