@@ -1,0 +1,6 @@
+/* Force text presentation for Unicode characters that have an emoji variant
+   (arrows like →, ←, ↑, ↓, symbols like ✓, ✗, etc.). Without this, iOS/Android
+   render them as emoji glyphs in the post body. */
+body {
+    font-variant-emoji: text;
+}

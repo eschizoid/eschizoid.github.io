@@ -73,7 +73,7 @@ Within two refactors of the converter registry, I had a working version of the l
 test suite hit lens laws, prism partial round-trips, iso reversibility, and the diamond
 resolution rule for `Iso.then(Lens)` returning `Lens`. The composition table:
 
-| Outer ↘ Inner | Lens   | Prism  | Iso    | Affine | Traversal |
+| Outer ↘︎ Inner | Lens   | Prism  | Iso    | Affine | Traversal |
 | ------------- | ------ | ------ | ------ | ------ | --------- |
 | **Lens**      | Lens   | Affine | Lens   | Affine | Traversal |
 | **Prism**     | Affine | Prism  | Prism  | Affine | Traversal |
