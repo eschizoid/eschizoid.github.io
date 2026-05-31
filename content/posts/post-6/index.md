@@ -1,5 +1,5 @@
 ---
-title: "From a Monocle port to one fluent type: how telescope happened"
+title: "From a Monocle port to one fluent type: how Telescope happened"
 date: 2026-05-30
 description: "Telescope started as a converter registry, drifted into an academic port of Scala
   Monocle's optic lattice, and turned — through five rewrites — into a single-type Java DSL with
