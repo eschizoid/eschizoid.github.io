@@ -17,11 +17,14 @@ Then they turn into tightly coupled, hard-to-test, side-effect-heavy code.
 
 I built KPipe to fix that.
 
+![kpipe](logo.png)
+
 [GitHub repo][gh]
 
 ## External write-ups
 
 - [KPipe: A Modern, High-Performance Kafka Consumer in Java — Powered by Java 25 Features][substack-writeup]
+- [Interesting links — May 2026][rmoff-may-2026] — mentions KPipe in the context of Kafka consumer libraries
 
 ---
 
@@ -299,3 +302,4 @@ method with hand-rolled retries and a TODO about offset commits, this library is
 [gh]: https://github.com/eschizoid/kpipe
 [mvn]: https://central.sonatype.com/artifact/io.github.eschizoid/kpipe-api
 [substack-writeup]: https://topicigor.substack.com/p/kpipe-a-modern-high-performance-kafka
+[rmoff-may-2026]: https://rmoff.net/2026/05/28/interesting-links-may-2026/
