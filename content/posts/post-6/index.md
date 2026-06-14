@@ -14,7 +14,7 @@ tags:
   - jmh
 ---
 
-Telescope is a Java 25 deep-copy DSL for records and POJOs. You build a path through an immutable
+Telescope is a Java deep-copy DSL for records and POJOs. You build a path through an immutable
 graph, then read it, write it, update it, traverse it, convert it, or thread an effect through it.
 No hand-written copy constructors. No mention of `Iso`, `Lens`, `Prism`, `Affine`, or `Traversal`
 anywhere in your code. The end-state is one method-ref chain on the runtime DSL, or one fluent
