@@ -8,7 +8,7 @@
   <meta itemprop="description" content="Telescope started as a converter registry, drifted into an academic port of Scala Monocle&#39;s optic lattice, and turned — through five rewrites — into a single-type Java DSL with compile-time codegen, a generated Path navigator, and a benchmark suite that says it pays. The story of getting category theory to disappear.">
   <meta itemprop="datePublished" content="2026-05-30T00:00:00+00:00">
   <meta itemprop="dateModified" content="2026-05-30T00:00:00+00:00">
-  <meta itemprop="wordCount" content="2314">
+  <meta itemprop="wordCount" content="2313">
   <meta itemprop="keywords" content="Java,Dsl,Optics,Codegen,Records,Jmh"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-6/">
   <meta property="og:site_name" content="Mariano Gonzalez">
   <meta property="og:title" content="From a Monocle port to one fluent type: how Telescope happened">
@@ -95,7 +95,7 @@
 			</div>
 					
 			<div class="markdown">
-				<p>Telescope is a Java 25 deep-copy DSL for records and POJOs. You build a path through an immutable
+				<p>Telescope is a Java deep-copy DSL for records and POJOs. You build a path through an immutable
 graph, then read it, write it, update it, traverse it, convert it, or thread an effect through it.
 No hand-written copy constructors. No mention of <code>Iso</code>, <code>Lens</code>, <code>Prism</code>, <code>Affine</code>, or <code>Traversal</code>
 anywhere in your code. The end-state is one method-ref chain on the runtime DSL, or one fluent
