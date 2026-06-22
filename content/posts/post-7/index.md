@@ -95,7 +95,7 @@ telescope:
 to(Order::getCustomerName, OrderDto::getFullName)
 ```
 
-Two method references. Rename the getter and the IDE updates the reference with it; get one wrong and
+Two method references. Rename the getter, and the IDE updates the reference with it; gets one wrong, and
 javac stops the build. There is no string for a typo to hide in. That is the entire pitch, and it
 needs no benchmark and no effect system: in 2026, the field names a mapper turns on should be
 references your IDE and compiler can follow. In MapStruct, they are strings.
@@ -116,7 +116,7 @@ alike on purpose; the difference is what the compiler can see. Every MapStruct r
 string literal; every telescope row turns on a method reference. (telescope rows are static-imported:
 `to`, `via`, `constant`, `compute`, so the call site reads as a list.)
 
-Rename a couple of fields, and get the inverse for free:
+Rename a couple of fields and get the inverse for free:
 
 ```java
 // MapStruct: and you still write toEntity() by hand for the way back
