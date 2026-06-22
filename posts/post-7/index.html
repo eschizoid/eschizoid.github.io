@@ -202,7 +202,7 @@ telescope:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span>to(Order::getCustomerName,<span style="color:#6e7681"> </span>OrderDto::getFullName)</span></span></code></pre>
-</figure><p>Two method references. Rename the getter and the IDE updates the reference with it; get one wrong and
+</figure><p>Two method references. Rename the getter, and the IDE updates the reference with it; gets one wrong, and
 javac stops the build. There is no string for a typo to hide in. That is the entire pitch, and it
 needs no benchmark and no effect system: in 2026, the field names a mapper turns on should be
 references your IDE and compiler can follow. In MapStruct, they are strings.</p>
@@ -218,7 +218,7 @@ the receipts, including the ones that do not flatter it.</p>
 alike on purpose; the difference is what the compiler can see. Every MapStruct row below turns on a
 string literal; every telescope row turns on a method reference. (telescope rows are static-imported:
 <code>to</code>, <code>via</code>, <code>constant</code>, <code>compute</code>, so the call site reads as a list.)</p>
-<p>Rename a couple of fields, and get the inverse for free:</p>
+<p>Rename a couple of fields and get the inverse for free:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// MapStruct: and you still write toEntity() by hand for the way back</span><span style="color:#6e7681">
