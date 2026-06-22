@@ -38,8 +38,8 @@ wall of strings.
 Two things to hold in your head before the details.
 
 First, the capability gap, which is the actual reason to look. Most of the comparison is "telescope:
-yes / MapStruct: not in scope." That is not me stacking the deck; it is what a from-scratch design
-bought.
+yes / MapStruct: not in scope." That asymmetry is the payoff of designing the whole thing in 2026
+instead of 2014, not me stacking the deck.
 
 | Capability                                               | telescope | MapStruct                   |
 |----------------------------------------------------------|-----------|-----------------------------|
@@ -349,8 +349,9 @@ record's single canonical-constructor call.
 
 That 8× buys something MapStruct cannot do at all: zero setup. No annotation processor, no build
 wiring. Hand it two classes at runtime, and it resolves the mapping on the spot, where MapStruct is
-codegen or nothing. So the honest framing is not "telescope is 8× slower," it is "telescope ships a
-runtime path MapStruct does not have, and that path costs 8× on deep forward." When you want the
+codegen or nothing. "Telescope is 8× slower" is the misleading way to put it: MapStruct has no
+runtime path at all, and telescope's costs 8× on deep forward. You are paying for a path MapStruct
+does not offer, not losing a race you were both in. When you want the
 speed back, you put `@Bridge` on the type, and you are in the codegen tier at parity: same library,
 same API, one annotation. Nothing is given up permanently. You pick telescope for the capability
 surface, and the moment performance matters, you flip on codegen and the gap closes to a rounding
