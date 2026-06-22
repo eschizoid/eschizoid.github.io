@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
-		<title>MapStruct on Mariano Gonzalez</title>
-		<link>https://mariano-gonzalez.com/tags/mapstruct/</link>
-		<description>Recent content in MapStruct on Mariano Gonzalez</description>
+		<title>Telescope on Mariano Gonzalez</title>
+		<link>https://mariano-gonzalez.com/tags/telescope/</link>
+		<description>Recent content in Telescope on Mariano Gonzalez</description>
 		<generator>Hugo</generator>
 		<language>en-us</language>
 		
@@ -14,7 +14,7 @@
 		
 			<lastBuildDate>Sun, 21 Jun 2026 00:00:00 +0000</lastBuildDate>
 		
-			<atom:link href="https://mariano-gonzalez.com/tags/mapstruct/index.xml" rel="self" type="application/rss+xml" />
+			<atom:link href="https://mariano-gonzalez.com/tags/telescope/index.xml" rel="self" type="application/rss+xml" />
 			<item>
 				<title>It is 2026. Why are your object mappings still strings?</title>
 				<link>https://mariano-gonzalez.com/posts/post-7/</link>
