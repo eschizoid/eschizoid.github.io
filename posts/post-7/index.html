@@ -8,7 +8,7 @@
 	<meta itemprop="description" content="The most common way to map Java objects still describes every field as an unchecked string literal. Telescope makes them compile-checked method references instead: same speed at the codegen tier, a strictly larger surface, and a switch you can make one mapper at a time. The honest comparison with MapStruct, runtime costs included.">
 	<meta itemprop="datePublished" content="2026-06-21T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-06-21T00:00:00+00:00">
-	<meta itemprop="wordCount" content="2982">
+	<meta itemprop="wordCount" content="3007">
 	<meta itemprop="keywords" content="Java,Mapstruct,Object-Mapping,Benchmarks,Dsl"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-7/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="It is 2026. Why are your object mappings still strings?">
@@ -113,8 +113,8 @@ wall of strings.</p>
 <h2 id="the-scorecard-up-front">The scorecard, up front</h2>
 <p>Two things to hold in your head before the details.</p>
 <p>First, the capability gap, which is the actual reason to look. Most of the comparison is &ldquo;telescope:
-yes / MapStruct: not in scope.&rdquo; That is not me stacking the deck; it is what a from-scratch design
-bought.</p>
+yes / MapStruct: not in scope.&rdquo; That asymmetry is the payoff of designing the whole thing in 2026
+instead of 2014, not me stacking the deck.</p>
 <table>
 	<thead>
 			<tr>
@@ -439,8 +439,9 @@ heavier still, closer to 19×, because allocating a POJO and calling N setters i
 record&rsquo;s single canonical-constructor call.</p>
 <p>That 8× buys something MapStruct cannot do at all: zero setup. No annotation processor, no build
 wiring. Hand it two classes at runtime, and it resolves the mapping on the spot, where MapStruct is
-codegen or nothing. So the honest framing is not &ldquo;telescope is 8× slower,&rdquo; it is &ldquo;telescope ships a
-runtime path MapStruct does not have, and that path costs 8× on deep forward.&rdquo; When you want the
+codegen or nothing. &ldquo;Telescope is 8× slower&rdquo; is the misleading way to put it: MapStruct has no
+runtime path at all, and telescope&rsquo;s costs 8× on deep forward. You are paying for a path MapStruct
+does not offer, not losing a race you were both in. When you want the
 speed back, you put <code>@Bridge</code> on the type, and you are in the codegen tier at parity: same library,
 same API, one annotation. Nothing is given up permanently. You pick telescope for the capability
 surface, and the moment performance matters, you flip on codegen and the gap closes to a rounding
@@ -468,10 +469,10 @@ references instead of strings, deep nested updates, validation or effects inside
 hierarchies, multi-source merge, JPA cycles. The codegen tier keeps you at parity, so you are not
 trading speed for any of it.</p>
 <h2 id="trying-it-without-betting-the-codebase">Trying it without betting the codebase</h2>
-<p>The wedge only works if trying telescope is inexpensive, and it is. It does not replace MapStruct or
-fight it; they are independent libraries, so both live in the same module, and you reach for
-whichever per mapper. Adopt telescope for one conversion, and the MapStruct mappers next to it do not
-notice.</p>
+<p>Adopting telescope one mapper at a time only works if the trial is inexpensive, and it is. It does
+not replace MapStruct or fight it; they are independent libraries, so both live in the same module,
+and you reach for whichever per mapper. Use telescope for one conversion, and the MapStruct mappers
+next to it do not notice.</p>
 <p>If you are on a framework, it slots in the same way MapStruct does. <code>telescope-spring-boot-starter</code>
 autoconfigures a registry of your <code>Mapper&lt;A, B&gt;</code> beans on Spring Boot 4; <code>telescope-quarkus</code> does the
 same through Arc. A <code>Mapper</code> bean injects like any <code>@Mapper(componentModel = &quot;spring&quot;)</code> you already
