@@ -7,7 +7,8 @@ description: "The most common way to map Java objects still describes every fiel
   comparison with MapStruct, runtime costs included."
 tags:
   - java
-  - mapstruct
+  - telescope
+  - MapStruct
   - object-mapping
   - benchmarks
   - dsl
@@ -272,7 +273,7 @@ Telescope.of(Company.class)
     .update(company, String::toUpperCase); // upper-case every department name, deep and immutable
 ```
 
-MapStruct cannot do that, because it is not a mapping. It is a deep update of an immutable tree, and
+MapStruct cannot do that because it is not a mapping. It is a deep update of an immutable tree, and
 mapping is the only verb MapStruct has. You never type `Lens` or `Traversal` to get it. The optic
 lattice that makes the composition work stays inside the library, which was the entire point of the
 rewrite I wrote up in [my previous post](https://mariano-gonzalez.com/posts/post-6/). Conversion is
