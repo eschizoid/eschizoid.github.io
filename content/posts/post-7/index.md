@@ -62,7 +62,7 @@ what each row means at the call site, not a sales close.
 
 One thing shapes every example below. MapStruct has a single wiring model: annotation processing. You
 add the processor to the build, write a `@Mapper` interface, and at compile time it generates a
-`*Impl` class with the conversion inlined. That is the whole mechanism, and it is a good one.
+`*Impl` class with the conversion inlined. That is the whole mechanism, and it is good.
 
 Telescope gives you two. The runtime factory (`Telescope.mapper(A, B, ...)`, the form in the next few
 sections) needs no annotation processor at all. It builds the mapping once when you construct
@@ -72,7 +72,7 @@ wired into your build. The codegen path is the other one: annotate a type with `
 same compile-time mechanism, same performance class.
 
 Keep that split in mind. The ergonomics gallery is a runtime API because that is what you reach for
-first and it asks nothing of your build. The annotations section after it is the codegen path, and
+first, and it asks nothing of your build. The annotations section after it is the codegen path, and
 the performance section is where that path earns its keep.
 
 ## Your field names are strings. They should be references.
@@ -371,7 +371,7 @@ Now notice what is not on that list. Nothing about the architecture, the type sa
 surface, or the codegen speed. MapStruct wins on age and adoption, the two things a newer library
 gets only by shipping and waiting, and the two things that tell you nothing about which design is
 better. So I am not going to tell you to rip out working mappers; replacing code that works is a bad
-trade no matter what you would replace it with. I am going to tell you the cheap thing instead: the
+trade no matter what you would replace it with. I am going to tell you the inexpensive thing instead: the
 next mapper you write, write it in telescope.
 
 ## When to pick which
