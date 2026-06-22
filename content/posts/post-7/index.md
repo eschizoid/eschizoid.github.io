@@ -9,6 +9,7 @@ tags:
   - java
   - telescope
   - MapStruct
+  - optics
   - object-mapping
   - benchmarks
   - dsl
