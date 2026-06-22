@@ -84,10 +84,11 @@ Here is the line that does the whole argument. A MapStruct field mapping:
 @Mapping(source = "customerName", target = "fullName")
 ```
 
-Those are two string literals. MapStruct's processor checks them against the current field names, but
-the type system never does, and a rename refactor walks straight past them. Delete a field and the
-build fails, fine. But rename one of two same-typed fields and the string can silently rebind to the
-wrong one: it compiles, it runs, it ships the wrong data. The same mapping in telescope:
+Those are two string literals. Your IDE's rename refactor walks straight past them, and the language
+never type-checks them; MapStruct's processor does, but only at the next build, so the rename that
+broke the mapping is invisible while you make it. And where two fields share a name, MapStruct's
+automatic same-name mapping will bind one of them with no string and no warning. The same mapping in
+telescope:
 
 ```java
 to(Order::getCustomerName, OrderDto::getFullName)
