@@ -284,8 +284,9 @@ just the terminal you reach for most.
 
 ## Accumulating validation, which MapStruct cannot express
 
-The most underrated feature has nothing to do with speed. Turning a stringly-typed payload (a form
-post, a JSON body) into a typed object means validating several fields at once. MapStruct maps; it
+Validation is the sharpest example of that wider surface, and it has nothing to do with speed.
+Turning a stringly-typed payload (a form post, a JSON body) into a typed object means validating
+several fields at once. MapStruct maps; it
 does not validate. Collecting every failure in one pass means bolting on an `@AfterMapping`
 accumulator you own, or a separate validation library.
 
@@ -335,14 +336,6 @@ it is 1.15×, a tie. The nested tier's 2.01× is the worst row in the table, and
 is four nanoseconds. If that is the bottleneck in your service, congratulations on the rest of your
 stack.
 
-Now the methodology aside, because it is the part those posts skip. Smoke runs lie. An early laptop
-run told me telescope's zero-hop static path was *slower* than its own deeper lattice path, with
-error bars larger than the mean, which is impossible. It turned out to be JMH escape-analysis noise
-(the JIT was eliding an allocation inconsistently across iterations). The clean CI run dissolved it. I
-do not trust a mapping microbenchmark that was not run on dedicated hardware at a real iteration
-count, my own included, and neither should you. Run the workflow on your own box before you believe
-any of these numbers.
-
 Runtime against codegen is where the cost actually lives, and it is real. The reflective
 `Telescope.mapper(...)` path (no annotation processor, the mapping resolved at runtime, a
 structural-Iso chain dispatched on every call) lands at about 8× MapStruct on the deep-forward path
@@ -360,6 +353,14 @@ does not offer, not losing a race you were both in. When you want the speed back
 on the type, and you are in the codegen tier at parity: same library, same API, one annotation.
 Nothing is given up permanently.
 
+One methodology note, because it is the part those posts skip. Smoke runs lie. An early laptop run
+told me telescope's zero-hop static path was *slower* than its own deeper lattice path, with error
+bars larger than the mean, which is impossible. It turned out to be JMH escape-analysis noise (the
+JIT was eliding an allocation inconsistently across iterations). The clean CI run dissolved it. I do
+not trust a mapping microbenchmark that was not run on dedicated hardware at a real iteration count,
+my own included, and neither should you. Run the workflow on your own box before you believe any of
+these numbers.
+
 ## Where MapStruct still wins, for now
 
 Everything MapStruct beats telescope on comes down to time, not design.
@@ -373,20 +374,17 @@ switching cost, and I will not pretend otherwise.
 Now notice what is not on that list. Nothing about the architecture, the type safety, the capability
 surface, or the codegen speed. MapStruct wins on age and adoption, the two things a newer library
 gets only by shipping and waiting, and the two things that tell you nothing about which design is
-better. So I am not going to tell you to rip out working mappers; replacing code that works is a bad
-trade no matter what you would replace it with. I am going to tell you the inexpensive thing instead:
-the next mapper you write, write it in telescope.
+better.
 
-## When to pick which
+So reach for MapStruct when the codebase is already MapStruct, the mappers are one-directional and
+shallow, or team familiarity outweighs everything else. Those are real reasons, and none of them is
+about the library being better. Reach for telescope for new code, and for anything MapStruct cannot
+say: typed field references instead of strings, deep nested updates, validation or effects inside the
+mapping, sealed hierarchies, multi-source merge.
 
-Reach for MapStruct when the codebase is already MapStruct, the mappers are one-directional and
-shallow, or team familiarity is the constraint that outweighs everything else. Those are real
-reasons, and none of them is about the library being better.
-
-Reach for telescope on the next mapper you write, and for anything MapStruct cannot say: typed field
-references instead of strings, deep nested updates, validation or effects inside the mapping, sealed
-hierarchies, multi-source merge. The codegen tier keeps you at parity, so you are not
-trading speed for any of it.
+I am not going to tell you to rip out working mappers; replacing code that works is a bad trade no
+matter what you would replace it with. The inexpensive move is the next mapper you write: write it in
+telescope.
 
 ## Trying it without betting the codebase
 
