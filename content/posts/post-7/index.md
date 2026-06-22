@@ -1,10 +1,10 @@
 ---
 title: "It is 2026. Why are your object mappings still strings?"
 date: 2026-06-22
-description: "The most common way to map Java objects still describes every field as an unchecked
-  string literal. Telescope makes them compile-checked method references instead: codegen that keeps
-  pace with MapStruct at realistic depth, a strictly larger surface, and a switch you can make one
-  mapper at a time. The honest comparison with MapStruct, runtime costs included."
+description: "MapStruct, Java's most popular object mapper, still names fields with unchecked string
+  literals. Telescope makes them compile-checked method references instead: codegen that keeps pace
+  with MapStruct at realistic depth, a strictly larger surface, and a switch you can make one mapper
+  at a time. The honest comparison, runtime costs included."
 tags:
   - java
   - telescope
