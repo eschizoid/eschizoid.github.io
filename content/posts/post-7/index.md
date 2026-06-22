@@ -303,7 +303,7 @@ about what is being measured.
 There are two performance questions and they have different answers. The first: codegen against
 codegen. When telescope's `@Bridge` processor and MapStruct's `@Mapper` processor both emit compiled
 bytecode for the same mapping, how do they compare? The second: telescope's reflective runtime path
-against MapStruct's codegen. Those are not the same question, and running them together is how you
+against MapStruct's codegen. Those are different questions, and running them together is how you
 end up with a headline that does not survive contact with someone else's profiler.
 
 Codegen against codegen is a tie at any realistic depth. Both processors emit direct, JIT-inlinable
@@ -382,14 +382,14 @@ trading speed for any of it.
 
 ## Trying it without betting the codebase
 
-The wedge only works if trying telescope is cheap, and it is. It does not replace MapStruct or fight
-it; they are independent libraries, so both live in the same module and you reach for whichever per
-mapper. Adopt telescope for one conversion and the MapStruct mappers next to it do not notice.
+The wedge only works if trying telescope is inexpensive, and it is. It does not replace MapStruct or fight
+it; they are independent libraries, so both live in the same module, and you reach for whichever per
+mapper. Adopt telescope for one conversion, and the MapStruct mappers next to it do not notice.
 
-If you are on a framework it slots in the same way MapStruct does. `telescope-spring-boot-starter`
+If you are on a framework, it slots in the same way MapStruct does. `telescope-spring-boot-starter`
 autoconfigures a registry of your `Mapper<A, B>` beans on Spring Boot 4; `telescope-quarkus` does the
 same through Arc. A `Mapper` bean injects like any `@Mapper(componentModel = "spring")` you already
-have. The whole bet is one mapper and one dependency line, in a project that keeps working exactly as
+have. The whole bet is one mapper and one dependency line in a project that keeps working exactly as
 it did.
 
 ## Closing
