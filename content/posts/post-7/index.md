@@ -22,14 +22,15 @@ The most common way to map one Java object to another still describes every fiel
 unchecked string literals: `@Mapping(source = "customerName", target = "fullName")`. The field names
 your whole mapping turns on are text the compiler never reads.
 
-[MapStruct](https://mapstruct.org/) earned its place. Ten years, a huge adopter base, a bug list that converged long ago, and
-it generates genuinely fast code; I reach for it too. That string is just the one piece of its 2014
-design that aged badly.
+[MapStruct](https://mapstruct.org/) earned its place. Ten years, a huge adopter base, a bug list
+that converged long ago, and it generates genuinely fast code; I reach for it too. That string is
+just the one piece of its 2014 design that aged badly.
 
-[Telescope](https://github.com/eschizoid/telescope/) is the same job rebuilt on a foundation where those field names are method references the
-compiler checks. This post is the honest comparison, including the parts that do not favor telescope:
-the runtime numbers later are not flattering, and I show them anyway. The pitch is narrow and I will
-not pad it. Your next mapper does not have to be a wall of strings.
+[Telescope](https://github.com/eschizoid/telescope/) is the same job rebuilt on a foundation where
+those field names are method references the compiler checks. This post is the honest comparison,
+including the parts that do not favor telescope: the runtime numbers later are not flattering, and I
+show them anyway. The pitch is narrow and I will not pad it. Your next mapper does not have to be a
+wall of strings.
 
 ## The scorecard, up front
 
@@ -97,8 +98,8 @@ the compiler, and in MapStruct they are not.
 Everything else is downstream of that one decision. Once the path is a typed reference instead of a
 string, the compiler can follow it deeper (nested updates), the library can run it backward off the
 same definition (handy on the roughly one mapper in ten that actually needs the inverse, though that
-is a bonus, not the reason), and those references compose into validation and effects. But the reason to
-switch fits on one line: stop writing your mappings as strings.
+is a bonus, not the reason), and those references compose into validation and effects. But the
+reason to switch fits on one line: stop writing your mappings as strings.
 
 ## The same mappers, side by side
 
