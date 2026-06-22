@@ -84,7 +84,7 @@ Here is the line that does the whole argument. A MapStruct field mapping:
 ```
 
 Those are two string literals, and `javac` never reads them. Rename `getCustomerName` in a refactor
-and that `@Mapping` keeps compiling, green the whole way, then throws at runtime — or worse, quietly
+and that `@Mapping` keeps compiling, green the whole way, then throws at runtime, or worse, quietly
 maps the wrong field and ships. The same mapping in telescope:
 
 ```java
@@ -112,7 +112,7 @@ string literal; every telescope row turns on a method reference. (telescope rows
 Rename a couple of fields, and the inverse:
 
 ```java
-// MapStruct — and you still write toEntity() by hand for the way back
+// MapStruct: and you still write toEntity() by hand for the way back
 @Mapper
 public interface OrderMapper {
   @Mapping(source = "customerName", target = "fullName")
@@ -122,7 +122,7 @@ public interface OrderMapper {
 ```
 
 ```java
-// telescope — forward and backward off the one declaration
+// telescope: forward and backward off the one declaration
 final var orders =
     Telescope.mapper(
         Order.class,
@@ -137,13 +137,13 @@ Order back = orders.backward(dto); // no second interface
 Land a flat source field on a nested target leaf:
 
 ```java
-// MapStruct — the target path is a string
+// MapStruct: the target path is a string
 @Mapping(source = "customerName", target = "shipping.recipient.fullName")
 CartDto toDto(Cart cart);
 ```
 
 ```java
-// telescope — the codegen navigator is the argument; every hop is typed and refactors with you
+// telescope: the codegen navigator is the argument; every hop is typed and refactors with you
 Telescope.mapper(
     Cart.class,
     CartDto.class,
@@ -153,7 +153,7 @@ Telescope.mapper(
 Convert a single field's type:
 
 ```java
-// MapStruct — a @Named method, wired in by string
+// MapStruct: a @Named method, wired in by string
 @Mapping(source = "priceCents", target = "price", qualifiedByName = "centsToAmount")
 ProductDto toDto(Product p);
 
@@ -164,7 +164,7 @@ static BigDecimal centsToAmount(long cents) {
 ```
 
 ```java
-// telescope — the converter and its inverse sit in the row
+// telescope: the converter and its inverse sit in the row
 to(
     Product::priceCents,
     ProductDto::price,
@@ -182,7 +182,7 @@ OrderDto toDto(Order order);
 ```
 
 ```java
-// telescope — same call, no expression-string escape hatch
+// telescope: same call, no expression-string escape hatch
 Telescope.mapper(
     Order.class,
     OrderDto.class,
@@ -194,12 +194,12 @@ Telescope.mapper(
 Update an existing target in place rather than building a new one:
 
 ```java
-// MapStruct — @MappingTarget
+// MapStruct: @MappingTarget
 void update(@MappingTarget OrderDto dto, Order order);
 ```
 
 ```java
-// telescope — same idea, no annotation
+// telescope: same idea, no annotation
 OrderDto merged = orders.into(existingDto, order);
 ```
 
@@ -273,7 +273,7 @@ Telescope.of(Company.class)
 ```
 
 MapStruct cannot do that, because it is not a mapping. It is a deep update of an immutable tree, and
-mapping is the only verb MapStruct has. You never type `Lens` or `Traversal` to get it — the optic
+mapping is the only verb MapStruct has. You never type `Lens` or `Traversal` to get it. The optic
 lattice that makes the composition work stays inside the library, which was the entire point of the
 rewrite I wrote up in [my previous post](https://mariano-gonzalez.com/posts/post-6/). Conversion is
 just the terminal you reach for most.
@@ -368,7 +368,7 @@ the next engineer on the team already knowing it and never having heard of this.
 switching cost, and I will not pretend otherwise.
 
 Now notice what is not on that list. Nothing about the architecture, the type safety, the capability
-surface, or the codegen speed. MapStruct wins on age and adoption — the two things a newer library
+surface, or the codegen speed. MapStruct wins on age and adoption, the two things a newer library
 gets only by shipping and waiting, and the two things that tell you nothing about which design is
 better. So I am not going to tell you to rip out working mappers; replacing code that works is a bad
 trade no matter what you would replace it with. I am going to tell you the cheap thing instead: the
