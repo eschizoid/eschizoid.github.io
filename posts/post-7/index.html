@@ -8,7 +8,7 @@
 	<meta itemprop="description" content="The most common way to map Java objects still describes every field as an unchecked string literal. Telescope makes them compile-checked method references instead: same speed at the codegen tier, a strictly larger surface, and a switch you can make one mapper at a time. The honest comparison with MapStruct, runtime costs included.">
 	<meta itemprop="datePublished" content="2026-06-21T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-06-21T00:00:00+00:00">
-	<meta itemprop="wordCount" content="3010">
+	<meta itemprop="wordCount" content="3000">
 	<meta itemprop="keywords" content="Java,Mapstruct,Object-Mapping,Benchmarks,Dsl"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-7/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="It is 2026. Why are your object mappings still strings?">
@@ -194,7 +194,7 @@ the performance section is where that path earns its keep.</p>
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#d2a8ff;font-weight:bold">@Mapping</span>(source<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;customerName&#34;</span>,<span style="color:#6e7681"> </span>target<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;fullName&#34;</span>)</span></span></code></pre>
 </figure><p>Those are two string literals, and <code>javac</code> never reads them. Rename <code>getCustomerName</code> in a refactor
-and that <code>@Mapping</code> keeps compiling, green the whole way, then throws at runtime — or worse, quietly
+and that <code>@Mapping</code> keeps compiling, green the whole way, then throws at runtime, or worse, quietly
 maps the wrong field and ships. The same mapping in telescope:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
@@ -216,7 +216,7 @@ string literal; every telescope row turns on a method reference. (telescope rows
 <p>Rename a couple of fields, and the inverse:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
-    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// MapStruct — and you still write toEntity() by hand for the way back</span><span style="color:#6e7681">
+    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// MapStruct: and you still write toEntity() by hand for the way back</span><span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#d2a8ff;font-weight:bold">@Mapper</span><span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#ff7b72">public</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">interface</span> <span style="color:#f0883e;font-weight:bold">OrderMapper</span><span style="color:#6e7681"> </span>{<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span><span style="color:#d2a8ff;font-weight:bold">@Mapping</span>(source<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;customerName&#34;</span>,<span style="color:#6e7681"> </span>target<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;fullName&#34;</span>)<span style="color:#6e7681">
@@ -225,7 +225,7 @@ string literal; every telescope row turns on a method reference. (telescope rows
 </span></span></span><span style="display:flex;"><span>}</span></span></code></pre>
 </figure><figure class="highlight">
     <pre tabindex="0" class="chroma"
-    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// telescope — forward and backward off the one declaration</span><span style="color:#6e7681">
+    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// telescope: forward and backward off the one declaration</span><span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">var</span><span style="color:#6e7681"> </span>orders<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>Telescope.mapper(<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">        </span>Order.class,<span style="color:#6e7681">
@@ -238,12 +238,12 @@ string literal; every telescope row turns on a method reference. (telescope rows
 </figure><p>Land a flat source field on a nested target leaf:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
-    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// MapStruct — the target path is a string</span><span style="color:#6e7681">
+    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// MapStruct: the target path is a string</span><span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#d2a8ff;font-weight:bold">@Mapping</span>(source<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;customerName&#34;</span>,<span style="color:#6e7681"> </span>target<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;shipping.recipient.fullName&#34;</span>)<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span>CartDto<span style="color:#6e7681"> </span><span style="color:#d2a8ff;font-weight:bold">toDto</span>(Cart<span style="color:#6e7681"> </span>cart);</span></span></code></pre>
 </figure><figure class="highlight">
     <pre tabindex="0" class="chroma"
-    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// telescope — the codegen navigator is the argument; every hop is typed and refactors with you</span><span style="color:#6e7681">
+    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// telescope: the codegen navigator is the argument; every hop is typed and refactors with you</span><span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span>Telescope.mapper(<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>Cart.class,<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>CartDto.class,<span style="color:#6e7681">
@@ -251,7 +251,7 @@ string literal; every telescope row turns on a method reference. (telescope rows
 </figure><p>Convert a single field&rsquo;s type:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
-    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// MapStruct — a @Named method, wired in by string</span><span style="color:#6e7681">
+    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// MapStruct: a @Named method, wired in by string</span><span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#d2a8ff;font-weight:bold">@Mapping</span>(source<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;priceCents&#34;</span>,<span style="color:#6e7681"> </span>target<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;price&#34;</span>,<span style="color:#6e7681"> </span>qualifiedByName<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;centsToAmount&#34;</span>)<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span>ProductDto<span style="color:#6e7681"> </span><span style="color:#d2a8ff;font-weight:bold">toDto</span>(Product<span style="color:#6e7681"> </span>p);<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">
@@ -261,7 +261,7 @@ string literal; every telescope row turns on a method reference. (telescope rows
 </span></span></span><span style="display:flex;"><span>}</span></span></code></pre>
 </figure><figure class="highlight">
     <pre tabindex="0" class="chroma"
-    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// telescope — the converter and its inverse sit in the row</span><span style="color:#6e7681">
+    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// telescope: the converter and its inverse sit in the row</span><span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span>to(<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>Product::priceCents,<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>ProductDto::price,<span style="color:#6e7681">
@@ -276,7 +276,7 @@ string literal; every telescope row turns on a method reference. (telescope rows
 </span></span></span><span style="display:flex;"><span>OrderDto<span style="color:#6e7681"> </span><span style="color:#d2a8ff;font-weight:bold">toDto</span>(Order<span style="color:#6e7681"> </span>order);</span></span></code></pre>
 </figure><figure class="highlight">
     <pre tabindex="0" class="chroma"
-    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// telescope — same call, no expression-string escape hatch</span><span style="color:#6e7681">
+    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// telescope: same call, no expression-string escape hatch</span><span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span>Telescope.mapper(<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>Order.class,<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>OrderDto.class,<span style="color:#6e7681">
@@ -286,11 +286,11 @@ string literal; every telescope row turns on a method reference. (telescope rows
 </figure><p>Update an existing target in place rather than building a new one:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
-    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// MapStruct — @MappingTarget</span><span style="color:#6e7681">
+    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// MapStruct: @MappingTarget</span><span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#ff7b72">void</span><span style="color:#6e7681"> </span><span style="color:#d2a8ff;font-weight:bold">update</span>(<span style="color:#d2a8ff;font-weight:bold">@MappingTarget</span><span style="color:#6e7681"> </span>OrderDto<span style="color:#6e7681"> </span>dto,<span style="color:#6e7681"> </span>Order<span style="color:#6e7681"> </span>order);</span></span></code></pre>
 </figure><figure class="highlight">
     <pre tabindex="0" class="chroma"
-    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// telescope — same idea, no annotation</span><span style="color:#6e7681">
+    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// telescope: same idea, no annotation</span><span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span>OrderDto<span style="color:#6e7681"> </span>merged<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>orders.into(existingDto,<span style="color:#6e7681"> </span>order);</span></span></code></pre>
 </figure><p>The pattern across all of these: the MapStruct side leans on annotation attributes and strings
 (<code>target = &quot;shipping.recipient.fullName&quot;</code>, <code>qualifiedByName = &quot;centsToAmount&quot;</code>,
@@ -348,7 +348,7 @@ through it.</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.field(Department::name)<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.update(company,<span style="color:#6e7681"> </span>String::toUpperCase);<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">//</span><span style="color:#6e7681"> </span>upper<span style="color:#ff7b72;font-weight:bold">-</span><span style="color:#ff7b72">case</span><span style="color:#6e7681"> </span>every<span style="color:#6e7681"> </span>department<span style="color:#6e7681"> </span>name,<span style="color:#6e7681"> </span>deep<span style="color:#6e7681"> </span>and<span style="color:#6e7681"> </span>immutable</span></span></code></pre>
 </figure><p>MapStruct cannot do that, because it is not a mapping. It is a deep update of an immutable tree, and
-mapping is the only verb MapStruct has. You never type <code>Lens</code> or <code>Traversal</code> to get it — the optic
+mapping is the only verb MapStruct has. You never type <code>Lens</code> or <code>Traversal</code> to get it. The optic
 lattice that makes the composition work stays inside the library, which was the entire point of the
 rewrite I wrote up in <a href="https://mariano-gonzalez.com/posts/post-6/">my previous post</a>. Conversion is
 just the terminal you reach for most.</p>
@@ -381,7 +381,7 @@ end up with a headline that does not survive contact with someone else&rsquo;s p
 <p>Codegen against codegen is a tie at any realistic depth. Both processors emit direct, JIT-inlinable
 calls: method references and constructor invocations, no reflection on the hot path. Here is the
 matrix, run on a dedicated GitHub Actions runner with no competing workload, so the error bands are
-tight (±0.01–0.9 ns) rather than the ±20 ns a laptop hands you:</p>
+tight (±0.01 to 0.9 ns) rather than the ±20 ns a laptop hands you:</p>
 <table>
 	<thead>
 			<tr>
@@ -443,9 +443,9 @@ wiring. Hand it two classes at runtime, and it resolves the mapping on the spot,
 codegen or nothing. &ldquo;Telescope is 8× slower&rdquo; is the misleading way to put it: MapStruct has no
 runtime path at all, and telescope&rsquo;s costs 8× on deep forward. You are paying for a path MapStruct
 does not offer, not losing a race you were both in. When you want the speed back, you put <code>@Bridge</code>
-on the type, and you are in the codegen tier at parity: same library, same API, one annotation. Nothing
-is given up permanently. You pick telescope for the capability surface, and the moment performance
-matters, you flip on codegen and the gap closes to a rounding error.</p>
+on the type, and you are in the codegen tier at parity: same library, same API, one annotation.
+Nothing is given up permanently. You pick telescope for the capability surface, and the moment
+performance matters, you flip on codegen and the gap closes to a rounding error.</p>
 <h2 id="where-mapstruct-still-wins-for-now">Where MapStruct still wins, for now</h2>
 <p>Everything MapStruct beats telescope on comes down to time, not design.</p>
 <p>Maturity is the big one. A decade across thousands of codebases means the edge cases are found and
@@ -454,7 +454,7 @@ find. The ecosystem is the quieter one: IDE support, a Stack Overflow answer for
 the next engineer on the team already knowing it and never having heard of this. That is a real
 switching cost, and I will not pretend otherwise.</p>
 <p>Now notice what is not on that list. Nothing about the architecture, the type safety, the capability
-surface, or the codegen speed. MapStruct wins on age and adoption — the two things a newer library
+surface, or the codegen speed. MapStruct wins on age and adoption, the two things a newer library
 gets only by shipping and waiting, and the two things that tell you nothing about which design is
 better. So I am not going to tell you to rip out working mappers; replacing code that works is a bad
 trade no matter what you would replace it with. I am going to tell you the cheap thing instead: the
@@ -495,9 +495,9 @@ exactly the gap you can help close.</p>
 </span></span><span style="display:flex;"><span><span style="color:#7ee787">&lt;/dependency&gt;</span></span></span></code></pre>
 </figure><p>Then the next mapper you would have written as a MapStruct interface, write as one
 <code>Telescope.mapper(...)</code> call instead, and leave everything else alone. The repo has the CI benchmark
-matrix and the escape hatches; <a href="https://mariano-gonzalez.com/posts/post-6/">that earlier post</a> has the story of how the thing
-got built. Rename a field and watch which library catches it at compile time and which one finds out in production, then tell me
-where it falls over. I do not think it will.</p>
+matrix and the escape hatches; <a href="https://mariano-gonzalez.com/posts/post-6/">that earlier post</a> has
+the story of how the thing got built. Rename a field and watch which library catches it at compile
+time and which one finds out in production, then tell me where it falls over. I do not think it will.</p>
 
 			</div>
 
