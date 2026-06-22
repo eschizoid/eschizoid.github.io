@@ -8,7 +8,7 @@
 	<meta itemprop="description" content="The most common way to map Java objects still describes every field as an unchecked string literal. Telescope makes them compile-checked method references instead: same speed at the codegen tier, a strictly larger surface, and a switch you can make one mapper at a time. The honest comparison with MapStruct, runtime costs included.">
 	<meta itemprop="datePublished" content="2026-06-21T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-06-21T00:00:00+00:00">
-	<meta itemprop="wordCount" content="2968">
+	<meta itemprop="wordCount" content="2966">
 	<meta itemprop="keywords" content="Java,Mapstruct,Object-Mapping,Benchmarks,Dsl"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-7/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="It is 2026. Why are your object mappings still strings?">
@@ -369,7 +369,7 @@ about what is being measured.</p>
 <p>There are two performance questions and they have different answers. The first: codegen against
 codegen. When telescope&rsquo;s <code>@Bridge</code> processor and MapStruct&rsquo;s <code>@Mapper</code> processor both emit compiled
 bytecode for the same mapping, how do they compare? The second: telescope&rsquo;s reflective runtime path
-against MapStruct&rsquo;s codegen. Those are not the same question, and running them together is how you
+against MapStruct&rsquo;s codegen. Those are different questions, and running them together is how you
 end up with a headline that does not survive contact with someone else&rsquo;s profiler.</p>
 <p>Codegen against codegen is a tie at any realistic depth. Both processors emit direct, JIT-inlinable
 calls: method references and constructor invocations, no reflection on the hot path. Here is the
@@ -462,13 +462,13 @@ references instead of strings, deep nested updates, validation or effects inside
 hierarchies, multi-source merge, JPA cycles. The codegen tier keeps you at parity, so you are not
 trading speed for any of it.</p>
 <h2 id="trying-it-without-betting-the-codebase">Trying it without betting the codebase</h2>
-<p>The wedge only works if trying telescope is cheap, and it is. It does not replace MapStruct or fight
-it; they are independent libraries, so both live in the same module and you reach for whichever per
-mapper. Adopt telescope for one conversion and the MapStruct mappers next to it do not notice.</p>
-<p>If you are on a framework it slots in the same way MapStruct does. <code>telescope-spring-boot-starter</code>
+<p>The wedge only works if trying telescope is inexpensive, and it is. It does not replace MapStruct or fight
+it; they are independent libraries, so both live in the same module, and you reach for whichever per
+mapper. Adopt telescope for one conversion, and the MapStruct mappers next to it do not notice.</p>
+<p>If you are on a framework, it slots in the same way MapStruct does. <code>telescope-spring-boot-starter</code>
 autoconfigures a registry of your <code>Mapper&lt;A, B&gt;</code> beans on Spring Boot 4; <code>telescope-quarkus</code> does the
 same through Arc. A <code>Mapper</code> bean injects like any <code>@Mapper(componentModel = &quot;spring&quot;)</code> you already
-have. The whole bet is one mapper and one dependency line, in a project that keeps working exactly as
+have. The whole bet is one mapper and one dependency line in a project that keeps working exactly as
 it did.</p>
 <h2 id="closing">Closing</h2>
 <p>I will not say telescope has dethroned MapStruct, because it has not — no production adopters yet,
