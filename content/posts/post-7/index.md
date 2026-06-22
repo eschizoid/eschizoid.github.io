@@ -22,7 +22,7 @@ draft: false
 Mapping one Java object to another is routine work in most apps, and
 [MapStruct](https://mapstruct.org/), the standard tool for it, still has you name each field with a
 string: `@Mapping(source = "customerName", target = "fullName")`. Those two names are what the whole
-mapping turns on, and they are strings: rename the field and they stay exactly as they were.
+mapping turns on, and they are strings: rename the field, and they stay exactly as they were.
 
 MapStruct earned its place. Ten years, a huge adopter base, a bug list that converged long ago, and
 it generates genuinely fast code; I reach for it too. Those strings are just the one piece of its
@@ -94,10 +94,10 @@ telescope:
 to(Order::getCustomerName, OrderDto::getFullName)
 ```
 
-Two method references. Rename the getter, and the IDE renames this with it; miss one, and javac stops
-the build. There is no string for a typo to hide in. That is the entire pitch, and it needs no
-benchmark and no effect system: in 2026, the field names a mapper turns on
-should be references the compiler and your IDE follow, and in MapStruct they are strings.
+Two method references. Rename the getter and the IDE updates the reference with it; get one wrong and
+javac stops the build. There is no string for a typo to hide in. That is the entire pitch, and it
+needs no benchmark and no effect system: in 2026, the field names a mapper turns on should be
+references your IDE and compiler can follow. In MapStruct, they are strings.
 
 Everything else is downstream of that one decision. Once the path is a typed reference instead of a
 string, the compiler can follow it deeper (nested updates), the library can run it backward off the
