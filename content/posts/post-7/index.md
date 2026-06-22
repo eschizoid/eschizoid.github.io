@@ -275,7 +275,8 @@ Telescope.of(Company.class)
 MapStruct cannot do that, because it is not a mapping. It is a deep update of an immutable tree, and
 mapping is the only verb MapStruct has. You never type `Lens` or `Traversal` to get it — the optic
 lattice that makes the composition work stays inside the library, which was the entire point of the
-rewrite I wrote up in post-6. Conversion is just the terminal you reach for most.
+rewrite I wrote up in [my previous post](/posts/post-6/). Conversion is just the terminal you reach
+for most.
 
 ## Accumulating validation, which MapStruct cannot express
 
@@ -413,6 +414,7 @@ implementation("io.github.eschizoid:telescope-core:1.0.7")
 
 Then the next mapper you would have written as a MapStruct interface, write as one
 `Telescope.mapper(...)` call instead, and leave everything else alone. The repo has the CI benchmark
-matrix and the escape hatches; post-6 has the story of how the thing got built. Rename a field and
+matrix and the escape hatches; [that earlier post](/posts/post-6/) has the story of how the thing
+got built. Rename a field and
 watch which library catches it at compile time and which one finds out in production, then tell me
 where it falls over. I do not think it will.
