@@ -4,29 +4,29 @@
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Benchmarking KPipe against the parallel-Kafka libraries you would actually pick - Mariano Gonzalez</title><meta name="viewport" content="width=device-width, initial-scale=1">
 	
-  <meta itemprop="name" content="Benchmarking KPipe against the parallel-Kafka libraries you would actually pick">
-  <meta itemprop="description" content="How KPipe stacks up against Confluent Parallel Consumer, Reactor Kafka, and a hand-rolled KafkaConsumer &#43; virtual-thread executor. Latest snapshot from the 4-runtime harness.">
-  <meta itemprop="datePublished" content="2026-05-20T00:00:00+00:00">
-  <meta itemprop="dateModified" content="2026-05-20T00:00:00+00:00">
-  <meta itemprop="wordCount" content="1706">
-  <meta itemprop="keywords" content="Kafka,Java,Benchmarks,Virtual-Threads,Jmh"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-5/">
-  <meta property="og:site_name" content="Mariano Gonzalez">
-  <meta property="og:title" content="Benchmarking KPipe against the parallel-Kafka libraries you would actually pick">
-  <meta property="og:description" content="How KPipe stacks up against Confluent Parallel Consumer, Reactor Kafka, and a hand-rolled KafkaConsumer &#43; virtual-thread executor. Latest snapshot from the 4-runtime harness.">
-  <meta property="og:locale" content="en_us">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2026-05-20T00:00:00+00:00">
-    <meta property="article:modified_time" content="2026-05-20T00:00:00+00:00">
-    <meta property="article:tag" content="Kafka">
-    <meta property="article:tag" content="Java">
-    <meta property="article:tag" content="Benchmarks">
-    <meta property="article:tag" content="Virtual-Threads">
-    <meta property="article:tag" content="Jmh">
+	<meta itemprop="name" content="Benchmarking KPipe against the parallel-Kafka libraries you would actually pick">
+	<meta itemprop="description" content="How KPipe stacks up against Confluent Parallel Consumer, Reactor Kafka, and a hand-rolled KafkaConsumer &#43; virtual-thread executor. Latest snapshot from the 4-runtime harness.">
+	<meta itemprop="datePublished" content="2026-05-20T00:00:00+00:00">
+	<meta itemprop="dateModified" content="2026-05-20T00:00:00+00:00">
+	<meta itemprop="wordCount" content="1706">
+	<meta itemprop="keywords" content="Kafka,Java,Benchmarks,Virtual-Threads,Jmh"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-5/">
+	<meta property="og:site_name" content="Mariano Gonzalez">
+	<meta property="og:title" content="Benchmarking KPipe against the parallel-Kafka libraries you would actually pick">
+	<meta property="og:description" content="How KPipe stacks up against Confluent Parallel Consumer, Reactor Kafka, and a hand-rolled KafkaConsumer &#43; virtual-thread executor. Latest snapshot from the 4-runtime harness.">
+	<meta property="og:locale" content="en_us">
+	<meta property="og:type" content="article">
+		<meta property="article:section" content="posts">
+		<meta property="article:published_time" content="2026-05-20T00:00:00+00:00">
+		<meta property="article:modified_time" content="2026-05-20T00:00:00+00:00">
+		<meta property="article:tag" content="Kafka">
+		<meta property="article:tag" content="Java">
+		<meta property="article:tag" content="Benchmarks">
+		<meta property="article:tag" content="Virtual-Threads">
+		<meta property="article:tag" content="Jmh">
 
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Benchmarking KPipe against the parallel-Kafka libraries you would actually pick">
-  <meta name="twitter:description" content="How KPipe stacks up against Confluent Parallel Consumer, Reactor Kafka, and a hand-rolled KafkaConsumer &#43; virtual-thread executor. Latest snapshot from the 4-runtime harness.">
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:title" content="Benchmarking KPipe against the parallel-Kafka libraries you would actually pick">
+	<meta name="twitter:description" content="How KPipe stacks up against Confluent Parallel Consumer, Reactor Kafka, and a hand-rolled KafkaConsumer &#43; virtual-thread executor. Latest snapshot from the 4-runtime harness.">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css" />
@@ -116,40 +116,40 @@ is a blocking I/O round trip. All four runtimes run against the same Testcontain
 4.2.0 broker, same 25,000-record seed, same eight partitions, two JMH forks × five measurement
 iterations. Source numbers in <a href="https://github.com/eschizoid/kpipe/blob/main/benchmarks/results/2026-05-24.json"><code>benchmarks/results/2026-05-24.json</code></a>.</p>
 <table>
-  <thead>
-      <tr>
-          <th>Runtime</th>
-          <th style="text-align: right"><code>workMicros=0</code></th>
-          <th style="text-align: right"><code>workMicros=100</code></th>
-          <th style="text-align: right"><code>workMicros=1000</code></th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><strong>KPipe</strong></td>
-          <td style="text-align: right"><strong>542,412 ± 65,198</strong></td>
-          <td style="text-align: right"><strong>490,543 ± 66,648</strong></td>
-          <td style="text-align: right"><strong>483,061 ± 43,265</strong></td>
-      </tr>
-      <tr>
-          <td><strong>Raw <code>KafkaConsumer</code> + VT</strong></td>
-          <td style="text-align: right">557,439 ± 51,512</td>
-          <td style="text-align: right">520,859 ± 73,444</td>
-          <td style="text-align: right">417,920 ± 80,770</td>
-      </tr>
-      <tr>
-          <td><strong>Reactor Kafka 1.3.25</strong></td>
-          <td style="text-align: right">150,081 ± 27,927</td>
-          <td style="text-align: right">72,595 ± 7,344</td>
-          <td style="text-align: right"><strong>9,079 ± 164</strong></td>
-      </tr>
-      <tr>
-          <td><strong>Confluent Parallel Consumer</strong></td>
-          <td style="text-align: right">109,952 ± 8,544</td>
-          <td style="text-align: right">114,362 ± 5,115</td>
-          <td style="text-align: right">67,726 ± 899</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Runtime</th>
+					<th style="text-align: right"><code>workMicros=0</code></th>
+					<th style="text-align: right"><code>workMicros=100</code></th>
+					<th style="text-align: right"><code>workMicros=1000</code></th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>KPipe</strong></td>
+					<td style="text-align: right"><strong>542,412 ± 65,198</strong></td>
+					<td style="text-align: right"><strong>490,543 ± 66,648</strong></td>
+					<td style="text-align: right"><strong>483,061 ± 43,265</strong></td>
+			</tr>
+			<tr>
+					<td><strong>Raw <code>KafkaConsumer</code> + VT</strong></td>
+					<td style="text-align: right">557,439 ± 51,512</td>
+					<td style="text-align: right">520,859 ± 73,444</td>
+					<td style="text-align: right">417,920 ± 80,770</td>
+			</tr>
+			<tr>
+					<td><strong>Reactor Kafka 1.3.25</strong></td>
+					<td style="text-align: right">150,081 ± 27,927</td>
+					<td style="text-align: right">72,595 ± 7,344</td>
+					<td style="text-align: right"><strong>9,079 ± 164</strong></td>
+			</tr>
+			<tr>
+					<td><strong>Confluent Parallel Consumer</strong></td>
+					<td style="text-align: right">109,952 ± 8,544</td>
+					<td style="text-align: right">114,362 ± 5,115</td>
+					<td style="text-align: right">67,726 ± 899</td>
+			</tr>
+	</tbody>
 </table>
 <p><p class="md__image">
     <img src="parallel-gc-baseline.svg" alt="Parallel-consumer throughput, allocation, and GC profile"  />
@@ -197,40 +197,40 @@ The JVM young gen absorbed it cleanly. The number to watch is whether that holds
 or under tail-latency-sensitive workloads. For steady-state throughput on a default heap, it&rsquo;s a
 non-event.</p>
 <table>
-  <thead>
-      <tr>
-          <th>Runtime</th>
-          <th style="text-align: right"><code>workMicros=0</code> B/op</th>
-          <th style="text-align: right"><code>workMicros=100</code> B/op</th>
-          <th style="text-align: right"><code>workMicros=1000</code> B/op</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>Confluent Parallel Consumer</td>
-          <td style="text-align: right">34</td>
-          <td style="text-align: right">34</td>
-          <td style="text-align: right">34</td>
-      </tr>
-      <tr>
-          <td>Raw <code>KafkaConsumer</code> + VT</td>
-          <td style="text-align: right">55</td>
-          <td style="text-align: right">431</td>
-          <td style="text-align: right">455</td>
-      </tr>
-      <tr>
-          <td>Reactor Kafka</td>
-          <td style="text-align: right">162</td>
-          <td style="text-align: right">84</td>
-          <td style="text-align: right">193</td>
-      </tr>
-      <tr>
-          <td>KPipe</td>
-          <td style="text-align: right">924</td>
-          <td style="text-align: right">1,484</td>
-          <td style="text-align: right">1,468</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Runtime</th>
+					<th style="text-align: right"><code>workMicros=0</code> B/op</th>
+					<th style="text-align: right"><code>workMicros=100</code> B/op</th>
+					<th style="text-align: right"><code>workMicros=1000</code> B/op</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Confluent Parallel Consumer</td>
+					<td style="text-align: right">34</td>
+					<td style="text-align: right">34</td>
+					<td style="text-align: right">34</td>
+			</tr>
+			<tr>
+					<td>Raw <code>KafkaConsumer</code> + VT</td>
+					<td style="text-align: right">55</td>
+					<td style="text-align: right">431</td>
+					<td style="text-align: right">455</td>
+			</tr>
+			<tr>
+					<td>Reactor Kafka</td>
+					<td style="text-align: right">162</td>
+					<td style="text-align: right">84</td>
+					<td style="text-align: right">193</td>
+			</tr>
+			<tr>
+					<td>KPipe</td>
+					<td style="text-align: right">924</td>
+					<td style="text-align: right">1,484</td>
+					<td style="text-align: right">1,468</td>
+			</tr>
+	</tbody>
 </table>
 <p>KPipe&rsquo;s allocation comes from three places: <code>Result&lt;T&gt;</code> wrappers (sealed type, allocated per record),
 the per-record pipeline builder hand-off, and a fresh virtual thread per record. The first two are

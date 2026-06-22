@@ -4,29 +4,29 @@
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Supercharge SageMaker with Embeddings - Mariano Gonzalez</title><meta name="viewport" content="width=device-width, initial-scale=1">
 	
-  <meta itemprop="name" content="Supercharge SageMaker with Embeddings">
-  <meta itemprop="description" content="Integrate SageMaker with a vector database">
-  <meta itemprop="datePublished" content="2023-05-13T15:50:53-05:00">
-  <meta itemprop="dateModified" content="2023-05-13T15:50:53-05:00">
-  <meta itemprop="wordCount" content="600">
-  <meta itemprop="keywords" content="Sagemaker,Langchain,Deep Lake,Aws,Activeloop"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-3/">
-  <meta property="og:site_name" content="Mariano Gonzalez">
-  <meta property="og:title" content="Supercharge SageMaker with Embeddings">
-  <meta property="og:description" content="Integrate SageMaker with a vector database">
-  <meta property="og:locale" content="en_us">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2023-05-13T15:50:53-05:00">
-    <meta property="article:modified_time" content="2023-05-13T15:50:53-05:00">
-    <meta property="article:tag" content="Sagemaker">
-    <meta property="article:tag" content="Langchain">
-    <meta property="article:tag" content="Deep Lake">
-    <meta property="article:tag" content="Aws">
-    <meta property="article:tag" content="Activeloop">
+	<meta itemprop="name" content="Supercharge SageMaker with Embeddings">
+	<meta itemprop="description" content="Integrate SageMaker with a vector database">
+	<meta itemprop="datePublished" content="2023-05-13T15:50:53-05:00">
+	<meta itemprop="dateModified" content="2023-05-13T15:50:53-05:00">
+	<meta itemprop="wordCount" content="600">
+	<meta itemprop="keywords" content="Sagemaker,Langchain,Deep Lake,Aws,Activeloop"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-3/">
+	<meta property="og:site_name" content="Mariano Gonzalez">
+	<meta property="og:title" content="Supercharge SageMaker with Embeddings">
+	<meta property="og:description" content="Integrate SageMaker with a vector database">
+	<meta property="og:locale" content="en_us">
+	<meta property="og:type" content="article">
+		<meta property="article:section" content="posts">
+		<meta property="article:published_time" content="2023-05-13T15:50:53-05:00">
+		<meta property="article:modified_time" content="2023-05-13T15:50:53-05:00">
+		<meta property="article:tag" content="Sagemaker">
+		<meta property="article:tag" content="Langchain">
+		<meta property="article:tag" content="Deep Lake">
+		<meta property="article:tag" content="Aws">
+		<meta property="article:tag" content="Activeloop">
 
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Supercharge SageMaker with Embeddings">
-  <meta name="twitter:description" content="Integrate SageMaker with a vector database">
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:title" content="Supercharge SageMaker with Embeddings">
+	<meta name="twitter:description" content="Integrate SageMaker with a vector database">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css" />
@@ -221,45 +221,45 @@ platform <a href="https://app.activeloop.ai/">here</a></p>
 </figure><p>The Deep Lake dataset serving as a VectorStore has 4 tensors including the embedding, its ids, metadata including the
 filename of the text, and the text itself. A preview of the dataset would look something like this:</p>
 <table>
-  <thead>
-      <tr>
-          <th>tensor</th>
-          <th>htype</th>
-          <th>shape</th>
-          <th>dtype</th>
-          <th>compression</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>embedding</td>
-          <td>generic</td>
-          <td>(23156, 1536)</td>
-          <td>float32</td>
-          <td>None</td>
-      </tr>
-      <tr>
-          <td>ids</td>
-          <td>text</td>
-          <td>(23156, 1)</td>
-          <td>str</td>
-          <td>None</td>
-      </tr>
-      <tr>
-          <td>metadata</td>
-          <td>json</td>
-          <td>(23156, 1)</td>
-          <td>str</td>
-          <td>None</td>
-      </tr>
-      <tr>
-          <td>text</td>
-          <td>text</td>
-          <td>(23156, 1)</td>
-          <td>str</td>
-          <td>None</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>tensor</th>
+					<th>htype</th>
+					<th>shape</th>
+					<th>dtype</th>
+					<th>compression</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>embedding</td>
+					<td>generic</td>
+					<td>(23156, 1536)</td>
+					<td>float32</td>
+					<td>None</td>
+			</tr>
+			<tr>
+					<td>ids</td>
+					<td>text</td>
+					<td>(23156, 1)</td>
+					<td>str</td>
+					<td>None</td>
+			</tr>
+			<tr>
+					<td>metadata</td>
+					<td>json</td>
+					<td>(23156, 1)</td>
+					<td>str</td>
+					<td>None</td>
+			</tr>
+			<tr>
+					<td>text</td>
+					<td>text</td>
+					<td>(23156, 1)</td>
+					<td>str</td>
+					<td>None</td>
+			</tr>
+	</tbody>
 </table>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"

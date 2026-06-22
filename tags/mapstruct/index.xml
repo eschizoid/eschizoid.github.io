@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
-		<title>Dsl on Mariano Gonzalez</title>
-		<link>https://mariano-gonzalez.com/tags/dsl/</link>
-		<description>Recent content in Dsl on Mariano Gonzalez</description>
+		<title>Mapstruct on Mariano Gonzalez</title>
+		<link>https://mariano-gonzalez.com/tags/mapstruct/</link>
+		<description>Recent content in Mapstruct on Mariano Gonzalez</description>
 		<generator>Hugo</generator>
 		<language>en-us</language>
 		
@@ -14,20 +14,13 @@
 		
 			<lastBuildDate>Sun, 21 Jun 2026 00:00:00 +0000</lastBuildDate>
 		
-			<atom:link href="https://mariano-gonzalez.com/tags/dsl/index.xml" rel="self" type="application/rss+xml" />
+			<atom:link href="https://mariano-gonzalez.com/tags/mapstruct/index.xml" rel="self" type="application/rss+xml" />
 			<item>
 				<title>It is 2026. Why are your object mappings still strings?</title>
 				<link>https://mariano-gonzalez.com/posts/post-7/</link>
 				<pubDate>Sun, 21 Jun 2026 00:00:00 +0000</pubDate>
 				<guid>https://mariano-gonzalez.com/posts/post-7/</guid>
 				<description>&lt;h2 id=&#34;the-setup&#34;&gt;The setup&lt;/h2&gt;&#xA;&lt;p&gt;The most common way to map one Java object to another still describes every field with a pair of&#xA;unchecked string literals: &lt;code&gt;@Mapping(source = &amp;quot;customerName&amp;quot;, target = &amp;quot;fullName&amp;quot;)&lt;/code&gt;. The field names&#xA;your whole mapping turns on are text the compiler never reads.&lt;/p&gt;&#xA;&lt;p&gt;MapStruct earned its place. Ten years, a huge adopter base, a bug list that converged long ago, and&#xA;it generates genuinely fast code; I reach for it too. That string is just the one piece of its 2014&#xA;design that aged badly.&lt;/p&gt;</description>
-			</item>
-			<item>
-				<title>From a Monocle port to one fluent type: how Telescope happened</title>
-				<link>https://mariano-gonzalez.com/posts/post-6/</link>
-				<pubDate>Sat, 30 May 2026 00:00:00 +0000</pubDate>
-				<guid>https://mariano-gonzalez.com/posts/post-6/</guid>
-				<description>&lt;p&gt;Telescope is a Java deep-copy DSL for records and POJOs. You build a path through an immutable&#xA;graph, then read it, write it, update it, traverse it, convert it, or thread an effect through it.&#xA;No hand-written copy constructors. No mention of &lt;code&gt;Iso&lt;/code&gt;, &lt;code&gt;Lens&lt;/code&gt;, &lt;code&gt;Prism&lt;/code&gt;, &lt;code&gt;Affine&lt;/code&gt;, or &lt;code&gt;Traversal&lt;/code&gt;&#xA;anywhere in your code. The end-state is one method-ref chain on the runtime DSL, or one fluent&#xA;chain on the generated navigator. Both bottom out at the same value:&lt;/p&gt;</description>
 			</item>
 	</channel>
 </rss>

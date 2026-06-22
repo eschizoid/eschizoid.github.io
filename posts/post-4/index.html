@@ -4,30 +4,30 @@
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Kafka consumers get messy fast. KPipe is a simpler way to structure them. - Mariano Gonzalez</title><meta name="viewport" content="width=device-width, initial-scale=1">
 	
-  <meta itemprop="name" content="Kafka consumers get messy fast. KPipe is a simpler way to structure them.">
-  <meta itemprop="description" content="Modern Java Kafka consumer library: virtual threads, composable pipelines, predictable consumers.">
-  <meta itemprop="datePublished" content="2026-04-12T00:00:00+00:00">
-  <meta itemprop="dateModified" content="2026-04-12T00:00:00+00:00">
-  <meta itemprop="wordCount" content="1194">
-  <meta itemprop="keywords" content="Kafka,Java,Virtual-Threads,Event-Driven,Stream-Processing,Apache-Kafka"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-4/">
-  <meta property="og:site_name" content="Mariano Gonzalez">
-  <meta property="og:title" content="Kafka consumers get messy fast. KPipe is a simpler way to structure them.">
-  <meta property="og:description" content="Modern Java Kafka consumer library: virtual threads, composable pipelines, predictable consumers.">
-  <meta property="og:locale" content="en_us">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2026-04-12T00:00:00+00:00">
-    <meta property="article:modified_time" content="2026-04-12T00:00:00+00:00">
-    <meta property="article:tag" content="Kafka">
-    <meta property="article:tag" content="Java">
-    <meta property="article:tag" content="Virtual-Threads">
-    <meta property="article:tag" content="Event-Driven">
-    <meta property="article:tag" content="Stream-Processing">
-    <meta property="article:tag" content="Apache-Kafka">
+	<meta itemprop="name" content="Kafka consumers get messy fast. KPipe is a simpler way to structure them.">
+	<meta itemprop="description" content="Modern Java Kafka consumer library: virtual threads, composable pipelines, predictable consumers.">
+	<meta itemprop="datePublished" content="2026-04-12T00:00:00+00:00">
+	<meta itemprop="dateModified" content="2026-04-12T00:00:00+00:00">
+	<meta itemprop="wordCount" content="1194">
+	<meta itemprop="keywords" content="Kafka,Java,Virtual-Threads,Event-Driven,Stream-Processing,Apache-Kafka"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-4/">
+	<meta property="og:site_name" content="Mariano Gonzalez">
+	<meta property="og:title" content="Kafka consumers get messy fast. KPipe is a simpler way to structure them.">
+	<meta property="og:description" content="Modern Java Kafka consumer library: virtual threads, composable pipelines, predictable consumers.">
+	<meta property="og:locale" content="en_us">
+	<meta property="og:type" content="article">
+		<meta property="article:section" content="posts">
+		<meta property="article:published_time" content="2026-04-12T00:00:00+00:00">
+		<meta property="article:modified_time" content="2026-04-12T00:00:00+00:00">
+		<meta property="article:tag" content="Kafka">
+		<meta property="article:tag" content="Java">
+		<meta property="article:tag" content="Virtual-Threads">
+		<meta property="article:tag" content="Event-Driven">
+		<meta property="article:tag" content="Stream-Processing">
+		<meta property="article:tag" content="Apache-Kafka">
 
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Kafka consumers get messy fast. KPipe is a simpler way to structure them.">
-  <meta name="twitter:description" content="Modern Java Kafka consumer library: virtual threads, composable pipelines, predictable consumers.">
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:title" content="Kafka consumers get messy fast. KPipe is a simpler way to structure them.">
+	<meta name="twitter:description" content="Modern Java Kafka consumer library: virtual threads, composable pipelines, predictable consumers.">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css" />
@@ -155,75 +155,75 @@ DLQ, backpressure, metrics, tracing, circuit breaker, graceful shutdown) so the 
 <h2 id="kpipe-vs-spring-kafka">KPipe vs Spring Kafka</h2>
 <p>This is the comparison most people actually need.</p>
 <table>
-  <thead>
-      <tr>
-          <th>Concern</th>
-          <th>Spring Kafka</th>
-          <th>KPipe</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><strong>Container</strong></td>
-          <td>Spring required</td>
-          <td>None: <code>kafka-clients</code> + Java 25</td>
-      </tr>
-      <tr>
-          <td><strong>Programming model</strong></td>
-          <td><code>@KafkaListener</code> on a bean method</td>
-          <td><code>Stream&lt;T&gt;</code> fluent pipeline; <code>UnaryOperator&lt;T&gt;</code> per step</td>
-      </tr>
-      <tr>
-          <td><strong>Concurrency</strong></td>
-          <td><code>concurrency=N</code> per listener (one thread per partition)</td>
-          <td>Virtual thread per record, by default</td>
-      </tr>
-      <tr>
-          <td><strong>Error semantics</strong></td>
-          <td><code>ErrorHandler</code>, exceptions bubble out</td>
-          <td>Sealed <code>Result&lt;T&gt;</code> (Passed/Filtered/Failed)</td>
-      </tr>
-      <tr>
-          <td><strong>Retries</strong></td>
-          <td><code>@RetryableTopic</code> or <code>DefaultErrorHandler</code></td>
-          <td><code>.withRetry(maxRetries, backoff)</code></td>
-      </tr>
-      <tr>
-          <td><strong>DLQ</strong></td>
-          <td><code>DeadLetterPublishingRecoverer</code></td>
-          <td><code>.withDeadLetterTopic(&quot;events-dlq&quot;)</code></td>
-      </tr>
-      <tr>
-          <td><strong>Backpressure</strong></td>
-          <td>Manual pause/resume from the listener</td>
-          <td><code>.withBackpressure()</code> with hysteresis (in-flight or lag)</td>
-      </tr>
-      <tr>
-          <td><strong>Tracing</strong></td>
-          <td>Spring Cloud Sleuth / Micrometer Tracing</td>
-          <td><code>kpipe-tracing-otel</code>, W3C propagation via Kafka headers</td>
-      </tr>
-      <tr>
-          <td><strong>Schema Registry</strong></td>
-          <td>Confluent client via Spring auto-config</td>
-          <td><code>kpipe-schema-registry-confluent</code>, plain HTTP client</td>
-      </tr>
-      <tr>
-          <td><strong>Testing</strong></td>
-          <td><code>EmbeddedKafka</code> + Spring context</td>
-          <td>Testcontainers; <code>kpipe-test</code> (no Kafka) on the roadmap</td>
-      </tr>
-      <tr>
-          <td><strong>Health checks</strong></td>
-          <td>Spring Boot Actuator</td>
-          <td><code>HttpHealthServer.fromEnv(...)</code> in <code>kpipe-consumer</code></td>
-      </tr>
-      <tr>
-          <td><strong>Java floor</strong></td>
-          <td>17</td>
-          <td>25</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Concern</th>
+					<th>Spring Kafka</th>
+					<th>KPipe</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>Container</strong></td>
+					<td>Spring required</td>
+					<td>None: <code>kafka-clients</code> + Java 25</td>
+			</tr>
+			<tr>
+					<td><strong>Programming model</strong></td>
+					<td><code>@KafkaListener</code> on a bean method</td>
+					<td><code>Stream&lt;T&gt;</code> fluent pipeline; <code>UnaryOperator&lt;T&gt;</code> per step</td>
+			</tr>
+			<tr>
+					<td><strong>Concurrency</strong></td>
+					<td><code>concurrency=N</code> per listener (one thread per partition)</td>
+					<td>Virtual thread per record, by default</td>
+			</tr>
+			<tr>
+					<td><strong>Error semantics</strong></td>
+					<td><code>ErrorHandler</code>, exceptions bubble out</td>
+					<td>Sealed <code>Result&lt;T&gt;</code> (Passed/Filtered/Failed)</td>
+			</tr>
+			<tr>
+					<td><strong>Retries</strong></td>
+					<td><code>@RetryableTopic</code> or <code>DefaultErrorHandler</code></td>
+					<td><code>.withRetry(maxRetries, backoff)</code></td>
+			</tr>
+			<tr>
+					<td><strong>DLQ</strong></td>
+					<td><code>DeadLetterPublishingRecoverer</code></td>
+					<td><code>.withDeadLetterTopic(&quot;events-dlq&quot;)</code></td>
+			</tr>
+			<tr>
+					<td><strong>Backpressure</strong></td>
+					<td>Manual pause/resume from the listener</td>
+					<td><code>.withBackpressure()</code> with hysteresis (in-flight or lag)</td>
+			</tr>
+			<tr>
+					<td><strong>Tracing</strong></td>
+					<td>Spring Cloud Sleuth / Micrometer Tracing</td>
+					<td><code>kpipe-tracing-otel</code>, W3C propagation via Kafka headers</td>
+			</tr>
+			<tr>
+					<td><strong>Schema Registry</strong></td>
+					<td>Confluent client via Spring auto-config</td>
+					<td><code>kpipe-schema-registry-confluent</code>, plain HTTP client</td>
+			</tr>
+			<tr>
+					<td><strong>Testing</strong></td>
+					<td><code>EmbeddedKafka</code> + Spring context</td>
+					<td>Testcontainers; <code>kpipe-test</code> (no Kafka) on the roadmap</td>
+			</tr>
+			<tr>
+					<td><strong>Health checks</strong></td>
+					<td>Spring Boot Actuator</td>
+					<td><code>HttpHealthServer.fromEnv(...)</code> in <code>kpipe-consumer</code></td>
+			</tr>
+			<tr>
+					<td><strong>Java floor</strong></td>
+					<td>17</td>
+					<td>25</td>
+			</tr>
+	</tbody>
 </table>
 <p><strong>Pick Spring Kafka when</strong> the rest of the app is Spring, the team already has Spring muscle memory, and
 Actuator / Sleuth integration is load-bearing.</p>
@@ -355,62 +355,62 @@ notes in the release; the win is no <code>since=&quot;...&quot;</code> rot.</p>
 <h2 id="modules">Modules</h2>
 <p>12 published artifacts on Maven Central. Pull what you need:</p>
 <table>
-  <thead>
-      <tr>
-          <th>Module</th>
-          <th>What it gives you</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><code>kpipe-api</code></td>
-          <td>Fluent facade: <code>KPipe</code>, <code>Stream&lt;T&gt;</code>, <code>Sink&lt;T&gt;</code>, <code>Handle</code></td>
-      </tr>
-      <tr>
-          <td><code>kpipe-bom</code></td>
-          <td>Version-pinning BOM</td>
-      </tr>
-      <tr>
-          <td><code>kpipe-core</code></td>
-          <td>Pipeline machinery: <code>MessageProcessorRegistry</code>, <code>MessageFormat</code>, <code>Operators</code>, <code>Result&lt;T&gt;</code></td>
-      </tr>
-      <tr>
-          <td><code>kpipe-consumer</code></td>
-          <td><code>KPipeConsumer</code>, backpressure, circuit breaker, offset manager, health server</td>
-      </tr>
-      <tr>
-          <td><code>kpipe-producer</code></td>
-          <td>Kafka producer wrapper, DLQ producer, <code>Tracer</code> SPI</td>
-      </tr>
-      <tr>
-          <td><code>kpipe-metrics</code></td>
-          <td>Metrics interfaces + log-based reporters (no OTel on classpath)</td>
-      </tr>
-      <tr>
-          <td><code>kpipe-metrics-otel</code></td>
-          <td>OpenTelemetry-backed metrics (opt-in)</td>
-      </tr>
-      <tr>
-          <td><code>kpipe-tracing-otel</code></td>
-          <td>W3C trace context propagation (opt-in)</td>
-      </tr>
-      <tr>
-          <td><code>kpipe-schema-registry-confluent</code></td>
-          <td>Confluent Schema Registry client (opt-in)</td>
-      </tr>
-      <tr>
-          <td><code>kpipe-format-json</code></td>
-          <td><code>JsonFormat</code>, <code>JsonConsoleSink</code></td>
-      </tr>
-      <tr>
-          <td><code>kpipe-format-avro</code></td>
-          <td><code>AvroFormat</code>, <code>AvroSchemaCatalog</code>, <code>AvroConsoleSink</code></td>
-      </tr>
-      <tr>
-          <td><code>kpipe-format-protobuf</code></td>
-          <td><code>ProtobufFormat</code>, <code>ProtobufDescriptorCatalog</code>, <code>ProtobufConsoleSink</code></td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Module</th>
+					<th>What it gives you</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>kpipe-api</code></td>
+					<td>Fluent facade: <code>KPipe</code>, <code>Stream&lt;T&gt;</code>, <code>Sink&lt;T&gt;</code>, <code>Handle</code></td>
+			</tr>
+			<tr>
+					<td><code>kpipe-bom</code></td>
+					<td>Version-pinning BOM</td>
+			</tr>
+			<tr>
+					<td><code>kpipe-core</code></td>
+					<td>Pipeline machinery: <code>MessageProcessorRegistry</code>, <code>MessageFormat</code>, <code>Operators</code>, <code>Result&lt;T&gt;</code></td>
+			</tr>
+			<tr>
+					<td><code>kpipe-consumer</code></td>
+					<td><code>KPipeConsumer</code>, backpressure, circuit breaker, offset manager, health server</td>
+			</tr>
+			<tr>
+					<td><code>kpipe-producer</code></td>
+					<td>Kafka producer wrapper, DLQ producer, <code>Tracer</code> SPI</td>
+			</tr>
+			<tr>
+					<td><code>kpipe-metrics</code></td>
+					<td>Metrics interfaces + log-based reporters (no OTel on classpath)</td>
+			</tr>
+			<tr>
+					<td><code>kpipe-metrics-otel</code></td>
+					<td>OpenTelemetry-backed metrics (opt-in)</td>
+			</tr>
+			<tr>
+					<td><code>kpipe-tracing-otel</code></td>
+					<td>W3C trace context propagation (opt-in)</td>
+			</tr>
+			<tr>
+					<td><code>kpipe-schema-registry-confluent</code></td>
+					<td>Confluent Schema Registry client (opt-in)</td>
+			</tr>
+			<tr>
+					<td><code>kpipe-format-json</code></td>
+					<td><code>JsonFormat</code>, <code>JsonConsoleSink</code></td>
+			</tr>
+			<tr>
+					<td><code>kpipe-format-avro</code></td>
+					<td><code>AvroFormat</code>, <code>AvroSchemaCatalog</code>, <code>AvroConsoleSink</code></td>
+			</tr>
+			<tr>
+					<td><code>kpipe-format-protobuf</code></td>
+					<td><code>ProtobufFormat</code>, <code>ProtobufDescriptorCatalog</code>, <code>ProtobufConsoleSink</code></td>
+			</tr>
+	</tbody>
 </table>
 <hr>
 <h2 id="closing">Closing</h2>

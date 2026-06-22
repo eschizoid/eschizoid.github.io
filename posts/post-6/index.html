@@ -4,30 +4,30 @@
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>From a Monocle port to one fluent type: how Telescope happened - Mariano Gonzalez</title><meta name="viewport" content="width=device-width, initial-scale=1">
 	
-  <meta itemprop="name" content="From a Monocle port to one fluent type: how Telescope happened">
-  <meta itemprop="description" content="Telescope started as a converter registry, drifted into an academic port of Scala Monocle&#39;s optic lattice, and turned — through five rewrites — into a single-type Java DSL with compile-time codegen, a generated Path navigator, and a benchmark suite that says it pays. The story of getting category theory to disappear.">
-  <meta itemprop="datePublished" content="2026-05-30T00:00:00+00:00">
-  <meta itemprop="dateModified" content="2026-05-30T00:00:00+00:00">
-  <meta itemprop="wordCount" content="2313">
-  <meta itemprop="keywords" content="Java,Dsl,Optics,Codegen,Records,Jmh"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-6/">
-  <meta property="og:site_name" content="Mariano Gonzalez">
-  <meta property="og:title" content="From a Monocle port to one fluent type: how Telescope happened">
-  <meta property="og:description" content="Telescope started as a converter registry, drifted into an academic port of Scala Monocle&#39;s optic lattice, and turned — through five rewrites — into a single-type Java DSL with compile-time codegen, a generated Path navigator, and a benchmark suite that says it pays. The story of getting category theory to disappear.">
-  <meta property="og:locale" content="en_us">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2026-05-30T00:00:00+00:00">
-    <meta property="article:modified_time" content="2026-05-30T00:00:00+00:00">
-    <meta property="article:tag" content="Java">
-    <meta property="article:tag" content="Dsl">
-    <meta property="article:tag" content="Optics">
-    <meta property="article:tag" content="Codegen">
-    <meta property="article:tag" content="Records">
-    <meta property="article:tag" content="Jmh">
+	<meta itemprop="name" content="From a Monocle port to one fluent type: how Telescope happened">
+	<meta itemprop="description" content="Telescope started as a converter registry, drifted into an academic port of Scala Monocle&#39;s optic lattice, and turned — through five rewrites — into a single-type Java DSL with compile-time codegen, a generated Path navigator, and a benchmark suite that says it pays. The story of getting category theory to disappear.">
+	<meta itemprop="datePublished" content="2026-05-30T00:00:00+00:00">
+	<meta itemprop="dateModified" content="2026-05-30T00:00:00+00:00">
+	<meta itemprop="wordCount" content="2313">
+	<meta itemprop="keywords" content="Java,Dsl,Optics,Codegen,Records,Jmh"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-6/">
+	<meta property="og:site_name" content="Mariano Gonzalez">
+	<meta property="og:title" content="From a Monocle port to one fluent type: how Telescope happened">
+	<meta property="og:description" content="Telescope started as a converter registry, drifted into an academic port of Scala Monocle&#39;s optic lattice, and turned — through five rewrites — into a single-type Java DSL with compile-time codegen, a generated Path navigator, and a benchmark suite that says it pays. The story of getting category theory to disappear.">
+	<meta property="og:locale" content="en_us">
+	<meta property="og:type" content="article">
+		<meta property="article:section" content="posts">
+		<meta property="article:published_time" content="2026-05-30T00:00:00+00:00">
+		<meta property="article:modified_time" content="2026-05-30T00:00:00+00:00">
+		<meta property="article:tag" content="Java">
+		<meta property="article:tag" content="Dsl">
+		<meta property="article:tag" content="Optics">
+		<meta property="article:tag" content="Codegen">
+		<meta property="article:tag" content="Records">
+		<meta property="article:tag" content="Jmh">
 
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="From a Monocle port to one fluent type: how Telescope happened">
-  <meta name="twitter:description" content="Telescope started as a converter registry, drifted into an academic port of Scala Monocle&#39;s optic lattice, and turned — through five rewrites — into a single-type Java DSL with compile-time codegen, a generated Path navigator, and a benchmark suite that says it pays. The story of getting category theory to disappear.">
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:title" content="From a Monocle port to one fluent type: how Telescope happened">
+	<meta name="twitter:description" content="Telescope started as a converter registry, drifted into an academic port of Scala Monocle&#39;s optic lattice, and turned — through five rewrites — into a single-type Java DSL with compile-time codegen, a generated Path navigator, and a benchmark suite that says it pays. The story of getting category theory to disappear.">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css" />
@@ -148,58 +148,58 @@ already implemented in Haskell <code>lens</code>, Scala Monocle, Arrow Optics, H
 test suite hit lens laws, prism partial round-trips, iso reversibility, and the diamond
 resolution rule for <code>Iso.then(Lens)</code> returning <code>Lens</code>. The composition table:</p>
 <table>
-  <thead>
-      <tr>
-          <th>Outer ↘︎ Inner</th>
-          <th>Lens</th>
-          <th>Prism</th>
-          <th>Iso</th>
-          <th>Affine</th>
-          <th>Traversal</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><strong>Lens</strong></td>
-          <td>Lens</td>
-          <td>Affine</td>
-          <td>Lens</td>
-          <td>Affine</td>
-          <td>Traversal</td>
-      </tr>
-      <tr>
-          <td><strong>Prism</strong></td>
-          <td>Affine</td>
-          <td>Prism</td>
-          <td>Prism</td>
-          <td>Affine</td>
-          <td>Traversal</td>
-      </tr>
-      <tr>
-          <td><strong>Iso</strong></td>
-          <td>Lens</td>
-          <td>Prism</td>
-          <td>Iso</td>
-          <td>Affine</td>
-          <td>Traversal</td>
-      </tr>
-      <tr>
-          <td><strong>Affine</strong></td>
-          <td>Affine</td>
-          <td>Affine</td>
-          <td>Affine</td>
-          <td>Affine</td>
-          <td>Traversal</td>
-      </tr>
-      <tr>
-          <td><strong>Traversal</strong></td>
-          <td>Trav.</td>
-          <td>Trav.</td>
-          <td>Trav.</td>
-          <td>Trav.</td>
-          <td>Traversal</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Outer ↘︎ Inner</th>
+					<th>Lens</th>
+					<th>Prism</th>
+					<th>Iso</th>
+					<th>Affine</th>
+					<th>Traversal</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>Lens</strong></td>
+					<td>Lens</td>
+					<td>Affine</td>
+					<td>Lens</td>
+					<td>Affine</td>
+					<td>Traversal</td>
+			</tr>
+			<tr>
+					<td><strong>Prism</strong></td>
+					<td>Affine</td>
+					<td>Prism</td>
+					<td>Prism</td>
+					<td>Affine</td>
+					<td>Traversal</td>
+			</tr>
+			<tr>
+					<td><strong>Iso</strong></td>
+					<td>Lens</td>
+					<td>Prism</td>
+					<td>Iso</td>
+					<td>Affine</td>
+					<td>Traversal</td>
+			</tr>
+			<tr>
+					<td><strong>Affine</strong></td>
+					<td>Affine</td>
+					<td>Affine</td>
+					<td>Affine</td>
+					<td>Affine</td>
+					<td>Traversal</td>
+			</tr>
+			<tr>
+					<td><strong>Traversal</strong></td>
+					<td>Trav.</td>
+					<td>Trav.</td>
+					<td>Trav.</td>
+					<td>Trav.</td>
+					<td>Traversal</td>
+			</tr>
+	</tbody>
 </table>
 <p>That table is intellectually satisfying. The lattice rules fall out of category theory and the
 laws fall out of the type signatures. As a piece of academic Java, it was perfectly fine. As an
@@ -351,70 +351,70 @@ same way.</p>
 <p>JMH, 3 warmup + 5 measurement iterations, JDK 25, Apple Silicon. Numbers shift between runs;
 the ratios are the part to read.</p>
 <table>
-  <thead>
-      <tr>
-          <th>Benchmark</th>
-          <th style="text-align: right">ns/op</th>
-          <th style="text-align: right">±error</th>
-          <th style="text-align: right">vs hand-copy</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><code>bridgeForwardRead</code></td>
-          <td style="text-align: right">14.9</td>
-          <td style="text-align: right">±0.2</td>
-          <td style="text-align: right">codegen conversion</td>
-      </tr>
-      <tr>
-          <td><code>handRolledBeanCopyUpdate</code></td>
-          <td style="text-align: right">22.2</td>
-          <td style="text-align: right">±0.6</td>
-          <td style="text-align: right">1.0× (bean baseline)</td>
-      </tr>
-      <tr>
-          <td><code>handRolledCopyUpdate</code></td>
-          <td style="text-align: right">26.4</td>
-          <td style="text-align: right">±1.9</td>
-          <td style="text-align: right">record baseline</td>
-      </tr>
-      <tr>
-          <td><code>lensConstantUpdate</code></td>
-          <td style="text-align: right">45.2</td>
-          <td style="text-align: right">±3.4</td>
-          <td style="text-align: right">1.7×</td>
-      </tr>
-      <tr>
-          <td><code>fromBeanForwardRead</code></td>
-          <td style="text-align: right">114.0</td>
-          <td style="text-align: right">±1.7</td>
-          <td style="text-align: right">5.1×</td>
-      </tr>
-      <tr>
-          <td><code>mapperForwardRead</code></td>
-          <td style="text-align: right">135.4</td>
-          <td style="text-align: right">±90.1</td>
-          <td style="text-align: right">record→︎record (noisy)</td>
-      </tr>
-      <tr>
-          <td><code>mapBeanForwardRead</code></td>
-          <td style="text-align: right">142.5</td>
-          <td style="text-align: right">±3.7</td>
-          <td style="text-align: right">6.4×</td>
-      </tr>
-      <tr>
-          <td><code>reflectionFieldUpdate</code></td>
-          <td style="text-align: right">261.6</td>
-          <td style="text-align: right">±15.9</td>
-          <td style="text-align: right">11.8×</td>
-      </tr>
-      <tr>
-          <td><code>ofBeanFieldUpdate</code></td>
-          <td style="text-align: right">488.1</td>
-          <td style="text-align: right">±139.7</td>
-          <td style="text-align: right">22.0×</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Benchmark</th>
+					<th style="text-align: right">ns/op</th>
+					<th style="text-align: right">±error</th>
+					<th style="text-align: right">vs hand-copy</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>bridgeForwardRead</code></td>
+					<td style="text-align: right">14.9</td>
+					<td style="text-align: right">±0.2</td>
+					<td style="text-align: right">codegen conversion</td>
+			</tr>
+			<tr>
+					<td><code>handRolledBeanCopyUpdate</code></td>
+					<td style="text-align: right">22.2</td>
+					<td style="text-align: right">±0.6</td>
+					<td style="text-align: right">1.0× (bean baseline)</td>
+			</tr>
+			<tr>
+					<td><code>handRolledCopyUpdate</code></td>
+					<td style="text-align: right">26.4</td>
+					<td style="text-align: right">±1.9</td>
+					<td style="text-align: right">record baseline</td>
+			</tr>
+			<tr>
+					<td><code>lensConstantUpdate</code></td>
+					<td style="text-align: right">45.2</td>
+					<td style="text-align: right">±3.4</td>
+					<td style="text-align: right">1.7×</td>
+			</tr>
+			<tr>
+					<td><code>fromBeanForwardRead</code></td>
+					<td style="text-align: right">114.0</td>
+					<td style="text-align: right">±1.7</td>
+					<td style="text-align: right">5.1×</td>
+			</tr>
+			<tr>
+					<td><code>mapperForwardRead</code></td>
+					<td style="text-align: right">135.4</td>
+					<td style="text-align: right">±90.1</td>
+					<td style="text-align: right">record→︎record (noisy)</td>
+			</tr>
+			<tr>
+					<td><code>mapBeanForwardRead</code></td>
+					<td style="text-align: right">142.5</td>
+					<td style="text-align: right">±3.7</td>
+					<td style="text-align: right">6.4×</td>
+			</tr>
+			<tr>
+					<td><code>reflectionFieldUpdate</code></td>
+					<td style="text-align: right">261.6</td>
+					<td style="text-align: right">±15.9</td>
+					<td style="text-align: right">11.8×</td>
+			</tr>
+			<tr>
+					<td><code>ofBeanFieldUpdate</code></td>
+					<td style="text-align: right">488.1</td>
+					<td style="text-align: right">±139.7</td>
+					<td style="text-align: right">22.0×</td>
+			</tr>
+	</tbody>
 </table>
 <p>A few things to read out of that:</p>
 <ul>
