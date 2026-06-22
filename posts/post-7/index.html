@@ -8,7 +8,7 @@
 	<meta itemprop="description" content="The most common way to map Java objects still describes every field as an unchecked string literal. Telescope makes them compile-checked method references instead: same speed at the codegen tier, a strictly larger surface, and a switch you can make one mapper at a time. The honest comparison with MapStruct, runtime costs included.">
 	<meta itemprop="datePublished" content="2026-06-21T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-06-21T00:00:00+00:00">
-	<meta itemprop="wordCount" content="2966">
+	<meta itemprop="wordCount" content="2974">
 	<meta itemprop="keywords" content="Java,Mapstruct,Object-Mapping,Benchmarks,Dsl"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-7/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="It is 2026. Why are your object mappings still strings?">
@@ -101,13 +101,14 @@
 <p>The most common way to map one Java object to another still describes every field with a pair of
 unchecked string literals: <code>@Mapping(source = &quot;customerName&quot;, target = &quot;fullName&quot;)</code>. The field names
 your whole mapping turns on are text the compiler never reads.</p>
-<p><a href="https://mapstruct.org/">MapStruct</a> earned its place. Ten years, a huge adopter base, a bug list that converged long ago, and
-it generates genuinely fast code; I reach for it too. That string is just the one piece of its 2014
-design that aged badly.</p>
-<p><a href="https://github.com/eschizoid/telescope/">Telescope</a> is the same job rebuilt on a foundation where those field names are method references the
-compiler checks. This post is the honest comparison, including the parts that do not favor telescope:
-the runtime numbers later are not flattering, and I show them anyway. The pitch is narrow and I will
-not pad it. Your next mapper does not have to be a wall of strings.</p>
+<p><a href="https://mapstruct.org/">MapStruct</a> earned its place. Ten years, a huge adopter base, a bug list
+that converged long ago, and it generates genuinely fast code; I reach for it too. That string is
+just the one piece of its 2014 design that aged badly.</p>
+<p><a href="https://github.com/eschizoid/telescope/">Telescope</a> is the same job rebuilt on a foundation where
+those field names are method references the compiler checks. This post is the honest comparison,
+including the parts that do not favor telescope: the runtime numbers later are not flattering, and I
+show them anyway. The pitch is narrow and I will not pad it. Your next mapper does not have to be a
+wall of strings.</p>
 <h2 id="the-scorecard-up-front">The scorecard, up front</h2>
 <p>Two things to hold in your head before the details.</p>
 <p>First, the capability gap, which is the actual reason to look. Most of the comparison is &ldquo;telescope:
@@ -204,8 +205,8 @@ the compiler, and in MapStruct they are not.</p>
 <p>Everything else is downstream of that one decision. Once the path is a typed reference instead of a
 string, the compiler can follow it deeper (nested updates), the library can run it backward off the
 same definition (handy on the roughly one mapper in ten that actually needs the inverse, though that
-is a bonus, not the reason), and the rows compose into validation and effects. But the reason to
-switch fits on one line: stop writing your mappings as strings.</p>
+is a bonus, not the reason), and those references compose into validation and effects. But the
+reason to switch fits on one line: stop writing your mappings as strings.</p>
 <h2 id="the-same-mappers-side-by-side">The same mappers, side by side</h2>
 <p>Take the MapStruct calls you write every day and put the telescope version next to them. They look
 alike on purpose; the difference is what the compiler can see. Every MapStruct row below turns on a
@@ -315,10 +316,11 @@ processor checks every name and type against the real components at compile time
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>renames<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>{<span style="color:#d2a8ff;font-weight:bold">@Rename</span>(source<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;customerName&#34;</span>,<span style="color:#6e7681"> </span>target<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;fullName&#34;</span>)},<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>transforms<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>{<span style="color:#d2a8ff;font-weight:bold">@Transform</span>(field<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;priceCents&#34;</span>,<span style="color:#6e7681"> </span>using<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>CentsToAmount.class)})<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#ff7b72">record</span> <span style="color:#f0883e;font-weight:bold">Order</span>(String<span style="color:#6e7681"> </span>customerName,<span style="color:#6e7681"> </span><span style="color:#ff7b72">long</span><span style="color:#6e7681"> </span>priceCents)<span style="color:#6e7681"> </span>{}</span></span></code></pre>
-</figure><p>Then two attributes MapStruct has no equal for. First, <code>lenient</code>. <code>@Bridge</code> is a strict bijection by
-default, so a round trip cannot silently drop a field, which is the wrong default for the
-small-DTO-into-large-entity shape, a seven-field request mapping into a hundred-field entity where
-the other ninety-three are meant to stay at their defaults. One flag turns the check off:</p>
+</figure><p>Then two attributes MapStruct has no equal for. First, <code>lenient</code>. By default <code>@Bridge</code> insists that
+every field on both sides line up, so a round trip cannot silently lose one. That is the right
+default most of the time and the wrong one for the small-DTO-into-large-entity shape: a seven-field
+request mapping into a hundred-field entity where the other ninety-three are meant to stay at their
+defaults. One flag turns the check off:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#d2a8ff;font-weight:bold">@Bridge</span>(value<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>GovtIdData.class,<span style="color:#6e7681"> </span>lenient<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#79c0ff">true</span>)<span style="color:#6e7681">
@@ -362,8 +364,8 @@ and report every failure in one pass&rdquo; is a primitive:</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// both bad fields surface at once:</span><span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#ff7b72;font-weight:bold">//</span><span style="color:#6e7681"> </span>Invalid<span style="color:#ff7b72;font-weight:bold">[</span>email:<span style="color:#6e7681"> </span>missing<span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#39;@&#39;</span><span style="color:#6e7681"> </span>in<span style="color:#6e7681"> </span><span style="color:#f85149">&#39;</span>not<span style="color:#ff7b72;font-weight:bold">-</span>an<span style="color:#ff7b72;font-weight:bold">-</span>email<span style="color:#f85149">&#39;</span>,<span style="color:#6e7681"> </span>age:<span style="color:#6e7681"> </span>out<span style="color:#6e7681"> </span>of<span style="color:#6e7681"> </span>range:<span style="color:#6e7681"> </span>200<span style="color:#ff7b72;font-weight:bold">]</span></span></span></code></pre>
-</figure><p><code>combine</code> accumulates: both checks run, both errors survive. That is the applicative behaviour, where
-<code>Either</code> would stop at the first failure. <code>combineAll</code> does the batch version across a list of rows.
+</figure><p><code>combine</code> accumulates: both checks run, and both errors survive, where <code>Either</code> would stop at the
+first failure. <code>combineAll</code> does the batch version across a list of rows.
 This is the &ldquo;switch your mapper over and get validation for free&rdquo; line, and it holds because it is
 shipped API, not a roadmap promise.</p>
 <h2 id="the-performance-conversation-honestly">The performance conversation, honestly</h2>
