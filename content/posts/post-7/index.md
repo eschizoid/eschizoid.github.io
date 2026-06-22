@@ -260,7 +260,7 @@ will not let you. (`@Focus` is the sibling that generates the typed navigators, 
 
 ## Mapping is one verb, not the whole library
 
-The deeper difference: MapStruct maps, and that is the noun, the verb, and the ceiling. Telescope
+The deeper difference: MapStruct maps, and that is the whole of it. Telescope
 walks an immutable object graph, and mapping is one thing you do once you hold a path. The same path
 that converts can read a nested value, update it, traverse a collection under it, or thread an effect
 through it.
@@ -296,9 +296,9 @@ Validated<String, Account> account =
 ```
 
 `combine` accumulates: both checks run, and both errors survive, where `Either` would stop at the
-first failure. `combineAll` does the batch version across a list of rows.
-This is the "switch your mapper over and get validation for free" line, and it holds because it is
-shipped API, not a roadmap promise.
+first failure. `combineAll` does the batch version across a list of rows. This is the "switch your
+mapper over and get validation for free" line, and it holds because it is shipped API, not a roadmap
+promise.
 
 ## The performance conversation, honestly
 
