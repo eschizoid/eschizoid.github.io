@@ -77,12 +77,12 @@ test suite hit lens laws, prism partial round-trips, iso reversibility, and the 
 resolution rule for `Iso.then(Lens)` returning `Lens`. The composition table:
 
 | Outer ↘︎ Inner | Lens   | Prism  | Iso    | Affine | Traversal |
-| ------------- | ------ | ------ | ------ | ------ | --------- |
-| **Lens**      | Lens   | Affine | Lens   | Affine | Traversal |
-| **Prism**     | Affine | Prism  | Prism  | Affine | Traversal |
-| **Iso**       | Lens   | Prism  | Iso    | Affine | Traversal |
-| **Affine**    | Affine | Affine | Affine | Affine | Traversal |
-| **Traversal** | Trav.  | Trav.  | Trav.  | Trav.  | Traversal |
+|----------------|--------|--------|--------|--------|-----------|
+| **Lens**       | Lens   | Affine | Lens   | Affine | Traversal |
+| **Prism**      | Affine | Prism  | Prism  | Affine | Traversal |
+| **Iso**        | Lens   | Prism  | Iso    | Affine | Traversal |
+| **Affine**     | Affine | Affine | Affine | Affine | Traversal |
+| **Traversal**  | Trav.  | Trav.  | Trav.  | Trav.  | Traversal |
 
 That table is intellectually satisfying. The lattice rules fall out of category theory and the
 laws fall out of the type signatures. As a piece of academic Java, it was perfectly fine. As an
@@ -268,17 +268,17 @@ same way.
 JMH, 3 warmup + 5 measurement iterations, JDK 25, Apple Silicon. Numbers shift between runs;
 the ratios are the part to read.
 
-| Benchmark                  | ns/op | ±error |             vs hand-copy |
-| -------------------------- | ----: | -----: | -----------------------: |
-| `bridgeForwardRead`        |  14.9 |   ±0.2 |       codegen conversion |
-| `handRolledBeanCopyUpdate` |  22.2 |   ±0.6 |     1.0× (bean baseline) |
-| `handRolledCopyUpdate`     |  26.4 |   ±1.9 |          record baseline |
-| `lensConstantUpdate`       |  45.2 |   ±3.4 |                     1.7× |
-| `fromBeanForwardRead`      | 114.0 |   ±1.7 |                     5.1× |
-| `mapperForwardRead`        | 135.4 |  ±90.1 |    record→︎record (noisy) |
-| `mapBeanForwardRead`       | 142.5 |   ±3.7 |                     6.4× |
-| `reflectionFieldUpdate`    | 261.6 |  ±15.9 |                    11.8× |
-| `ofBeanFieldUpdate`        | 488.1 | ±139.7 |                    22.0× |
+| Benchmark                  | ns/op | ±error |           vs hand-copy |
+|----------------------------|------:|-------:|-----------------------:|
+| `bridgeForwardRead`        |  14.9 |   ±0.2 |     codegen conversion |
+| `handRolledBeanCopyUpdate` |  22.2 |   ±0.6 |   1.0× (bean baseline) |
+| `handRolledCopyUpdate`     |  26.4 |   ±1.9 |        record baseline |
+| `lensConstantUpdate`       |  45.2 |   ±3.4 |                   1.7× |
+| `fromBeanForwardRead`      | 114.0 |   ±1.7 |                   5.1× |
+| `mapperForwardRead`        | 135.4 |  ±90.1 | record→︎record (noisy) |
+| `mapBeanForwardRead`       | 142.5 |   ±3.7 |                   6.4× |
+| `reflectionFieldUpdate`    | 261.6 |  ±15.9 |                  11.8× |
+| `ofBeanFieldUpdate`        | 488.1 | ±139.7 |                  22.0× |
 
 A few things to read out of that:
 
