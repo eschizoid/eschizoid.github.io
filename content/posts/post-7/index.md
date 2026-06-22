@@ -14,6 +14,8 @@ tags:
 draft: false
 ---
 
+![telescope](logo.png)
+
 ## The setup
 
 The most common way to map one Java object to another still describes every field with a pair of
