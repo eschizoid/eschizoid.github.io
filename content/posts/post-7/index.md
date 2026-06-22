@@ -55,7 +55,7 @@ instead of 2014, not me stacking the deck.
 | Maturity and ecosystem                                   | 1.0       | a decade                    |
 
 Second, performance in one breath: at the codegen tier it is a tie at realistic depth, and the
-reflective runtime path trades speed for needing no build setup. That is the whole perf story, and
+reflective runtime path trades speed for zero build setup. That is the whole perf story, and
 the section below shows the numbers instead of asking you to take my word. The rest of the post is
 what each row means at the call site.
 
@@ -115,7 +115,7 @@ alike on purpose; the difference is what the compiler can see. Every MapStruct r
 string literal; every telescope row turns on a method reference. (telescope rows are static-imported:
 `to`, `via`, `constant`, `compute`, so the call site reads as a list.)
 
-Rename a couple of fields, and the inverse:
+Rename a couple of fields, and get the inverse for free:
 
 ```java
 // MapStruct: and you still write toEntity() by hand for the way back
@@ -239,7 +239,7 @@ processor checks every name and type against the real components at compile time
 record Order(String customerName, long priceCents) {}
 ```
 
-Then two attributes MapStruct has no equal for. First, `lenient`. By default `@Bridge` insists that
+Then two attributes MapStruct cannot match. First, `lenient`. By default `@Bridge` insists that
 every field on both sides line up, so a round trip cannot silently lose one. That is the right
 default most of the time and the wrong one for the small-DTO-into-large-entity shape: a seven-field
 request mapping into a hundred-field entity where the other ninety-three are meant to stay at their
@@ -349,9 +349,10 @@ record's single canonical-constructor call.
 That 8× buys something MapStruct cannot do at all: zero setup. No annotation processor, no build
 wiring. Hand it two classes at runtime, and it resolves the mapping on the spot, where MapStruct is
 codegen or nothing. "Telescope is 8× slower" is the misleading way to put it: MapStruct has no
-runtime path at all, and telescope's costs 8× on deep forward. You are paying for a path MapStruct
-does not offer, not losing a race you were both in. When you want the speed back, you put `@Bridge`
-on the type, and you are in the codegen tier at parity: same library, same API, one annotation.
+runtime path at all, and telescope's runtime path costs 8× on deep forward. You are paying for a
+path MapStruct does not offer, not losing a race you were both in. When you want the speed back, you
+put `@Bridge` on the type, and you are in the codegen tier at parity: same library, same API, one
+annotation.
 Nothing is given up permanently.
 
 One methodology note, because it is the part those posts skip. Smoke runs lie. An early laptop run
@@ -391,8 +392,8 @@ telescope.
 
 Adopting telescope one mapper at a time only works if the trial is inexpensive, and it is. It does
 not replace MapStruct or fight it; they are independent libraries, so both live in the same module,
-and you reach for whichever per mapper. Use telescope for one conversion, and the MapStruct mappers
-next to it do not notice.
+and you choose between them mapper by mapper. Use telescope for one conversion, and the MapStruct
+mappers next to it do not notice.
 
 If you are on a framework, it slots in the same way MapStruct does. `telescope-spring-boot-starter`
 autoconfigures a registry of your `Mapper<A, B>` beans on Spring Boot 4; `telescope-quarkus` does the
