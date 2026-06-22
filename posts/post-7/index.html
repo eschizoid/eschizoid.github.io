@@ -8,7 +8,7 @@
 	<meta itemprop="description" content="The most common way to map Java objects still describes every field as an unchecked string literal. Telescope makes them compile-checked method references instead: same speed at the codegen tier, a strictly larger surface, and a switch you can make one mapper at a time. The honest comparison with MapStruct, runtime costs included.">
 	<meta itemprop="datePublished" content="2026-06-21T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-06-21T00:00:00+00:00">
-	<meta itemprop="wordCount" content="3004">
+	<meta itemprop="wordCount" content="2986">
 	<meta itemprop="keywords" content="Java,Mapstruct,Object-Mapping,Benchmarks,Dsl"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-7/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="It is 2026. Why are your object mappings still strings?">
@@ -447,8 +447,7 @@ same API, one annotation. Nothing is given up permanently. You pick telescope fo
 surface, and the moment performance matters, you flip on codegen and the gap closes to a rounding
 error.</p>
 <h2 id="where-mapstruct-still-wins-for-now">Where MapStruct still wins, for now</h2>
-<p>Credibility means saying the true thing, so here it is: everything MapStruct beats telescope on is a
-function of time, not design.</p>
+<p>Everything MapStruct beats telescope on comes down to time, not design.</p>
 <p>Maturity is the big one. A decade across thousands of codebases means the edge cases are found and
 the answers are written down, where telescope is at 1.0 and some of those edges are still mine to
 find. The ecosystem is the quieter one: IDE support, a Stack Overflow answer for every question, and
@@ -479,10 +478,10 @@ same through Arc. A <code>Mapper</code> bean injects like any <code>@Mapper(comp
 have. The whole bet is one mapper and one dependency line in a project that keeps working exactly as
 it did.</p>
 <h2 id="closing">Closing</h2>
-<p>I will not say telescope has dethroned MapStruct, because it has not — no production adopters yet,
-and the word would be marketing rather than fact. The claim the receipts do support, I will make
-without flinching: telescope is the better-designed mapping library, it is on Maven Central today,
-and at the codegen tier its strictly larger surface costs you nothing you can measure.</p>
+<p>Telescope is the better-designed mapping library, and I will say so without flinching, because the
+receipts back it: it is on Maven Central today, its codegen benchmarks at parity with MapStruct, and
+its capability surface is strictly larger. The one thing it does not have yet is adopters, which is
+exactly the gap you can help close.</p>
 <p>So here is the ask, and it is small. Add one line:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
