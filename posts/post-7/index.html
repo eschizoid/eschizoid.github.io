@@ -8,7 +8,7 @@
 	<meta itemprop="description" content="The most common way to map Java objects still describes every field as an unchecked string literal. Telescope makes them compile-checked method references instead: same speed at the codegen tier, a strictly larger surface, and a switch you can make one mapper at a time. The honest comparison with MapStruct, runtime costs included.">
 	<meta itemprop="datePublished" content="2026-06-21T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-06-21T00:00:00+00:00">
-	<meta itemprop="wordCount" content="3007">
+	<meta itemprop="wordCount" content="3004">
 	<meta itemprop="keywords" content="Java,Mapstruct,Object-Mapping,Benchmarks,Dsl"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-7/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="It is 2026. Why are your object mappings still strings?">
@@ -337,7 +337,7 @@ depend on the other:</p>
 will not let you. (<code>@Focus</code> is the sibling that generates the typed navigators, like the
 <code>CartDtoTelescope</code> in the nested-target example above, for deep paths.)</p>
 <h2 id="mapping-is-one-verb-not-the-whole-library">Mapping is one verb, not the whole library</h2>
-<p>The deeper difference: MapStruct maps, and that is the noun, the verb, and the ceiling. Telescope
+<p>The deeper difference: MapStruct maps, and that is the whole of it. Telescope
 walks an immutable object graph, and mapping is one thing you do once you hold a path. The same path
 that converts can read a nested value, update it, traverse a collection under it, or thread an effect
 through it.</p>
@@ -366,9 +366,9 @@ and report every failure in one pass&rdquo; is a primitive:</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// both bad fields surface at once:</span><span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#ff7b72;font-weight:bold">//</span><span style="color:#6e7681"> </span>Invalid<span style="color:#ff7b72;font-weight:bold">[</span>email:<span style="color:#6e7681"> </span>missing<span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#39;@&#39;</span><span style="color:#6e7681"> </span>in<span style="color:#6e7681"> </span><span style="color:#f85149">&#39;</span>not<span style="color:#ff7b72;font-weight:bold">-</span>an<span style="color:#ff7b72;font-weight:bold">-</span>email<span style="color:#f85149">&#39;</span>,<span style="color:#6e7681"> </span>age:<span style="color:#6e7681"> </span>out<span style="color:#6e7681"> </span>of<span style="color:#6e7681"> </span>range:<span style="color:#6e7681"> </span>200<span style="color:#ff7b72;font-weight:bold">]</span></span></span></code></pre>
 </figure><p><code>combine</code> accumulates: both checks run, and both errors survive, where <code>Either</code> would stop at the
-first failure. <code>combineAll</code> does the batch version across a list of rows.
-This is the &ldquo;switch your mapper over and get validation for free&rdquo; line, and it holds because it is
-shipped API, not a roadmap promise.</p>
+first failure. <code>combineAll</code> does the batch version across a list of rows. This is the &ldquo;switch your
+mapper over and get validation for free&rdquo; line, and it holds because it is shipped API, not a roadmap
+promise.</p>
 <h2 id="the-performance-conversation-honestly">The performance conversation, honestly</h2>
 <p>This is the section where &ldquo;we beat the incumbent&rdquo; posts tend to quietly cheat, so let me be precise
 about what is being measured.</p>
