@@ -353,9 +353,9 @@ wiring. Hand it two classes at runtime, and it resolves the mapping on the spot,
 codegen or nothing. "Telescope is 8× slower" is the misleading way to put it: MapStruct has no
 runtime path at all, and telescope's costs 8× on deep forward. You are paying for a path MapStruct
 does not offer, not losing a race you were both in. When you want the speed back, you put `@Bridge`
-on the type, and you are in the codegen tier at parity: same library, same API, one annotation. Nothing
-is given up permanently. You pick telescope for the capability surface, and the moment performance
-matters, you flip on codegen and the gap closes to a rounding error.
+on the type, and you are in the codegen tier at parity: same library, same API, one annotation.
+Nothing is given up permanently. You pick telescope for the capability surface, and the moment
+performance matters, you flip on codegen and the gap closes to a rounding error.
 
 ## Where MapStruct still wins, for now
 
@@ -421,6 +421,6 @@ implementation("io.github.eschizoid:telescope-core:1.0.7")
 
 Then the next mapper you would have written as a MapStruct interface, write as one
 `Telescope.mapper(...)` call instead, and leave everything else alone. The repo has the CI benchmark
-matrix and the escape hatches; [that earlier post](https://mariano-gonzalez.com/posts/post-6/) has the story of how the thing
-got built. Rename a field and watch which library catches it at compile time and which one finds out in production, then tell me
-where it falls over. I do not think it will.
+matrix and the escape hatches; [that earlier post](https://mariano-gonzalez.com/posts/post-6/) has
+the story of how the thing got built. Rename a field and watch which library catches it at compile
+time and which one finds out in production, then tell me where it falls over. I do not think it will.
