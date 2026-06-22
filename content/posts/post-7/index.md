@@ -22,11 +22,11 @@ The most common way to map one Java object to another still describes every fiel
 unchecked string literals: `@Mapping(source = "customerName", target = "fullName")`. The field names
 your whole mapping turns on are text the compiler never reads.
 
-MapStruct earned its place. Ten years, a huge adopter base, a bug list that converged long ago, and
+[MapStruct](https://mapstruct.org/) earned its place. Ten years, a huge adopter base, a bug list that converged long ago, and
 it generates genuinely fast code; I reach for it too. That string is just the one piece of its 2014
 design that aged badly.
 
-Telescope is the same job rebuilt on a foundation where those field names are method references the
+[Telescope](https://github.com/eschizoid/telescope/) is the same job rebuilt on a foundation where those field names are method references the
 compiler checks. This post is the honest comparison, including the parts that do not favor telescope:
 the runtime numbers later are not flattering, and I show them anyway. The pitch is narrow and I will
 not pad it. Your next mapper does not have to be a wall of strings.
