@@ -8,7 +8,7 @@
 	<meta itemprop="description" content="The most common way to map Java objects still describes every field as an unchecked string literal. Telescope makes them compile-checked method references instead: same speed at the codegen tier, a strictly larger surface, and a switch you can make one mapper at a time. The honest comparison with MapStruct, runtime costs included.">
 	<meta itemprop="datePublished" content="2026-06-21T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-06-21T00:00:00+00:00">
-	<meta itemprop="wordCount" content="2974">
+	<meta itemprop="wordCount" content="2982">
 	<meta itemprop="keywords" content="Java,Mapstruct,Object-Mapping,Benchmarks,Dsl"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-7/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="It is 2026. Why are your object mappings still strings?">
@@ -98,12 +98,13 @@
     <img src="logo.png" alt="telescope"  />
 </p></p>
 <h2 id="the-setup">The setup</h2>
-<p>The most common way to map one Java object to another still describes every field with a pair of
-unchecked string literals: <code>@Mapping(source = &quot;customerName&quot;, target = &quot;fullName&quot;)</code>. The field names
-your whole mapping turns on are text the compiler never reads.</p>
-<p><a href="https://mapstruct.org/">MapStruct</a> earned its place. Ten years, a huge adopter base, a bug list
-that converged long ago, and it generates genuinely fast code; I reach for it too. That string is
-just the one piece of its 2014 design that aged badly.</p>
+<p>Mapping one Java object to another is routine work in most apps, and
+<a href="https://mapstruct.org/">MapStruct</a>, the standard tool for it, still has you name each field with a
+string: <code>@Mapping(source = &quot;customerName&quot;, target = &quot;fullName&quot;)</code>. Those two names are what the whole
+mapping turns on, and the compiler never reads them.</p>
+<p>MapStruct earned its place. Ten years, a huge adopter base, a bug list that converged long ago, and
+it generates genuinely fast code; I reach for it too. Those strings are just the one piece of its
+2014 design that aged badly.</p>
 <p><a href="https://github.com/eschizoid/telescope/">Telescope</a> is the same job rebuilt on a foundation where
 those field names are method references the compiler checks. This post is the honest comparison,
 including the parts that do not favor telescope: the runtime numbers later are not flattering, and I
@@ -467,9 +468,10 @@ references instead of strings, deep nested updates, validation or effects inside
 hierarchies, multi-source merge, JPA cycles. The codegen tier keeps you at parity, so you are not
 trading speed for any of it.</p>
 <h2 id="trying-it-without-betting-the-codebase">Trying it without betting the codebase</h2>
-<p>The wedge only works if trying telescope is inexpensive, and it is. It does not replace MapStruct or fight
-it; they are independent libraries, so both live in the same module, and you reach for whichever per
-mapper. Adopt telescope for one conversion, and the MapStruct mappers next to it do not notice.</p>
+<p>The wedge only works if trying telescope is inexpensive, and it is. It does not replace MapStruct or
+fight it; they are independent libraries, so both live in the same module, and you reach for
+whichever per mapper. Adopt telescope for one conversion, and the MapStruct mappers next to it do not
+notice.</p>
 <p>If you are on a framework, it slots in the same way MapStruct does. <code>telescope-spring-boot-starter</code>
 autoconfigures a registry of your <code>Mapper&lt;A, B&gt;</code> beans on Spring Boot 4; <code>telescope-quarkus</code> does the
 same through Arc. A <code>Mapper</code> bean injects like any <code>@Mapper(componentModel = &quot;spring&quot;)</code> you already
