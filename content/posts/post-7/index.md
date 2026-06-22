@@ -315,7 +315,7 @@ end up with a headline that does not survive contact with someone else's profile
 Codegen against codegen is a tie at any realistic depth. Both processors emit direct, JIT-inlinable
 calls: method references and constructor invocations, no reflection on the hot path. Here is the
 matrix, run on a dedicated GitHub Actions runner with no competing workload, so the error bands are
-tight (±0.01–0.9 ns) rather than the ±20 ns a laptop hands you:
+tight (±0.01 to 0.9 ns) rather than the ±20 ns a laptop hands you:
 
 | Tier   | Direction     | MapStruct | Telescope `@Bridge` | Ratio |
 |--------|---------------|----------:|--------------------:|------:|
