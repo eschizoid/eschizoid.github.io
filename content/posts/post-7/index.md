@@ -97,7 +97,7 @@ the compiler, and in MapStruct they are not.
 Everything else is downstream of that one decision. Once the path is a typed reference instead of a
 string, the compiler can follow it deeper (nested updates), the library can run it backward off the
 same definition (handy on the roughly one mapper in ten that actually needs the inverse, though that
-is a bonus, not the reason), and the rows compose into validation and effects. But the reason to
+is a bonus, not the reason), and those references compose into validation and effects. But the reason to
 switch fits on one line: stop writing your mappings as strings.
 
 ## The same mappers, side by side
@@ -232,10 +232,11 @@ processor checks every name and type against the real components at compile time
 record Order(String customerName, long priceCents) {}
 ```
 
-Then two attributes MapStruct has no equal for. First, `lenient`. `@Bridge` is a strict bijection by
-default, so a round trip cannot silently drop a field, which is the wrong default for the
-small-DTO-into-large-entity shape, a seven-field request mapping into a hundred-field entity where
-the other ninety-three are meant to stay at their defaults. One flag turns the check off:
+Then two attributes MapStruct has no equal for. First, `lenient`. By default `@Bridge` insists that
+every field on both sides line up, so a round trip cannot silently lose one. That is the right
+default most of the time and the wrong one for the small-DTO-into-large-entity shape: a seven-field
+request mapping into a hundred-field entity where the other ninety-three are meant to stay at their
+defaults. One flag turns the check off:
 
 ```java
 @Bridge(value = GovtIdData.class, lenient = true)
@@ -292,8 +293,8 @@ Validated<String, Account> account =
 // Invalid[email: missing '@' in 'not-an-email', age: out of range: 200]
 ```
 
-`combine` accumulates: both checks run, both errors survive. That is the applicative behaviour, where
-`Either` would stop at the first failure. `combineAll` does the batch version across a list of rows.
+`combine` accumulates: both checks run, and both errors survive, where `Either` would stop at the
+first failure. `combineAll` does the batch version across a list of rows.
 This is the "switch your mapper over and get validation for free" line, and it holds because it is
 shipped API, not a roadmap promise.
 
