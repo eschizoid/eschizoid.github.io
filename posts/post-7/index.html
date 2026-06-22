@@ -8,7 +8,7 @@
 	<meta itemprop="description" content="The most common way to map Java objects still describes every field as an unchecked string literal. Telescope makes them compile-checked method references instead: codegen that keeps pace with MapStruct at realistic depth, a strictly larger surface, and a switch you can make one mapper at a time. The honest comparison with MapStruct, runtime costs included.">
 	<meta itemprop="datePublished" content="2026-06-22T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-06-22T00:00:00+00:00">
-	<meta itemprop="wordCount" content="2996">
+	<meta itemprop="wordCount" content="2997">
 	<meta itemprop="keywords" content="Java,Telescope,MapStruct,Object-Mapping,Benchmarks,Dsl"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-7/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="It is 2026. Why are your object mappings still strings?">
@@ -102,7 +102,7 @@
 <p>Mapping one Java object to another is routine work in most apps, and
 <a href="https://mapstruct.org/">MapStruct</a>, the standard tool for it, still has you name each field with a
 string: <code>@Mapping(source = &quot;customerName&quot;, target = &quot;fullName&quot;)</code>. Those two names are what the whole
-mapping turns on, and they are strings: rename the field and they stay exactly as they were.</p>
+mapping turns on, and they are strings: rename the field, and they stay exactly as they were.</p>
 <p>MapStruct earned its place. Ten years, a huge adopter base, a bug list that converged long ago, and
 it generates genuinely fast code; I reach for it too. Those strings are just the one piece of its
 2014 design that aged badly.</p>
@@ -202,10 +202,10 @@ telescope:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span>to(Order::getCustomerName,<span style="color:#6e7681"> </span>OrderDto::getFullName)</span></span></code></pre>
-</figure><p>Two method references. Rename the getter, and the IDE renames this with it; miss one, and javac stops
-the build. There is no string for a typo to hide in. That is the entire pitch, and it needs no
-benchmark and no effect system: in 2026, the field names a mapper turns on
-should be references the compiler and your IDE follow, and in MapStruct they are strings.</p>
+</figure><p>Two method references. Rename the getter and the IDE updates the reference with it; get one wrong and
+javac stops the build. There is no string for a typo to hide in. That is the entire pitch, and it
+needs no benchmark and no effect system: in 2026, the field names a mapper turns on should be
+references your IDE and compiler can follow. In MapStruct, they are strings.</p>
 <p>Everything else is downstream of that one decision. Once the path is a typed reference instead of a
 string, the compiler can follow it deeper (nested updates), the library can run it backward off the
 same definition (handy on the minority of mappers that actually need the inverse, though that is a
