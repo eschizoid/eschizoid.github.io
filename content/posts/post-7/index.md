@@ -272,10 +272,10 @@ Telescope.of(Company.class)
     .update(company, String::toUpperCase); // upper-case every department name, deep and immutable
 ```
 
-MapStruct has no shape for that, because it is not a mapping. And you never type `Lens` or
-`Traversal` to get it — the optic lattice that makes the composition work stays inside the library,
-which was the entire point of the rewrite I wrote up in post-6. Conversion is just the terminal you
-reach for most.
+MapStruct cannot do that, because it is not a mapping. It is a deep update of an immutable tree, and
+mapping is the only verb MapStruct has. You never type `Lens` or `Traversal` to get it — the optic
+lattice that makes the composition work stays inside the library, which was the entire point of the
+rewrite I wrote up in post-6. Conversion is just the terminal you reach for most.
 
 ## Accumulating validation, which MapStruct cannot express
 
