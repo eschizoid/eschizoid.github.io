@@ -8,7 +8,7 @@
 	<meta itemprop="description" content="The most common way to map Java objects still describes every field as an unchecked string literal. Telescope makes them compile-checked method references instead: codegen that keeps pace with MapStruct at realistic depth, a strictly larger surface, and a switch you can make one mapper at a time. The honest comparison with MapStruct, runtime costs included.">
 	<meta itemprop="datePublished" content="2026-06-22T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-06-22T00:00:00+00:00">
-	<meta itemprop="wordCount" content="2995">
+	<meta itemprop="wordCount" content="2996">
 	<meta itemprop="keywords" content="Java,Telescope,MapStruct,Object-Mapping,Benchmarks,Dsl"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-7/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="It is 2026. Why are your object mappings still strings?">
@@ -194,10 +194,11 @@ the performance section is where that path earns its keep.</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#d2a8ff;font-weight:bold">@Mapping</span>(source<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;customerName&#34;</span>,<span style="color:#6e7681"> </span>target<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;fullName&#34;</span>)</span></span></code></pre>
-</figure><p>Those are two string literals. MapStruct&rsquo;s processor checks them against the current field names, but
-the type system never does, and a rename refactor walks straight past them. Delete a field and the
-build fails, fine. But rename one of two same-typed fields and the string can silently rebind to the
-wrong one: it compiles, it runs, it ships the wrong data. The same mapping in telescope:</p>
+</figure><p>Those are two string literals. Your IDE&rsquo;s rename refactor walks straight past them, and the language
+never type-checks them; MapStruct&rsquo;s processor does, but only at the next build, so the rename that
+broke the mapping is invisible while you make it. And where two fields share a name, MapStruct&rsquo;s
+automatic same-name mapping will bind one of them with no string and no warning. The same mapping in
+telescope:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span>to(Order::getCustomerName,<span style="color:#6e7681"> </span>OrderDto::getFullName)</span></span></code></pre>
