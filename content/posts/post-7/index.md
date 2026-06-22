@@ -1,6 +1,6 @@
 ---
 title: "It is 2026. Why are your object mappings still strings?"
-date: 2026-06-21
+date: 2026-06-22
 description: "The most common way to map Java objects still describes every field as an unchecked
   string literal. Telescope makes them compile-checked method references instead: same speed at the
   codegen tier, a strictly larger surface, and a switch you can make one mapper at a time. The honest
