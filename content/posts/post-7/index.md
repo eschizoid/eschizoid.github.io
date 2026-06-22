@@ -18,13 +18,14 @@ draft: false
 
 ## The setup
 
-The most common way to map one Java object to another still describes every field with a pair of
-unchecked string literals: `@Mapping(source = "customerName", target = "fullName")`. The field names
-your whole mapping turns on are text the compiler never reads.
+Mapping one Java object to another is routine work in most apps, and
+[MapStruct](https://mapstruct.org/), the standard tool for it, still has you name each field with a
+string: `@Mapping(source = "customerName", target = "fullName")`. Those two names are what the whole
+mapping turns on, and the compiler never reads them.
 
-[MapStruct](https://mapstruct.org/) earned its place. Ten years, a huge adopter base, a bug list
-that converged long ago, and it generates genuinely fast code; I reach for it too. That string is
-just the one piece of its 2014 design that aged badly.
+MapStruct earned its place. Ten years, a huge adopter base, a bug list that converged long ago, and
+it generates genuinely fast code; I reach for it too. Those strings are just the one piece of its
+2014 design that aged badly.
 
 [Telescope](https://github.com/eschizoid/telescope/) is the same job rebuilt on a foundation where
 those field names are method references the compiler checks. This post is the honest comparison,
