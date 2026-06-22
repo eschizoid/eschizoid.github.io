@@ -5,14 +5,14 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>It is 2026. Why are your object mappings still strings? - Mariano Gonzalez</title><meta name="viewport" content="width=device-width, initial-scale=1">
 	
 	<meta itemprop="name" content="It is 2026. Why are your object mappings still strings?">
-	<meta itemprop="description" content="The most common way to map Java objects still describes every field as an unchecked string literal. Telescope makes them compile-checked method references instead: same speed at the codegen tier, a strictly larger surface, and a switch you can make one mapper at a time. The honest comparison with MapStruct, runtime costs included.">
+	<meta itemprop="description" content="The most common way to map Java objects still describes every field as an unchecked string literal. Telescope makes them compile-checked method references instead: codegen that keeps pace with MapStruct at realistic depth, a strictly larger surface, and a switch you can make one mapper at a time. The honest comparison with MapStruct, runtime costs included.">
 	<meta itemprop="datePublished" content="2026-06-22T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-06-22T00:00:00+00:00">
-	<meta itemprop="wordCount" content="2998">
+	<meta itemprop="wordCount" content="3023">
 	<meta itemprop="keywords" content="Java,Telescope,MapStruct,Object-Mapping,Benchmarks,Dsl"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-7/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="It is 2026. Why are your object mappings still strings?">
-	<meta property="og:description" content="The most common way to map Java objects still describes every field as an unchecked string literal. Telescope makes them compile-checked method references instead: same speed at the codegen tier, a strictly larger surface, and a switch you can make one mapper at a time. The honest comparison with MapStruct, runtime costs included.">
+	<meta property="og:description" content="The most common way to map Java objects still describes every field as an unchecked string literal. Telescope makes them compile-checked method references instead: codegen that keeps pace with MapStruct at realistic depth, a strictly larger surface, and a switch you can make one mapper at a time. The honest comparison with MapStruct, runtime costs included.">
 	<meta property="og:locale" content="en_us">
 	<meta property="og:type" content="article">
 		<meta property="article:section" content="posts">
@@ -27,7 +27,7 @@
 
 	<meta name="twitter:card" content="summary">
 	<meta name="twitter:title" content="It is 2026. Why are your object mappings still strings?">
-	<meta name="twitter:description" content="The most common way to map Java objects still describes every field as an unchecked string literal. Telescope makes them compile-checked method references instead: same speed at the codegen tier, a strictly larger surface, and a switch you can make one mapper at a time. The honest comparison with MapStruct, runtime costs included.">
+	<meta name="twitter:description" content="The most common way to map Java objects still describes every field as an unchecked string literal. Telescope makes them compile-checked method references instead: codegen that keeps pace with MapStruct at realistic depth, a strictly larger surface, and a switch you can make one mapper at a time. The honest comparison with MapStruct, runtime costs included.">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css" />
@@ -102,7 +102,7 @@
 <p>Mapping one Java object to another is routine work in most apps, and
 <a href="https://mapstruct.org/">MapStruct</a>, the standard tool for it, still has you name each field with a
 string: <code>@Mapping(source = &quot;customerName&quot;, target = &quot;fullName&quot;)</code>. Those two names are what the whole
-mapping turns on, and the compiler never reads them.</p>
+mapping turns on, and they are strings: rename the field and they stay exactly as they were.</p>
 <p>MapStruct earned its place. Ten years, a huge adopter base, a bug list that converged long ago, and
 it generates genuinely fast code; I reach for it too. Those strings are just the one piece of its
 2014 design that aged badly.</p>
@@ -158,7 +158,7 @@ instead of 2014, not me stacking the deck.</p>
 			<tr>
 					<td>Multi-source merge (N → 1)</td>
 					<td>yes</td>
-					<td>partial</td>
+					<td>yes, string-keyed</td>
 			</tr>
 			<tr>
 					<td>Runtime path, no codegen</td>
@@ -175,7 +175,7 @@ instead of 2014, not me stacking the deck.</p>
 <p>Second, performance in one breath: at the codegen tier it is a tie at realistic depth, and the
 reflective runtime path trades speed for needing no build setup. That is the whole perf story, and
 the section below shows the numbers instead of asking you to take my word. The rest of the post is
-what each row means at the call site, not a sales close.</p>
+what each row means at the call site.</p>
 <h2 id="two-ways-in-runtime-or-annotation-processing">Two ways in: runtime or annotation processing</h2>
 <p>One thing shapes every example below. MapStruct has a single wiring model: annotation processing. You
 add the processor to the build, write a <code>@Mapper</code> interface, and at compile time it generates a
@@ -194,21 +194,24 @@ the performance section is where that path earns its keep.</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#d2a8ff;font-weight:bold">@Mapping</span>(source<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;customerName&#34;</span>,<span style="color:#6e7681"> </span>target<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;fullName&#34;</span>)</span></span></code></pre>
-</figure><p>Those are two string literals, and <code>javac</code> never reads them. Rename <code>getCustomerName</code> in a refactor
-and that <code>@Mapping</code> keeps compiling, green the whole way, then throws at runtime, or worse, quietly
-maps the wrong field and ships. The same mapping in telescope:</p>
+</figure><p>Those are two string literals. MapStruct&rsquo;s processor checks them against the current field names, but
+the type system never does, and a rename refactor walks straight past them. Delete a field and the
+build fails, fine. But rename one of two same-typed fields and the string can silently rebind to the
+wrong one: it compiles, it runs, it ships the wrong data. The same mapping in telescope:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span>to(Order::getCustomerName,<span style="color:#6e7681"> </span>OrderDto::getFullName)</span></span></code></pre>
 </figure><p>Two method references. Rename the getter, and the IDE renames this with it; miss one, and javac stops
 the build. There is no string for a typo to hide in. That is the entire pitch, and it needs no
-benchmark and no effect system: in 2026, the field names your mappers turn on should be checked by
-the compiler, and in MapStruct they are not.</p>
+benchmark and no effect system: in 2026, the field names a mapper turns on
+should be references the compiler and your IDE follow, and in MapStruct they are strings.</p>
 <p>Everything else is downstream of that one decision. Once the path is a typed reference instead of a
 string, the compiler can follow it deeper (nested updates), the library can run it backward off the
-same definition (handy on the roughly one mapper in ten that actually needs the inverse, though that
-is a bonus, not the reason), and those references compose into validation and effects. But the
+same definition (handy on the minority of mappers that actually need the inverse, though that is a
+bonus, not the reason), and those references compose into validation and effects. But the
 reason to switch fits on one line: stop writing your mappings as strings.</p>
+<p>That is why I will say it plainly: telescope is the better-designed library. The rest of this post is
+the receipts, including the ones that do not flatter it.</p>
 <h2 id="the-same-mappers-side-by-side">The same mappers, side by side</h2>
 <p>Take the MapStruct calls you write every day and put the telescope version next to them. They look
 alike on purpose; the difference is what the compiler can see. Every MapStruct row below turns on a
@@ -295,14 +298,13 @@ string literal; every telescope row turns on a method reference. (telescope rows
 </span></span></span><span style="display:flex;"><span>OrderDto<span style="color:#6e7681"> </span>merged<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>orders.into(existingDto,<span style="color:#6e7681"> </span>order);</span></span></code></pre>
 </figure><p>The pattern across all of these: the MapStruct side leans on annotation attributes and strings
 (<code>target = &quot;shipping.recipient.fullName&quot;</code>, <code>qualifiedByName = &quot;centsToAmount&quot;</code>,
-<code>expression = &quot;java(...)&quot;</code>), each of which is a place a typo becomes a runtime surprise. The telescope
-side is method references the compiler and the IDE already understand, and the reverse direction is
-not a second artifact you maintain.</p>
+<code>expression = &quot;java(...)&quot;</code>), each of which is a string the type system never checks and a rename
+refactor walks straight past. The telescope side is method references the compiler and the IDE
+already understand, and the reverse direction is not a second artifact you maintain.</p>
 <h2 id="when-you-want-codegen-the-bridge-annotation">When you want codegen: the <code>@Bridge</code> annotation</h2>
 <p>The gallery is the runtime path. When you want compile-time wiring and the last nanosecond, you
-annotate instead, and this is where telescope&rsquo;s annotations earn the word &ldquo;powerful.&rdquo; <code>@Bridge</code> is
-the answer to <code>@Mapper</code>, except it is one annotation on one type rather than an interface you
-implement:</p>
+annotate instead. <code>@Bridge</code> is the answer to <code>@Mapper</code>, except it is one annotation on one type
+rather than an interface you implement:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#d2a8ff;font-weight:bold">@Bridge</span>(OrderDto.class)<span style="color:#6e7681">
@@ -348,16 +350,16 @@ through it.</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.each(Company::departments)<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.field(Department::name)<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.update(company,<span style="color:#6e7681"> </span>String::toUpperCase);<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">//</span><span style="color:#6e7681"> </span>upper<span style="color:#ff7b72;font-weight:bold">-</span><span style="color:#ff7b72">case</span><span style="color:#6e7681"> </span>every<span style="color:#6e7681"> </span>department<span style="color:#6e7681"> </span>name,<span style="color:#6e7681"> </span>deep<span style="color:#6e7681"> </span>and<span style="color:#6e7681"> </span>immutable</span></span></code></pre>
-</figure><p>MapStruct cannot do that because it is not a mapping. It is a deep update of an immutable tree, and
-mapping is the only verb MapStruct has. You never type <code>Lens</code> or <code>Traversal</code> to get it. The optic
+</figure><p>MapStruct cannot do that: it is a deep update of an immutable tree, and mapping is the only verb
+MapStruct has. You never type <code>Lens</code> or <code>Traversal</code> to get it. The optic
 lattice that makes the composition work stays inside the library, which was the entire point of the
 rewrite I wrote up in <a href="https://mariano-gonzalez.com/posts/post-6/">my previous post</a>. Conversion is
 just the terminal you reach for most.</p>
 <h2 id="accumulating-validation-which-mapstruct-cannot-express">Accumulating validation, which MapStruct cannot express</h2>
 <p>The most underrated feature has nothing to do with speed. Turning a stringly-typed payload (a form
-post, a JSON body) into a typed object means validating several fields at once. MapStruct maps field
-by field and has no way to collect the failures: the first bad field throws, or you hand-roll an
-<code>@AfterMapping</code> accumulator and own it yourself.</p>
+post, a JSON body) into a typed object means validating several fields at once. MapStruct maps; it
+does not validate. Collecting every failure in one pass means bolting on an <code>@AfterMapping</code>
+accumulator you own, or a separate validation library.</p>
 <p>Telescope ships <code>Validated</code> as a first-class effect, so &ldquo;build the target only if every field passes,
 and report every failure in one pass&rdquo; is a primitive:</p>
 <figure class="highlight">
@@ -445,8 +447,7 @@ codegen or nothing. &ldquo;Telescope is 8× slower&rdquo; is the misleading way 
 runtime path at all, and telescope&rsquo;s costs 8× on deep forward. You are paying for a path MapStruct
 does not offer, not losing a race you were both in. When you want the speed back, you put <code>@Bridge</code>
 on the type, and you are in the codegen tier at parity: same library, same API, one annotation.
-Nothing is given up permanently. You pick telescope for the capability surface, and the moment
-performance matters, you flip on codegen and the gap closes to a rounding error.</p>
+Nothing is given up permanently.</p>
 <h2 id="where-mapstruct-still-wins-for-now">Where MapStruct still wins, for now</h2>
 <p>Everything MapStruct beats telescope on comes down to time, not design.</p>
 <p>Maturity is the big one. A decade across thousands of codebases means the edge cases are found and
@@ -458,15 +459,15 @@ switching cost, and I will not pretend otherwise.</p>
 surface, or the codegen speed. MapStruct wins on age and adoption, the two things a newer library
 gets only by shipping and waiting, and the two things that tell you nothing about which design is
 better. So I am not going to tell you to rip out working mappers; replacing code that works is a bad
-trade no matter what you would replace it with. I am going to tell you the inexpensive thing instead: the
-next mapper you write, write it in telescope.</p>
+trade no matter what you would replace it with. I am going to tell you the inexpensive thing instead:
+the next mapper you write, write it in telescope.</p>
 <h2 id="when-to-pick-which">When to pick which</h2>
 <p>Reach for MapStruct when the codebase is already MapStruct, the mappers are one-directional and
 shallow, or team familiarity is the constraint that outweighs everything else. Those are real
 reasons, and none of them is about the library being better.</p>
 <p>Reach for telescope on the next mapper you write, and for anything MapStruct cannot say: typed field
 references instead of strings, deep nested updates, validation or effects inside the mapping, sealed
-hierarchies, multi-source merge, JPA cycles. The codegen tier keeps you at parity, so you are not
+hierarchies, multi-source merge. The codegen tier keeps you at parity, so you are not
 trading speed for any of it.</p>
 <h2 id="trying-it-without-betting-the-codebase">Trying it without betting the codebase</h2>
 <p>Adopting telescope one mapper at a time only works if the trial is inexpensive, and it is. It does
@@ -480,9 +481,9 @@ have. The whole bet is one mapper and one dependency line in a project that keep
 it did.</p>
 <h2 id="closing">Closing</h2>
 <p>Telescope is the better-designed mapping library, and I will say so without flinching, because the
-receipts back it: it is on Maven Central today, its codegen benchmarks at parity with MapStruct, and
-its capability surface is strictly larger. The one thing it does not have yet is adopters, which is
-exactly the gap you can help close.</p>
+receipts back it: it is on Maven Central today, its codegen matches MapStruct&rsquo;s speed at the depth
+real code has, and its capability surface is strictly larger. The one thing it does not have yet is
+adopters, which is exactly the gap you can help close.</p>
 <p>So here is the ask, and it is small. Add one line:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
