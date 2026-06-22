@@ -359,8 +359,7 @@ error.
 
 ## Where MapStruct still wins, for now
 
-Credibility means saying the true thing, so here it is: everything MapStruct beats telescope on is a
-function of time, not design.
+Everything MapStruct beats telescope on comes down to time, not design.
 
 Maturity is the big one. A decade across thousands of codebases means the edge cases are found and
 the answers are written down, where telescope is at 1.0 and some of those edges are still mine to
@@ -401,10 +400,10 @@ it did.
 
 ## Closing
 
-I will not say telescope has dethroned MapStruct, because it has not — no production adopters yet,
-and the word would be marketing rather than fact. The claim the receipts do support, I will make
-without flinching: telescope is the better-designed mapping library, it is on Maven Central today,
-and at the codegen tier its strictly larger surface costs you nothing you can measure.
+Telescope is the better-designed mapping library, and I will say so without flinching, because the
+receipts back it: it is on Maven Central today, its codegen benchmarks at parity with MapStruct, and
+its capability surface is strictly larger. The one thing it does not have yet is adopters, which is
+exactly the gap you can help close.
 
 So here is the ask, and it is small. Add one line:
 
