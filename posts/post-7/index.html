@@ -8,7 +8,7 @@
 	<meta itemprop="description" content="The most common way to map Java objects still describes every field as an unchecked string literal. Telescope makes them compile-checked method references instead: codegen that keeps pace with MapStruct at realistic depth, a strictly larger surface, and a switch you can make one mapper at a time. The honest comparison with MapStruct, runtime costs included.">
 	<meta itemprop="datePublished" content="2026-06-22T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-06-22T00:00:00+00:00">
-	<meta itemprop="wordCount" content="2997">
+	<meta itemprop="wordCount" content="3000">
 	<meta itemprop="keywords" content="Java,Telescope,MapStruct,Object-Mapping,Benchmarks,Dsl"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-7/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="It is 2026. Why are your object mappings still strings?">
@@ -173,7 +173,7 @@ instead of 2014, not me stacking the deck.</p>
 	</tbody>
 </table>
 <p>Second, performance in one breath: at the codegen tier it is a tie at realistic depth, and the
-reflective runtime path trades speed for needing no build setup. That is the whole perf story, and
+reflective runtime path trades speed for zero build setup. That is the whole perf story, and
 the section below shows the numbers instead of asking you to take my word. The rest of the post is
 what each row means at the call site.</p>
 <h2 id="two-ways-in-runtime-or-annotation-processing">Two ways in: runtime or annotation processing</h2>
@@ -218,7 +218,7 @@ the receipts, including the ones that do not flatter it.</p>
 alike on purpose; the difference is what the compiler can see. Every MapStruct row below turns on a
 string literal; every telescope row turns on a method reference. (telescope rows are static-imported:
 <code>to</code>, <code>via</code>, <code>constant</code>, <code>compute</code>, so the call site reads as a list.)</p>
-<p>Rename a couple of fields, and the inverse:</p>
+<p>Rename a couple of fields, and get the inverse for free:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// MapStruct: and you still write toEntity() by hand for the way back</span><span style="color:#6e7681">
@@ -321,7 +321,7 @@ processor checks every name and type against the real components at compile time
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>renames<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>{<span style="color:#d2a8ff;font-weight:bold">@Rename</span>(source<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;customerName&#34;</span>,<span style="color:#6e7681"> </span>target<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;fullName&#34;</span>)},<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>transforms<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>{<span style="color:#d2a8ff;font-weight:bold">@Transform</span>(field<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;priceCents&#34;</span>,<span style="color:#6e7681"> </span>using<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>CentsToAmount.class)})<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#ff7b72">record</span> <span style="color:#f0883e;font-weight:bold">Order</span>(String<span style="color:#6e7681"> </span>customerName,<span style="color:#6e7681"> </span><span style="color:#ff7b72">long</span><span style="color:#6e7681"> </span>priceCents)<span style="color:#6e7681"> </span>{}</span></span></code></pre>
-</figure><p>Then two attributes MapStruct has no equal for. First, <code>lenient</code>. By default <code>@Bridge</code> insists that
+</figure><p>Then two attributes MapStruct cannot match. First, <code>lenient</code>. By default <code>@Bridge</code> insists that
 every field on both sides line up, so a round trip cannot silently lose one. That is the right
 default most of the time and the wrong one for the small-DTO-into-large-entity shape: a seven-field
 request mapping into a hundred-field entity where the other ninety-three are meant to stay at their
@@ -439,9 +439,10 @@ record&rsquo;s single canonical-constructor call.</p>
 <p>That 8× buys something MapStruct cannot do at all: zero setup. No annotation processor, no build
 wiring. Hand it two classes at runtime, and it resolves the mapping on the spot, where MapStruct is
 codegen or nothing. &ldquo;Telescope is 8× slower&rdquo; is the misleading way to put it: MapStruct has no
-runtime path at all, and telescope&rsquo;s costs 8× on deep forward. You are paying for a path MapStruct
-does not offer, not losing a race you were both in. When you want the speed back, you put <code>@Bridge</code>
-on the type, and you are in the codegen tier at parity: same library, same API, one annotation.
+runtime path at all, and telescope&rsquo;s runtime path costs 8× on deep forward. You are paying for a
+path MapStruct does not offer, not losing a race you were both in. When you want the speed back, you
+put <code>@Bridge</code> on the type, and you are in the codegen tier at parity: same library, same API, one
+annotation.
 Nothing is given up permanently.</p>
 <p>One methodology note, because it is the part those posts skip. Smoke runs lie. An early laptop run
 told me telescope&rsquo;s zero-hop static path was <em>slower</em> than its own deeper lattice path, with error
@@ -472,8 +473,8 @@ telescope.</p>
 <h2 id="trying-it-without-betting-the-codebase">Trying it without betting the codebase</h2>
 <p>Adopting telescope one mapper at a time only works if the trial is inexpensive, and it is. It does
 not replace MapStruct or fight it; they are independent libraries, so both live in the same module,
-and you reach for whichever per mapper. Use telescope for one conversion, and the MapStruct mappers
-next to it do not notice.</p>
+and you choose between them mapper by mapper. Use telescope for one conversion, and the MapStruct
+mappers next to it do not notice.</p>
 <p>If you are on a framework, it slots in the same way MapStruct does. <code>telescope-spring-boot-starter</code>
 autoconfigures a registry of your <code>Mapper&lt;A, B&gt;</code> beans on Spring Boot 4; <code>telescope-quarkus</code> does the
 same through Arc. A <code>Mapper</code> bean injects like any <code>@Mapper(componentModel = &quot;spring&quot;)</code> you already
