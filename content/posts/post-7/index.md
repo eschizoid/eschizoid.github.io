@@ -387,10 +387,10 @@ trading speed for any of it.
 
 ## Trying it without betting the codebase
 
-The wedge only works if trying telescope is inexpensive, and it is. It does not replace MapStruct or
-fight it; they are independent libraries, so both live in the same module, and you reach for
-whichever per mapper. Adopt telescope for one conversion, and the MapStruct mappers next to it do not
-notice.
+Adopting telescope one mapper at a time only works if the trial is inexpensive, and it is. It does
+not replace MapStruct or fight it; they are independent libraries, so both live in the same module,
+and you reach for whichever per mapper. Use telescope for one conversion, and the MapStruct mappers
+next to it do not notice.
 
 If you are on a framework, it slots in the same way MapStruct does. `telescope-spring-boot-starter`
 autoconfigures a registry of your `Mapper<A, B>` beans on Spring Boot 4; `telescope-quarkus` does the
