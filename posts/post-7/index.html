@@ -8,7 +8,7 @@
 	<meta itemprop="description" content="The most common way to map Java objects still describes every field as an unchecked string literal. Telescope makes them compile-checked method references instead: same speed at the codegen tier, a strictly larger surface, and a switch you can make one mapper at a time. The honest comparison with MapStruct, runtime costs included.">
 	<meta itemprop="datePublished" content="2026-06-21T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-06-21T00:00:00+00:00">
-	<meta itemprop="wordCount" content="2986">
+	<meta itemprop="wordCount" content="3010">
 	<meta itemprop="keywords" content="Java,Mapstruct,Object-Mapping,Benchmarks,Dsl"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-7/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="It is 2026. Why are your object mappings still strings?">
@@ -347,10 +347,11 @@ through it.</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.each(Company::departments)<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.field(Department::name)<span style="color:#6e7681">
 </span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.update(company,<span style="color:#6e7681"> </span>String::toUpperCase);<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">//</span><span style="color:#6e7681"> </span>upper<span style="color:#ff7b72;font-weight:bold">-</span><span style="color:#ff7b72">case</span><span style="color:#6e7681"> </span>every<span style="color:#6e7681"> </span>department<span style="color:#6e7681"> </span>name,<span style="color:#6e7681"> </span>deep<span style="color:#6e7681"> </span>and<span style="color:#6e7681"> </span>immutable</span></span></code></pre>
-</figure><p>MapStruct has no shape for that, because it is not a mapping. And you never type <code>Lens</code> or
-<code>Traversal</code> to get it — the optic lattice that makes the composition work stays inside the library,
-which was the entire point of the rewrite I wrote up in post-6. Conversion is just the terminal you
-reach for most.</p>
+</figure><p>MapStruct cannot do that, because it is not a mapping. It is a deep update of an immutable tree, and
+mapping is the only verb MapStruct has. You never type <code>Lens</code> or <code>Traversal</code> to get it — the optic
+lattice that makes the composition work stays inside the library, which was the entire point of the
+rewrite I wrote up in <a href="https://mariano-gonzalez.com/posts/post-6/">my previous post</a>. Conversion is
+just the terminal you reach for most.</p>
 <h2 id="accumulating-validation-which-mapstruct-cannot-express">Accumulating validation, which MapStruct cannot express</h2>
 <p>The most underrated feature has nothing to do with speed. Turning a stringly-typed payload (a form
 post, a JSON body) into a typed object means validating several fields at once. MapStruct maps field
@@ -367,7 +368,7 @@ and report every failure in one pass&rdquo; is a primitive:</p>
 </span></span></span><span style="display:flex;"><span><span style="color:#ff7b72;font-weight:bold">//</span><span style="color:#6e7681"> </span>Invalid<span style="color:#ff7b72;font-weight:bold">[</span>email:<span style="color:#6e7681"> </span>missing<span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#39;@&#39;</span><span style="color:#6e7681"> </span>in<span style="color:#6e7681"> </span><span style="color:#f85149">&#39;</span>not<span style="color:#ff7b72;font-weight:bold">-</span>an<span style="color:#ff7b72;font-weight:bold">-</span>email<span style="color:#f85149">&#39;</span>,<span style="color:#6e7681"> </span>age:<span style="color:#6e7681"> </span>out<span style="color:#6e7681"> </span>of<span style="color:#6e7681"> </span>range:<span style="color:#6e7681"> </span>200<span style="color:#ff7b72;font-weight:bold">]</span></span></span></code></pre>
 </figure><p><code>combine</code> accumulates: both checks run, and both errors survive, where <code>Either</code> would stop at the
 first failure. <code>combineAll</code> does the batch version across a list of rows. This is the &ldquo;switch your
-mapper over and get validation for free&rdquo; line, and it holds because it is shipped API, not a roadmap
+mapper over and get validation for free&rdquo; line, and it holds because it is a shipped API, not a roadmap
 promise.</p>
 <h2 id="the-performance-conversation-honestly">The performance conversation, honestly</h2>
 <p>This is the section where &ldquo;we beat the incumbent&rdquo; posts tend to quietly cheat, so let me be precise
@@ -441,11 +442,10 @@ record&rsquo;s single canonical-constructor call.</p>
 wiring. Hand it two classes at runtime, and it resolves the mapping on the spot, where MapStruct is
 codegen or nothing. &ldquo;Telescope is 8× slower&rdquo; is the misleading way to put it: MapStruct has no
 runtime path at all, and telescope&rsquo;s costs 8× on deep forward. You are paying for a path MapStruct
-does not offer, not losing a race you were both in. When you want the
-speed back, you put <code>@Bridge</code> on the type, and you are in the codegen tier at parity: same library,
-same API, one annotation. Nothing is given up permanently. You pick telescope for the capability
-surface, and the moment performance matters, you flip on codegen and the gap closes to a rounding
-error.</p>
+does not offer, not losing a race you were both in. When you want the speed back, you put <code>@Bridge</code>
+on the type, and you are in the codegen tier at parity: same library, same API, one annotation. Nothing
+is given up permanently. You pick telescope for the capability surface, and the moment performance
+matters, you flip on codegen and the gap closes to a rounding error.</p>
 <h2 id="where-mapstruct-still-wins-for-now">Where MapStruct still wins, for now</h2>
 <p>Everything MapStruct beats telescope on comes down to time, not design.</p>
 <p>Maturity is the big one. A decade across thousands of codebases means the edge cases are found and
@@ -486,10 +486,17 @@ exactly the gap you can help close.</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
     ><code class="language-kotlin" data-lang="kotlin"><span style="display:flex;"><span>implementation(<span style="color:#a5d6ff">&#34;io.github.eschizoid:telescope-core:1.0.7&#34;</span>)</span></span></code></pre>
+</figure><figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#7ee787">&lt;dependency&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#7ee787">&lt;groupId&gt;</span>io.github.eschizoid<span style="color:#7ee787">&lt;/groupId&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#7ee787">&lt;artifactId&gt;</span>telescope-core<span style="color:#7ee787">&lt;/artifactId&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#7ee787">&lt;version&gt;</span>1.0.7<span style="color:#7ee787">&lt;/version&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#7ee787">&lt;/dependency&gt;</span></span></span></code></pre>
 </figure><p>Then the next mapper you would have written as a MapStruct interface, write as one
 <code>Telescope.mapper(...)</code> call instead, and leave everything else alone. The repo has the CI benchmark
-matrix and the escape hatches; post-6 has the story of how the thing got built. Rename a field and
-watch which library catches it at compile time and which one finds out in production, then tell me
+matrix and the escape hatches; <a href="https://mariano-gonzalez.com/posts/post-6/">that earlier post</a> has the story of how the thing
+got built. Rename a field and watch which library catches it at compile time and which one finds out in production, then tell me
 where it falls over. I do not think it will.</p>
 
 			</div>
