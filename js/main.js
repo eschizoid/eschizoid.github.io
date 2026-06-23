@@ -2,15 +2,25 @@
 // Hugo serves the project-root static/ over the theme's static/ at the same path,
 // so this survives theme updates.
 //
-// Why it exists: the theme reads/writes localStorage unguarded. Brave (Shields up,
-// "block all cookies", or a private window) throws a SecurityError on any localStorage
-// access, which killed the whole DOMContentLoaded handler before it could wire up the
-// toggle — so the scheme button did nothing in Brave while working in Chrome/Safari.
-// Guarding every storage and matchMedia call degrades that to "works but does not
-// persist when storage is blocked" instead of "does not work at all".
+// Why it exists: the theme reads/writes localStorage unguarded AND assumes the
+// feather global is always present. Brave (Shields up, "block all cookies", private
+// window, or fingerprinting-protection edge cases) can throw a SecurityError on
+// localStorage access, or make the feather global missing — either kills the whole
+// DOMContentLoaded handler before the click listener gets wired up, so the scheme
+// button does nothing while working in Chrome/Safari. This override guards every
+// storage/matchMedia call and inlines the sun/moon SVGs so the toggle no longer
+// depends on feather at runtime. Worst case (storage blocked): "works but does not
+// persist across reloads" instead of "does not work at all".
+
+var ICON_SUN  = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-sun"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
+var ICON_MOON = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
 
 document.addEventListener("DOMContentLoaded", function () {
   var toggle = document.getElementById("scheme-toggle");
+  if (!toggle) {
+    // Toggle not in DOM (theme variant or stripped layout) — nothing to wire up.
+    return;
+  }
 
   var scheme = "light";
 
@@ -64,14 +74,14 @@ function saveScheme(value) {
 
 function darkscheme(toggle, container) {
   saveScheme("dark");
-  toggle.innerHTML = feather.icons.sun.toSvg();
+  toggle.innerHTML = ICON_SUN;
   toggle.className = "dark";
   container.className = "dark";
 }
 
 function lightscheme(toggle, container) {
   saveScheme("light");
-  toggle.innerHTML = feather.icons.moon.toSvg();
+  toggle.innerHTML = ICON_MOON;
   toggle.className = "light";
   container.className = "";
 }
