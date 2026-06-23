@@ -23,7 +23,7 @@ disqusShortname = "eschizoid"
 	# Content types to disable Disqus on.
 	disableDisqusTypes = ["page"]
 
-	featherIconsCDN = true
+	featherIconsCDN = false
 
 	mode = "auto" # "dark" or "auto"
 	customCSS = "css/custom.css"  # Custom CSS applied to default styles.
