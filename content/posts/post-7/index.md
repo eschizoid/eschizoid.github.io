@@ -18,6 +18,8 @@ draft: false
 
 ![telescope](logo.png)
 
+> _Telescope, part 2 of 3: [how it got built](/posts/post-6/) · **why your mappings should not be strings** · [asking your mapper what it did](/posts/post-8/)_
+
 > **Update, July 2026.** Since this went out, telescope grew the thing this post could not claim:
 > mappers that are no longer black boxes. `mapper.explain()` returns the mapping structure as data,
 > `mapper.trace(input)` shows the values flowing through, and flipping a log level makes every

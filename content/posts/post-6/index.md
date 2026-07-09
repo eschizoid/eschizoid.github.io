@@ -39,6 +39,8 @@ CompanyPath.start()
 
 ![telescope](logo.png)
 
+> _Telescope, part 1 of 3: **how it got built** · [why your mappings should not be strings](/posts/post-7/) · [asking your mapper what it did](/posts/post-8/)_
+
 It did not start there. The first commits were a small converter registry: function-based,
 multi-hop composition, a few dozen lines. Two iterations later it had drifted into a full port of
 Scala's [Monocle][monocle] library, eight category-theory interfaces
