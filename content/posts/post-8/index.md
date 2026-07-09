@@ -32,7 +32,7 @@ read against what you meant. If the question is about a specific request — whi
 which came out — generated source cannot answer it at all; you add a breakpoint or a log line,
 redeploy, and wait for the bug to happen again.
 
-This is not a MapStruct flaw so much as a category default. Mappers everywhere are write-only: you
+This is not really a MapStruct flaw. Every mapper I know of is write-only: you
 declare the mapping, the tool does something, and the something is invisible until it is wrong.
 
 [Last time](https://mariano-gonzalez.com/posts/post-7/) I argued the input side of
@@ -55,7 +55,7 @@ System.out.println(mapper.explain());
 //   ✓ name  → name
 ```
 
-That render is the demo, not the API. `explain()` returns an `OpticReport` — a list of typed nodes
+That render is the demo, not the API. `explain()` returns an `OpticReport`, a list of typed nodes
 you can query: `mapped()`, `skipped()`, `transformations()`, `unusedSources()`. Which means the
 question "did I map everything?" stops being a code review and becomes a test:
 
@@ -85,8 +85,8 @@ Transformations:
   • birthDate(String) → LocalDate
 ```
 
-Renames, intentional drops, type conversions — the whole shape of the mapping, printed by the
-mapping. Nothing to keep in sync, because it is not documentation; it is the mapper describing
+Renames, intentional drops, type conversions: the whole shape of the mapping, printed by the
+mapping. There is nothing to keep in sync, because it is not documentation; it is the mapper describing
 itself.
 
 ## trace(input): the same rows, with your values in them
@@ -102,15 +102,15 @@ System.out.println(mapper.trace(order));
 ```
 
 This is the production question from the setup, answered directly: for this input, these values
-went in, these came out, row by row. The trace never re-runs your conversion — it reads the result
-you already have — and it is built not to make things worse: a field whose `toString()` throws
+went in, these came out, row by row. The trace never re-runs your conversion (it reads the result
+you already have), and it is built not to make things worse: a field whose `toString()` throws
 renders as `(n/a)` instead of taking the diagnostic down with it.
 
-## The log level: observability with no code change
+## The log level: the same answers in production
 
 You will not call `trace()` by hand in production, so the mapper does it for you. Every mapper logs
-through `java.lang.System.Logger` — the facade that ships in `java.base`, so this costs zero
-dependencies — under a logger named by its type pair:
+through `java.lang.System.Logger`, the facade that ships in `java.base`, under a logger named by
+its type pair. It adds no dependency:
 
 ```properties
 # JUL (the JDK default): one mapper, values per conversion
@@ -123,10 +123,10 @@ io.github.eschizoid.telescope.mapper.Order.OrderDto.level = FINER
 ```
 
 `DEBUG` logs each mapper's `explain()` once, when it is built. `TRACE` adds the per-conversion
-value trace on every `forward()`. Off — the default — costs nothing measurable: the call sites are
-guarded before any message object exists. Which means the field-arrives-null investigation becomes:
-flip one logger in config, watch the very next conversion narrate itself, flip it back. No
-redeploy, no print statements, no archaeology in `build/generated`.
+value trace on every `forward()`. Off, the default, costs nothing measurable: the call sites are
+guarded before any message object exists. So the field-arrives-null investigation becomes: flip one
+logger in config, watch the very next conversion narrate itself, flip it back. You never redeploy
+and never dig through `build/generated`.
 
 MapStruct has no equivalent surface, and it cannot cheaply grow one: its mapper *is* the generated
 code, so there is no runtime object that knows the mapping's structure. Telescope's mapper is a
@@ -135,11 +135,11 @@ verbs come from.
 
 ## The receipts: auditing my own library against MapStruct's feature list
 
-A capability pitch invites one response, and it is the right one: "fine, but does it do X?" So
-instead of waiting for the question, I went through MapStruct's feature surface — all of it — and
+A capability pitch always gets the same response, and it is the right one: fine, but does it do X?
+So instead of waiting for the question, I went through MapStruct's whole feature surface and
 scored telescope against every row: implicit conversions, expressions, qualifiers, lifecycle hooks,
 `@MappingTarget` updates, builders, null-value strategies, decorators, subclass mapping,
-twenty-nine features in total. Each verdict cites the telescope source and tests it rests on, and a
+29 features in total. Each verdict cites the telescope source and tests it rests on, and a
 second adversarial pass re-checked every citation and every code snippet against the real API.
 
 The result is the
@@ -147,15 +147,15 @@ The result is the
 13 features fully covered, 16 covered with a named limitation, none missing. I will not re-argue it
 here; the point of writing it down with evidence is that you can check it without trusting me.
 
-Two things from that audit are worth telling on myself.
+Two parts of that audit embarrassed me, and both belong in this post.
 
 First, the verification pass downgraded two of my own verdicts. I had scored constructor mapping
-"full"; the checker pointed out MapStruct's `@Default` disambiguates multi-constructor classes and
+"full"; the second pass pointed out MapStruct's `@Default` disambiguates multi-constructor classes and
 telescope refuses them, so "partial" it is. The matrix is more honest because the process assumed I
 was wrong.
 
 Second, the audit found an actual bug. Telescope's `MapperBuilder.inherit(...)` lets mappers share
-row groups — its answer to `@InheritConfiguration` — and a group inherited into a mapper of the
+row groups (its answer to `@InheritConfiguration`), and a group inherited into a mapper of the
 wrong type pair was *silently dropped*: the mapper built cleanly and quietly lost the renamed
 fields, while same-name auto-mapping masked the hole. That is precisely the class of silent failure
 this whole library exists to kill, sitting in my own code. It fails fast now, with an error naming
@@ -192,7 +192,6 @@ The ask is the same one, one line, Java 21 or later:
 implementation("io.github.eschizoid:telescope-core:1.1.1")
 ```
 
-Then take the mapper that burned you last — the one where a field went quietly `null` and you found
-out from a bug report — and ask the telescope version what it does: `mapper.explain()`. You will
-get an answer. That is the difference, and it is the whole post: your mapper should not be a black
-box, and this one is not.
+Then take the mapper that burned you last, the one where a field went quietly `null` and you found
+out from a bug report, and ask the telescope version what it does: `mapper.explain()`. You will get
+an answer. That is the whole post.
