@@ -8,7 +8,7 @@
 	<meta itemprop="description" content="MapStruct, Java&#39;s most popular object mapper, still names fields with unchecked string literals. Telescope makes them compile-checked method references instead: codegen that keeps pace with MapStruct at realistic depth, a strictly larger surface, and a switch you can make one mapper at a time. The honest comparison, runtime costs included.">
 	<meta itemprop="datePublished" content="2026-06-22T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-06-22T00:00:00+00:00">
-	<meta itemprop="wordCount" content="3189">
+	<meta itemprop="wordCount" content="3213">
 	<meta itemprop="keywords" content="Java,Telescope,MapStruct,Optics,Object-Mapping,Benchmarks,Dsl"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-7/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="It is 2026. Why are your object mappings still strings?">
@@ -29,20 +29,20 @@
 	<meta name="twitter:title" content="It is 2026. Why are your object mappings still strings?">
 	<meta name="twitter:description" content="MapStruct, Java&#39;s most popular object mapper, still names fields with unchecked string literals. Telescope makes them compile-checked method references instead: codegen that keeps pace with MapStruct at realistic depth, a strictly larger surface, and a switch you can make one mapper at a time. The honest comparison, runtime costs included.">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1783601161" />
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1783601161" />
-	<script defer type="text/javascript"  src="/js/copy-code.js?v=1783601161"></script>
-		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1783601161" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1783601751" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1783601751" />
+	<script defer type="text/javascript"  src="/js/copy-code.js?v=1783601751"></script>
+		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1783601751" />
 	
 
-        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1783601161" />
+        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1783601751" />
 
-	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1783601161"></script>
+	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1783601751"></script>
 	
-		<script src="https://mariano-gonzalez.com/js/main.js?v=1783601161"></script>
+		<script src="https://mariano-gonzalez.com/js/main.js?v=1783601751"></script>
 
 	
-		<link rel="stylesheet" href="/css/copy-code-button.css?v=1783601161">
+		<link rel="stylesheet" href="/css/copy-code-button.css?v=1783601751">
 	
 </head>
 
@@ -99,6 +99,9 @@
 				<p><p class="md__image">
     <img src="logo.png" alt="telescope"  />
 </p></p>
+<blockquote>
+<p><em>Telescope, part 2 of 3: <a href="/posts/post-6/">how it got built</a> · <strong>why your mappings should not be strings</strong> · <a href="/posts/post-8/">asking your mapper what it did</a></em></p>
+</blockquote>
 <blockquote>
 <p><strong>Update, July 2026.</strong> Since this went out, telescope grew the thing this post could not claim:
 mappers that are no longer black boxes. <code>mapper.explain()</code> returns the mapping structure as data,

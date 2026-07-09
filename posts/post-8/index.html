@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>What did your mapper actually do? Now you can ask it. - Mariano Gonzalez</title><meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<meta itemprop="name" content="What did your mapper actually do? Now you can ask it.">
+	<meta itemprop="description" content="Every object mapper is a black box in production: to know what it mapped, you read generated source or add print statements. Telescope mappers answer the question themselves — explain() returns the mapping as data, trace(input) shows the values flowing through, and a log level makes every conversion narrate itself. Plus the receipts: a 29-feature MapStruct parity audit that found and fixed a real bug in my own library.">
+	<meta itemprop="datePublished" content="2026-07-09T00:00:00+00:00">
+	<meta itemprop="dateModified" content="2026-07-09T00:00:00+00:00">
+	<meta itemprop="wordCount" content="1255">
+	<meta itemprop="keywords" content="Java,Telescope,MapStruct,Introspection,Observability,Object-Mapping,Dsl"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-8/">
+	<meta property="og:site_name" content="Mariano Gonzalez">
+	<meta property="og:title" content="What did your mapper actually do? Now you can ask it.">
+	<meta property="og:description" content="Every object mapper is a black box in production: to know what it mapped, you read generated source or add print statements. Telescope mappers answer the question themselves — explain() returns the mapping as data, trace(input) shows the values flowing through, and a log level makes every conversion narrate itself. Plus the receipts: a 29-feature MapStruct parity audit that found and fixed a real bug in my own library.">
+	<meta property="og:locale" content="en_us">
+	<meta property="og:type" content="article">
+		<meta property="article:section" content="posts">
+		<meta property="article:published_time" content="2026-07-09T00:00:00+00:00">
+		<meta property="article:modified_time" content="2026-07-09T00:00:00+00:00">
+		<meta property="article:tag" content="Java">
+		<meta property="article:tag" content="Telescope">
+		<meta property="article:tag" content="MapStruct">
+		<meta property="article:tag" content="Introspection">
+		<meta property="article:tag" content="Observability">
+		<meta property="article:tag" content="Object-Mapping">
+
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:title" content="What did your mapper actually do? Now you can ask it.">
+	<meta name="twitter:description" content="Every object mapper is a black box in production: to know what it mapped, you read generated source or add print statements. Telescope mappers answer the question themselves — explain() returns the mapping as data, trace(input) shows the values flowing through, and a log level makes every conversion narrate itself. Plus the receipts: a 29-feature MapStruct parity audit that found and fixed a real bug in my own library.">
+<link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1783601714" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1783601714" />
+	<script defer type="text/javascript"  src="/js/copy-code.js?v=1783601714"></script>
+		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1783601714" />
+	
+
+        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1783601714" />
+
+	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1783601714"></script>
+	
+		<script src="https://mariano-gonzalez.com/js/main.js?v=1783601714"></script>
+
+	
+		<link rel="stylesheet" href="/css/copy-code-button.css?v=1783601714">
+	
+</head>
+
+<body>
+	<div class="container wrapper">
+		<div class="header">
+	
+	<h1 class="site-title"><a href="https://mariano-gonzalez.com/">Mariano Gonzalez</a></h1>
+	<div class="site-description"><p>Coder and Computer Enthusiast</p><nav class="nav social">
+			<ul class="flat"><li><a href="https://www.linkedin.com/in/marianogonzalezmx/?locale=en_US" title="LinkedIn"><i data-feather="linkedin"></i></a></li><li><a href="https://github.com/eschizoid" title="Github"><i data-feather="github"></i></a></li><li><a href="/index.xml" title="RSS"><i data-feather="rss"></i></a></li><li><a href="#" class="scheme-toggle" id="scheme-toggle"></a></li></ul>
+		</nav>
+	</div>
+
+	<nav class="nav">
+		<ul class="flat">
+			
+			<li>
+				<a href="/">Home</a>
+			</li>
+			
+			<li>
+				<a href="/posts">All posts</a>
+			</li>
+			
+			<li>
+				<a href="/about">About</a>
+			</li>
+			
+			<li>
+				<a href="/tags">Tags</a>
+			</li>
+			
+		</ul>
+	</nav>
+</div>
+
+
+		<div class="post">
+			<div class="post-header">
+				
+					<div class="meta">
+						<div class="date">
+							<span class="day">09</span>
+							<span class="rest">Jul 2026</span>
+						</div>
+					</div>
+				
+				<div class="matter">
+					<h1 class="title">What did your mapper actually do? Now you can ask it.</h1>
+				</div>
+			</div>
+					
+			<div class="markdown">
+				<p><p class="md__image">
+    <img src="logo.png" alt="telescope"  />
+</p></p>
+<blockquote>
+<p><em>Telescope, part 3 of 3: <a href="/posts/post-6/">how it got built</a> · <a href="/posts/post-7/">why your mappings should not be strings</a> · <strong>asking your mapper what it did</strong></em></p>
+</blockquote>
+<h2 id="the-setup">The setup</h2>
+<p>A field arrives <code>null</code> in production. The mapper between your entity and your DTO is the suspect,
+and now you get to answer a simple question: what did it actually map?</p>
+<p>If the mapper is <a href="https://mapstruct.org/">MapStruct</a>, the answer lives in one place: the generated
+<code>*MapperImpl.java</code> under <code>build/generated</code>. You open it, you read the assignments, you diff what you
+read against what you meant. If the question is about a specific request — which values went in,
+which came out — generated source cannot answer it at all; you add a breakpoint or a log line,
+redeploy, and wait for the bug to happen again.</p>
+<p>This is not really a MapStruct flaw. Every mapper I know of is write-only: you
+declare the mapping, the tool does something, and the something is invisible until it is wrong.</p>
+<p><a href="https://mariano-gonzalez.com/posts/post-7/">Last time</a> I argued the input side of
+<a href="https://github.com/eschizoid/telescope/">telescope</a>: field names should be method references the
+compiler checks, not strings. This post is the output side. A telescope mapper is not a black box;
+it is a value you can interrogate. Three verbs: <code>explain()</code>, <code>trace(input)</code>, and a log level.</p>
+<h2 id="explain-the-mapping-as-data">explain(): the mapping, as data</h2>
+<p>Every <code>Mapper&lt;A, B&gt;</code> can describe its own structure. No input needed, nothing executes:</p>
+<figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-java" data-lang="java"><span style="display:flex;"><span>Mapper<span style="color:#ff7b72;font-weight:bold">&lt;</span>Customer,<span style="color:#6e7681"> </span>CustomerDto<span style="color:#ff7b72;font-weight:bold">&gt;</span><span style="color:#6e7681"> </span>mapper<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>Telescope.mapper(<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>Customer.class,<span style="color:#6e7681"> </span>CustomerDto.class,<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>to(Customer::email,<span style="color:#6e7681"> </span>CustomerDto::getContactEmail));<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span>System.out.println(mapper.explain());<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// Mapped:</span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">//   ✓ email → contactEmail</span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#ff7b72;font-weight:bold">//</span><span style="color:#6e7681">   </span><span style="color:#f85149">✓</span><span style="color:#6e7681"> </span>name<span style="color:#6e7681">  </span><span style="color:#f85149">→</span><span style="color:#6e7681"> </span>name</span></span></code></pre>
+</figure><p>That render is the demo, not the API. <code>explain()</code> returns an <code>OpticReport</code>, a list of typed nodes
+you can query: <code>mapped()</code>, <code>skipped()</code>, <code>transformations()</code>, <code>unusedSources()</code>. Which means the
+question &ldquo;did I map everything?&rdquo; stops being a code review and becomes a test:</p>
+<figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// A strict mapper drops nothing, and CI proves it on every build:</span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span>assertThat(mapper.explain().skipped()).isEmpty();<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// The rename is not folklore; it is enumerable data:</span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span>assertThat(mapper.explain().mapped()).contains(<span style="color:#ff7b72">new</span><span style="color:#6e7681"> </span>Mapped(<span style="color:#a5d6ff">&#34;email&#34;</span>,<span style="color:#6e7681"> </span><span style="color:#a5d6ff">&#34;contactEmail&#34;</span>));</span></span></code></pre>
+</figure><p>Sit with that second assertion for a moment. In MapStruct, the knowledge that <code>email</code> maps to
+<code>contactEmail</code> exists in an annotation string and in generated code. Here it is a record you can
+pull out of the mapper and assert on. When someone edits the mapper next quarter, the test tells
+them what they changed.</p>
+<p>A fuller mapper renders with sections, aligned so it reads as one table:</p>
+<figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-text" data-lang="text"><span style="display:flex;"><span>Mapped:
+</span></span><span style="display:flex;"><span>  ✓ firstName         → givenName
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Skipped:
+</span></span><span style="display:flex;"><span>  • id                (ignored)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Transformations:
+</span></span><span style="display:flex;"><span>  • birthDate(String) → LocalDate</span></span></code></pre>
+</figure><p>Renames, intentional drops, type conversions: the whole shape of the mapping, printed by the
+mapping. There is nothing to keep in sync, because it is not documentation; it is the mapper describing
+itself.</p>
+<h2 id="traceinput-the-same-rows-with-your-values-in-them">trace(input): the same rows, with your values in them</h2>
+<p><code>explain()</code> is static structure. <code>trace(input)</code> runs one conversion and fills in the value column,
+whole nested graph included:</p>
+<figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-java" data-lang="java"><span style="display:flex;"><span>System.out.println(mapper.trace(order));<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// ✓ id        &#34;o-1&#34;                                     → id &#34;o-1&#34;</span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// • customer  Customer[name=Ada, email=ada@example.com] → customer CustomerDto[name=Ada, contactEmail=ada@example.com]</span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#ff7b72;font-weight:bold">//</span><span style="color:#6e7681"> </span><span style="color:#f85149">•</span><span style="color:#6e7681"> </span>lines<span style="color:#6e7681">     </span><span style="color:#ff7b72;font-weight:bold">[</span>LineItem<span style="color:#ff7b72;font-weight:bold">[</span>sku<span style="color:#ff7b72;font-weight:bold">=</span>sku<span style="color:#ff7b72;font-weight:bold">-</span>1,<span style="color:#6e7681"> </span>quantity<span style="color:#ff7b72;font-weight:bold">=</span>2,<span style="color:#6e7681"> </span>...<span style="color:#ff7b72;font-weight:bold">]]</span><span style="color:#6e7681">    </span><span style="color:#f85149">→</span><span style="color:#6e7681"> </span>lines<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">[</span>LineItemDto<span style="color:#ff7b72;font-weight:bold">[</span>sku<span style="color:#ff7b72;font-weight:bold">=</span>sku<span style="color:#ff7b72;font-weight:bold">-</span>1,<span style="color:#6e7681"> </span>quantity<span style="color:#ff7b72;font-weight:bold">=</span>2,<span style="color:#6e7681"> </span>...<span style="color:#ff7b72;font-weight:bold">]]</span></span></span></code></pre>
+</figure><p>This is the production question from the setup, answered directly: for this input, these values
+went in, these came out, row by row. The trace never re-runs your conversion (it reads the result
+you already have), and it is built not to make things worse: a field whose <code>toString()</code> throws
+renders as <code>(n/a)</code> instead of taking the diagnostic down with it.</p>
+<h2 id="the-log-level-the-same-answers-in-production">The log level: the same answers in production</h2>
+<p>You will not call <code>trace()</code> by hand in production, so the mapper does it for you. Every mapper logs
+through <code>java.lang.System.Logger</code>, the facade that ships in <code>java.base</code>, under a logger named by
+its type pair. It adds no dependency:</p>
+<figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-properties" data-lang="properties"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"># JUL (the JDK default): one mapper, values per conversion</span>
+</span></span><span style="display:flex;"><span>io.github.eschizoid.telescope.mapper.Order.OrderDto.level <span style="color:#ff7b72;font-weight:bold">=</span> <span style="color:#a5d6ff">FINER</span></span></span></code></pre>
+</figure><figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">&lt;!-- or Logback --&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#7ee787">&lt;logger</span> name=<span style="color:#a5d6ff">&#34;io.github.eschizoid.telescope.mapper.Order.OrderDto&#34;</span> level=<span style="color:#a5d6ff">&#34;TRACE&#34;</span><span style="color:#7ee787">/&gt;</span></span></span></code></pre>
+</figure><p><code>DEBUG</code> logs each mapper&rsquo;s <code>explain()</code> once, when it is built. <code>TRACE</code> adds the per-conversion
+value trace on every <code>forward()</code>. Off, the default, costs nothing measurable: the call sites are
+guarded before any message object exists. So the field-arrives-null investigation becomes: flip one
+logger in config, watch the very next conversion narrate itself, flip it back. You never redeploy
+and never dig through <code>build/generated</code>.</p>
+<p>MapStruct has no equivalent surface, and it cannot cheaply grow one: its mapper <em>is</em> the generated
+code, so there is no runtime object that knows the mapping&rsquo;s structure. Telescope&rsquo;s mapper is a
+value that carries its own description around. That one architectural difference is where all three
+verbs come from.</p>
+<h2 id="the-receipts-auditing-my-own-library-against-mapstructs-feature-list">The receipts: auditing my own library against MapStruct&rsquo;s feature list</h2>
+<p>A capability pitch always gets the same response, and it is the right one: fine, but does it do X?
+So instead of waiting for the question, I went through MapStruct&rsquo;s whole feature surface and
+scored telescope against every row: implicit conversions, expressions, qualifiers, lifecycle hooks,
+<code>@MappingTarget</code> updates, builders, null-value strategies, decorators, subclass mapping,
+29 features in total. Each verdict cites the telescope source and tests it rests on, and a
+second adversarial pass re-checked every citation and every code snippet against the real API.</p>
+<p>The result is the
+<a href="https://github.com/eschizoid/telescope/blob/main/docs/mapstruct-parity.md">parity matrix</a>:
+13 features fully covered, 16 covered with a named limitation, none missing. I will not re-argue it
+here; the point of writing it down with evidence is that you can check it without trusting me.</p>
+<p>Two parts of that audit embarrassed me, and both belong in this post.</p>
+<p>First, the verification pass downgraded two of my own verdicts. I had scored constructor mapping
+&ldquo;full&rdquo;; the second pass pointed out MapStruct&rsquo;s <code>@Default</code> disambiguates multi-constructor classes and
+telescope refuses them, so &ldquo;partial&rdquo; it is. The matrix is more honest because the process assumed I
+was wrong.</p>
+<p>Second, the audit found an actual bug. Telescope&rsquo;s <code>MapperBuilder.inherit(...)</code> lets mappers share
+row groups (its answer to <code>@InheritConfiguration</code>), and a group inherited into a mapper of the
+wrong type pair was <em>silently dropped</em>: the mapper built cleanly and quietly lost the renamed
+fields, while same-name auto-mapping masked the hole. That is precisely the class of silent failure
+this whole library exists to kill, sitting in my own code. It fails fast now, with an error naming
+the unreachable pair and its rows, and the fix landed before this post did. An audit that only
+produces a marketing table is a bad audit; this one filed a bug against its own author.</p>
+<h2 id="migrating-one-mapper-at-a-time">Migrating, one mapper at a time</h2>
+<p>The last post said &ldquo;write your next mapper in telescope.&rdquo; The
+<a href="https://github.com/eschizoid/telescope/blob/main/docs/mapstruct-migration.md">migration guide</a>
+now covers the mappers you already have: MapStruct and telescope run side by side indefinitely, so
+you translate one interface at a time with a pattern-by-pattern table, and introspection is what
+makes each step safe. Keep the old MapStruct mapper around for one golden assert:</p>
+<figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// the migrated mapper drops nothing…</span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span>assertThat(mapper.explain().skipped()).isEmpty();<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic">// …and for one golden input, old and new agree:</span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span>assertThat(mapper.forward(sample)).isEqualTo(oldMapStructMapper.toDto(sample));</span></span></code></pre>
+</figure><p>When both pass, delete the interface and move to the next one. The mapper that can prove what it
+does is also the mapper you can migrate to without holding your breath.</p>
+<h2 id="closing">Closing</h2>
+<p>The strings argument from last time was about what you write. This one is about what you can know
+afterward: the mapping as data you can assert on, the values as a trace you can flip on from
+config, and a feature-by-feature audit you can check instead of trusting.</p>
+<p>The ask is the same one, one line, Java 21 or later:</p>
+<figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-kotlin" data-lang="kotlin"><span style="display:flex;"><span>implementation(<span style="color:#a5d6ff">&#34;io.github.eschizoid:telescope-core:1.1.1&#34;</span>)</span></span></code></pre>
+</figure><p>Then take the mapper that burned you last, the one where a field went quietly <code>null</code> and you found
+out from a bug report, and ask the telescope version what it does: <code>mapper.explain()</code>. You will get
+an answer. That is the whole post.</p>
+
+			</div>
+
+			<div class="tags">
+				
+					
+						<ul class="flat">
+							
+							<li><a href="/tags/java">java</a></li>
+							
+							<li><a href="/tags/telescope">telescope</a></li>
+							
+							<li><a href="/tags/mapstruct">MapStruct</a></li>
+							
+							<li><a href="/tags/introspection">introspection</a></li>
+							
+							<li><a href="/tags/observability">observability</a></li>
+							
+							<li><a href="/tags/object-mapping">object-mapping</a></li>
+							
+							<li><a href="/tags/dsl">dsl</a></li>
+							
+						</ul>
+					
+				
+			</div><l></l><div id="disqus_thread"></div>
+<script>
+
+    (function() {
+        
+        
+        if (window.location.hostname == "localhost")
+            return;
+
+        var d = document, s = d.createElement('script');
+        s.src = 'https://mariano-gonzalez.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+	</div>
+	<div class="footer wrapper">
+	<nav class="nav">
+		<div>2026  <p>Copyright © 2026 Mariano Gonzalez</p><p xmlns:dct='http://purl.org/dc/terms/' xmlns:cc='http://creativecommons.org/ns#' class='license-text'><a rel='cc:attributionURL' property='dct:title' href='https://github.com/eschizoid/eschizoid.github.io/tree/main/content'>Content</a> licensed under <a rel='license' href='https://creativecommons.org/licenses/by/4.0'>CC BY 4.0</a></p> |  <a href="https://github.com/knadh/hugo-ink">Ink</a> theme on <a href="https://gohugo.io">Hugo</a></div>
+	</nav>
+</div>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1R50XCY25D"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-1R50XCY25D');
+</script><script>feather.replace()</script>
+</body>
+</html>
