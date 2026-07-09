@@ -12,9 +12,16 @@
 			<copyright>&lt;p&gt;Copyright © 2026 Mariano Gonzalez&lt;/p&gt;&lt;p xmlns:dct=&#39;http://purl.org/dc/terms/&#39; xmlns:cc=&#39;http://creativecommons.org/ns#&#39; class=&#39;license-text&#39;&gt;&lt;a rel=&#39;cc:attributionURL&#39; property=&#39;dct:title&#39; href=&#39;https://github.com/eschizoid/eschizoid.github.io/tree/main/content&#39;&gt;Content&lt;/a&gt; licensed under &lt;a rel=&#39;license&#39; href=&#39;https://creativecommons.org/licenses/by/4.0&#39;&gt;CC BY 4.0&lt;/a&gt;&lt;/p&gt;</copyright>
 		
 		
-			<lastBuildDate>Mon, 22 Jun 2026 00:00:00 +0000</lastBuildDate>
+			<lastBuildDate>Thu, 09 Jul 2026 00:00:00 +0000</lastBuildDate>
 		
 			<atom:link href="https://mariano-gonzalez.com/tags/mapstruct/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>What did your mapper actually do? Now you can ask it.</title>
+				<link>https://mariano-gonzalez.com/posts/post-8/</link>
+				<pubDate>Thu, 09 Jul 2026 00:00:00 +0000</pubDate>
+				<guid>https://mariano-gonzalez.com/posts/post-8/</guid>
+				<description>&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;&#xA;    &lt;img src=&#34;logo.png&#34; alt=&#34;telescope&#34;  /&gt;&#xA;&lt;/p&gt;&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;&lt;em&gt;Telescope, part 3 of 3: &lt;a href=&#34;https://mariano-gonzalez.com/posts/post-6/&#34;&gt;how it got built&lt;/a&gt; · &lt;a href=&#34;https://mariano-gonzalez.com/posts/post-7/&#34;&gt;why your mappings should not be strings&lt;/a&gt; · &lt;strong&gt;asking your mapper what it did&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;h2 id=&#34;the-setup&#34;&gt;The setup&lt;/h2&gt;&#xA;&lt;p&gt;A field arrives &lt;code&gt;null&lt;/code&gt; in production. The mapper between your entity and your DTO is the suspect,&#xA;and now you get to answer a simple question: what did it actually map?&lt;/p&gt;&#xA;&lt;p&gt;If the mapper is &lt;a href=&#34;https://mapstruct.org/&#34;&gt;MapStruct&lt;/a&gt;, the answer lives in one place: the generated&#xA;&lt;code&gt;*MapperImpl.java&lt;/code&gt; under &lt;code&gt;build/generated&lt;/code&gt;. You open it, you read the assignments, you diff what you&#xA;read against what you meant. If the question is about a specific request — which values went in,&#xA;which came out — generated source cannot answer it at all; you add a breakpoint or a log line,&#xA;redeploy, and wait for the bug to happen again.&lt;/p&gt;</description>
+			</item>
 			<item>
 				<title>It is 2026. Why are your object mappings still strings?</title>
 				<link>https://mariano-gonzalez.com/posts/post-7/</link>
