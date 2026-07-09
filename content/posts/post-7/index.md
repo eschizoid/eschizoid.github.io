@@ -18,6 +18,15 @@ draft: false
 
 ![telescope](logo.png)
 
+> **Update, July 2026.** Since this went out, telescope grew the thing this post could not claim:
+> mappers that are no longer black boxes. `mapper.explain()` returns the mapping structure as data,
+> `mapper.trace(input)` shows the values flowing through, and flipping a log level makes every
+> conversion narrate itself. The claims below also have receipts now: a
+> [feature-by-feature parity matrix](https://github.com/eschizoid/telescope/blob/main/docs/mapstruct-parity.md)
+> covering 29 MapStruct features (none missing, every verdict with evidence) and a
+> [migration guide](https://github.com/eschizoid/telescope/blob/main/docs/mapstruct-migration.md).
+> A follow-up post will do those justice. The baseline moved too: telescope now requires Java 21.
+
 ## The setup
 
 Mapping one Java object to another is routine work in most apps, and
@@ -51,6 +60,7 @@ instead of 2014, not me stacking the deck.
 | Effectful update (async / optional / either / validated) | yes       | not in scope                |
 | Accumulating validation                                  | yes       | hand-rolled                 |
 | Sealed-root dispatch                                     | yes       | not in scope                |
+| Mapper introspection (explain / trace / log narration)   | yes       | read the generated source   |
 | Multi-source merge (N → 1)                               | yes       | yes, string-keyed           |
 | Runtime path, no codegen                                 | yes       | compile-time only           |
 | Maturity and ecosystem                                   | 1.0       | a decade                    |
@@ -369,8 +379,11 @@ these numbers.
 Everything MapStruct beats telescope on comes down to time, not design.
 
 Maturity is the big one. A decade across thousands of codebases means the edge cases are found and
-the answers are written down, where telescope is at 1.0 and some of those edges are still mine to
-find. The ecosystem is the quieter one: IDE support, a Stack Overflow answer for every question, and
+the answers are written down, where telescope is at 1.x and some of those edges are still mine to
+find. One kind of answer is written down now, though: the
+[parity matrix](https://github.com/eschizoid/telescope/blob/main/docs/mapstruct-parity.md) scores
+every MapStruct feature against telescope with evidence per verdict, so "does it do X?" no longer
+depends on my say-so. The ecosystem is the quieter one: IDE support, a Stack Overflow answer for every question, and
 the next engineer on the team already knowing it and never having heard of this. That is a real
 switching cost, and I will not pretend otherwise.
 
@@ -383,7 +396,7 @@ So reach for MapStruct when the codebase is already MapStruct, the mappers are o
 shallow, or team familiarity outweighs everything else. Those are real reasons, and none of them is
 about the library being better. Reach for telescope for new code, and for anything MapStruct cannot
 say: typed field references instead of strings, deep nested updates, validation or effects inside the
-mapping, sealed hierarchies, multi-source merge.
+mapping, sealed hierarchies, multi-source merge, and mappers that explain themselves.
 
 I am not going to tell you to rip out working mappers; replacing code that works is a bad trade no
 matter what you would replace it with. The inexpensive move is the next mapper you write: write it in
@@ -400,26 +413,31 @@ If you are on a framework, it slots in the same way MapStruct does. `telescope-s
 autoconfigures a registry of your `Mapper<A, B>` beans on Spring Boot 4; `telescope-quarkus` does the
 same through Arc. A `Mapper` bean injects like any `@Mapper(componentModel = "spring")` you already
 have. The whole bet is one mapper and one dependency line in a project that keeps working exactly as
-it did.
+it did. There is now a written
+[migration guide](https://github.com/eschizoid/telescope/blob/main/docs/mapstruct-migration.md) for
+exactly this path: a translation table for every MapStruct pattern, and an assert that proves each
+migrated mapper does what the old one did before you delete it. One prerequisite: telescope runs on
+Java 21 and up.
 
 ## Closing
 
 Telescope is the better-designed mapping library, and I will say so without flinching, because the
 receipts back it: it is on Maven Central today, its codegen matches MapStruct's speed at the depth
-real code has, and its capability surface is strictly larger. The one thing it does not have yet is
+real code has, and its capability surface is strictly larger — feature by feature,
+[in writing](https://github.com/eschizoid/telescope/blob/main/docs/mapstruct-parity.md). The one thing it does not have yet is
 adopters, which is exactly the gap you can help close.
 
 So here is the ask, and it is small. Add one line:
 
 ```kotlin
-implementation("io.github.eschizoid:telescope-core:1.0.7")
+implementation("io.github.eschizoid:telescope-core:1.1.1")
 ```
 
 ```xml
 <dependency>
   <groupId>io.github.eschizoid</groupId>
   <artifactId>telescope-core</artifactId>
-  <version>1.0.7</version>
+  <version>1.1.1</version>
 </dependency>
 ```
 
