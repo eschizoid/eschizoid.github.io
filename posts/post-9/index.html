@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Fast is the easy part. Here is why you can trust KPipe with your offsets. - Mariano Gonzalez</title><meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<meta itemprop="name" content="Fast is the easy part. Here is why you can trust KPipe with your offsets.">
+	<meta itemprop="description" content="The last KPipe benchmark post told you not to trust the absolute numbers. This one earns them back: a quiesced box, five forks, honest error bars, and the full 0-100ms sweep where the gap over Confluent Parallel Consumer widens to 41x. Then the half a throughput chart cannot show - the at-least-once guarantee under jcstress - and one optimization that looked great and did not pan out.">
+	<meta itemprop="datePublished" content="2026-07-22T00:00:00+00:00">
+	<meta itemprop="dateModified" content="2026-07-22T00:00:00+00:00">
+	<meta itemprop="wordCount" content="1920">
+	<meta itemprop="keywords" content="Kafka,Java,Benchmarks,Virtual-Threads,Jmh,Jcstress,Concurrency"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-9/">
+	<meta property="og:site_name" content="Mariano Gonzalez">
+	<meta property="og:title" content="Fast is the easy part. Here is why you can trust KPipe with your offsets.">
+	<meta property="og:description" content="The last KPipe benchmark post told you not to trust the absolute numbers. This one earns them back: a quiesced box, five forks, honest error bars, and the full 0-100ms sweep where the gap over Confluent Parallel Consumer widens to 41x. Then the half a throughput chart cannot show - the at-least-once guarantee under jcstress - and one optimization that looked great and did not pan out.">
+	<meta property="og:locale" content="en_us">
+	<meta property="og:type" content="article">
+		<meta property="article:section" content="posts">
+		<meta property="article:published_time" content="2026-07-22T00:00:00+00:00">
+		<meta property="article:modified_time" content="2026-07-22T00:00:00+00:00">
+		<meta property="article:tag" content="Kafka">
+		<meta property="article:tag" content="Java">
+		<meta property="article:tag" content="Benchmarks">
+		<meta property="article:tag" content="Virtual-Threads">
+		<meta property="article:tag" content="Jmh">
+		<meta property="article:tag" content="Jcstress">
+
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:title" content="Fast is the easy part. Here is why you can trust KPipe with your offsets.">
+	<meta name="twitter:description" content="The last KPipe benchmark post told you not to trust the absolute numbers. This one earns them back: a quiesced box, five forks, honest error bars, and the full 0-100ms sweep where the gap over Confluent Parallel Consumer widens to 41x. Then the half a throughput chart cannot show - the at-least-once guarantee under jcstress - and one optimization that looked great and did not pan out.">
+<link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1784759422" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1784759422" />
+	<script defer type="text/javascript"  src="/js/copy-code.js?v=1784759422"></script>
+		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1784759422" />
+	
+
+        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1784759422" />
+
+	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1784759422"></script>
+	
+		<script src="https://mariano-gonzalez.com/js/main.js?v=1784759422"></script>
+
+	
+		<link rel="stylesheet" href="/css/copy-code-button.css?v=1784759422">
+	
+</head>
+
+<body>
+	<div class="container wrapper">
+		<div class="header">
+	
+	<h1 class="site-title"><a href="https://mariano-gonzalez.com/">Mariano Gonzalez</a></h1>
+	<div class="site-description"><p>Coder and Computer Enthusiast</p><nav class="nav social">
+			<ul class="flat"><li><a href="https://www.linkedin.com/in/marianogonzalezmx/?locale=en_US" title="LinkedIn"><i data-feather="linkedin"></i></a></li><li><a href="https://github.com/eschizoid" title="Github"><i data-feather="github"></i></a></li><li><a href="/index.xml" title="RSS"><i data-feather="rss"></i></a></li><li><a href="#" class="scheme-toggle" id="scheme-toggle"></a></li></ul>
+		</nav>
+	</div>
+
+	<nav class="nav">
+		<ul class="flat">
+			
+			<li>
+				<a href="/">Home</a>
+			</li>
+			
+			<li>
+				<a href="/posts">All posts</a>
+			</li>
+			
+			<li>
+				<a href="/about">About</a>
+			</li>
+			
+			<li>
+				<a href="/tags">Tags</a>
+			</li>
+			
+		</ul>
+	</nav>
+</div>
+
+
+		<div class="post">
+			<div class="post-header">
+				
+					<div class="meta">
+						<div class="date">
+							<span class="day">22</span>
+							<span class="rest">Jul 2026</span>
+						</div>
+					</div>
+				
+				<div class="matter">
+					<h1 class="title">Fast is the easy part. Here is why you can trust KPipe with your offsets.</h1>
+				</div>
+			</div>
+					
+			<div class="markdown">
+				<p><p class="md__image">
+    <img src="logo.png" alt="kpipe"  />
+</p></p>
+<blockquote>
+<p><em>KPipe, part 3 of 3: <a href="/posts/post-4/">a simpler way to structure consumers</a> · <a href="/posts/post-5/">the first benchmarks</a> · <strong>fast is the easy part</strong></em></p>
+</blockquote>
+<p>Last time I benchmarked KPipe I ended with a warning about my own numbers. Single runs moved 5 to
+40 percent between iterations. There was no latency-percentile data. I told you to read the
+percentages as one-sigma indicators and not to quote the absolute throughput at anyone.</p>
+<p>That was the honest thing to say at the time, and it was also a promissory note. This post is me
+paying it. The numbers here come from a quiesced machine - no browser, no IDE indexing, on mains
+power - with five JMH forks instead of one, the full <code>workMicros</code> sweep out to 100 ms per record,
+and latency percentiles alongside. The raw JSON and a dated markdown snapshot are committed in
+<a href="https://github.com/eschizoid/kpipe/tree/main/benchmarks/results"><code>benchmarks/results/</code></a> as always. Where the last post had ±5-40% error bars, this
+one has ±0.1-6% on nearly every cell.</p>
+<p>And then, because throughput is the easy half, the part that matters more: how I know KPipe does not
+lose your messages, and the story of an optimization I was sure would win and had to publish as a
+loss instead.</p>
+<p><a href="https://github.com/eschizoid/kpipe">GitHub repo</a></p>
+<h2 id="the-numbers-redone-right">The numbers, redone right</h2>
+<p>The headline regime is 10 to 100 ms of work per record - the range where a real consumer lives once
+it is doing a database write or an HTTP call per message, not just counting bytes. Throughput, in
+records per second, at-least-once delivery, on a 6-core laptop:</p>
+<table>
+	<thead>
+			<tr>
+					<th>Runtime (delivery guarantee)</th>
+					<th style="text-align: right">10ms / record</th>
+					<th style="text-align: right">100ms / record</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>KPipe <code>PARALLEL</code></strong></td>
+					<td style="text-align: right">57.6k ± 6%</td>
+					<td style="text-align: right">40.0k ± 3%</td>
+			</tr>
+			<tr>
+					<td><strong>KPipe <code>KEY_ORDERED</code></strong> (per-key FIFO)</td>
+					<td style="text-align: right">34.5k ± 0.3%</td>
+					<td style="text-align: right">5.2k ± 0.3%</td>
+			</tr>
+			<tr>
+					<td>Confluent PC <code>UNORDERED</code></td>
+					<td style="text-align: right">8.7k ± 0.3%</td>
+					<td style="text-align: right">968 ± 0.1%</td>
+			</tr>
+			<tr>
+					<td>Confluent PC <code>KEY</code> (per-key FIFO)</td>
+					<td style="text-align: right">8.7k ± 0.3%</td>
+					<td style="text-align: right">968 ± 0.1%</td>
+			</tr>
+			<tr>
+					<td>Reactor Kafka</td>
+					<td style="text-align: right">980 ± 0.2%</td>
+					<td style="text-align: right">did not finish</td>
+			</tr>
+	</tbody>
+</table>
+<p>That is roughly <strong>6.6x Confluent Parallel Consumer at 10 ms and 41x at 100 ms</strong>. The last post
+stopped at 1 ms of work and reported 4-7x; extending into the range where consumers actually spend
+their time, the gap does not close, it widens.</p>
+<p>Two honest asterisks on that table, because a benchmark you cannot poke holes in is a benchmark
+nobody should believe. Reactor Kafka at 100 ms did not finish - every fork blew past the harness&rsquo;s
+two-minute drain budget at an effective ~105 rec/s, so I recorded it as a did-not-finish rather than
+extrapolate a flattering-to-me number. And Confluent Parallel Consumer 0.5.3.3 is the last release
+before that project was retired in May; I am benchmarking against the last standing version, and I
+say so.</p>
+<h2 id="why-the-gap-widens-instead-of-closing">Why the gap widens instead of closing</h2>
+<p>The interesting part is that Confluent&rsquo;s numbers are not noisy - they are pinned. CPC runs a pool of
+100 worker threads. At 10 ms per record that pool tops out at <code>100 workers / 10 ms = 10,000 rec/s</code>;
+at 100 ms, <code>100 / 100 ms = 1,000 rec/s</code>. The benchmark measured 8,696 and 968. The model predicts
+the measurement almost exactly, because a platform-thread pool has a hard ceiling and that workload
+sits right on it.</p>
+<p>KPipe has no such pool. It runs one virtual thread per record, so its throughput tracks what the
+machine can actually overlap, not a fixed worker count. That is the whole thesis of the library in
+one comparison: platform pools saturate, virtual-thread-per-record does not. It is a threading-model
+verdict, not a tuning gap, and it is why the multiple grows with per-record latency instead of
+shrinking.</p>
+<p>The honest cost, stated plainly because it is real: KPipe allocates the most per record of anything
+in the field, about 1.7 KB/op against CPC&rsquo;s ~35 B/op, most of it the fresh virtual thread. You are
+trading memory for the throughput lead under blocking work. That is a deliberate trade, not a hidden
+one, and the allocation profile is in the repo next to the throughput JSON.</p>
+<p>The one place I will not oversell: at sub-millisecond work, <code>KEY_ORDERED</code> versus CPC&rsquo;s <code>KEY</code> mode is
+genuinely box-dependent. On a 4-vCPU CI runner KPipe wins 1.42x; on my 12-thread laptop it is 0.86x,
+slightly behind. I will come back to that number at the end of this post, because it has a story.</p>
+<h2 id="the-half-a-throughput-chart-cannot-show">The half a throughput chart cannot show</h2>
+<p>Here is the thing every Kafka-library benchmark leaves out, mine included until now: a throughput
+number tells you nothing about whether the fast consumer is also a correct one. It is trivial to be
+fast if you are allowed to drop a record on a rebalance or double-commit an offset under load. The
+whole point of KPipe over a hand-rolled <code>Consumer.poll</code> loop is the operational stack - and that
+stack is only worth anything if it is right.</p>
+<p>So the claim KPipe makes is &ldquo;at-least-once with parallel processing,&rdquo; and I do not want you to take
+that on faith. Every CI run gates on a <a href="https://openjdk.org/projects/code-tools/jcstress/">jcstress</a> suite - 21 concurrency-stress classes as
+of 1.18, four modules - that hammers the offset lifecycle, the backpressure handshake, and the
+dispatcher&rsquo;s per-key handoff under every thread interleaving the scheduler can produce. A single
+FORBIDDEN outcome - one lost record, one double-run, one offset committed ahead of an unfinished
+one - fails the build. This is not a unit test asserting a happy path; it is an exhaustive search
+for the interleaving that breaks the guarantee.</p>
+<p>Building that suite was not academic. It found three real bugs before any user hit them:</p>
+<ul>
+<li>An <strong>offset-tracking race</strong> where a concurrent add-versus-remove-if-empty on the pending-offset
+set could drop an offset from the commit frontier.</li>
+<li><strong>Silent data loss on DLQ-send failure</strong>: when a dead-letter send failed, the record was being
+marked processed anyway. Now a failed DLQ send leaves the offset uncommitted so the record is
+redelivered - a down DLQ applies backpressure instead of quietly eating messages.</li>
+<li>A <strong>circuit breaker blind to the batch path</strong>, tripping on per-record failures but not on the
+batch sink&rsquo;s.</li>
+</ul>
+<p>None of the runtimes I benchmark against state their delivery guarantee this way, let alone test it
+this way. That is the real pitch, and it is a slower, less clickable one than &ldquo;41x&rdquo;: the fast number
+gets you to try it, the stress suite is why you keep it in front of your offsets.</p>
+<p>The 1.18 release leaned into the same idea. Dead-letter records now carry <strong>all</strong> their original
+headers plus a full <code>x-dlq-*</code> envelope, including a source timestamp, so a DLQ is a replayable
+record of what happened rather than a payload graveyard. A throwing metrics callback can no longer
+crash a worker, abort a batch flush, or flip a successful send into a reported failure - your
+observability code cannot take down the data path. And it shipped the feature I get asked about
+most: Protobuf with Confluent Schema Registry, end to end, wire-compatible with Confluent&rsquo;s own
+<code>KafkaProtobufSerializer</code>, as an opt-in module so the JSON and Avro users carry none of its weight.</p>
+<h2 id="the-same-verification-handed-to-you">The same verification, handed to you</h2>
+<p>The jcstress suite is how I verify the library. But the honest problem with &ldquo;the library is
+correct&rdquo; is that your pipeline is your code, and most Kafka test setups make you choose between
+mocking so much that you test nothing real, or standing up a Testcontainers broker and paying five
+seconds of Docker per test.</p>
+<p>1.18 ships a third option: <code>kpipe-test</code>, a Docker-free kit that drives a <strong>real</strong> <code>KPipeConsumer</code> -
+the production dispatcher, offset manager, and sink code - over a seeded in-memory consumer. Your
+test exercises the actual runtime, in about 5 to 20 ms, with no broker:</p>
+<figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">var</span><span style="color:#6e7681"> </span>captured<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">new</span><span style="color:#6e7681"> </span>CapturingSink<span style="color:#ff7b72;font-weight:bold">&lt;</span>Map<span style="color:#ff7b72;font-weight:bold">&lt;</span>String,<span style="color:#6e7681"> </span>Object<span style="color:#ff7b72;font-weight:bold">&gt;&gt;</span>();<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#ff7b72">try</span><span style="color:#6e7681"> </span>(<span style="color:#ff7b72">final</span><span style="color:#6e7681"> </span><span style="color:#ff7b72">var</span><span style="color:#6e7681"> </span>driver<span style="color:#6e7681"> </span><span style="color:#ff7b72;font-weight:bold">=</span><span style="color:#6e7681"> </span>TestStream.<span style="color:#ff7b72;font-weight:bold">&lt;</span>Map<span style="color:#ff7b72;font-weight:bold">&lt;</span>String,<span style="color:#6e7681"> </span>Object<span style="color:#ff7b72;font-weight:bold">&gt;&gt;</span>builder(JsonFormat.INSTANCE)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.pipe(addTimestamp)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.filter(isActive)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.toCustom(captured)<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">    </span>.build())<span style="color:#6e7681"> </span>{<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>driver.send(activeRecord);<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>driver.send(inactiveRecord);<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>driver.flush();<span style="color:#6e7681">                              </span><span style="color:#8b949e;font-style:italic">// returns only once every record has drained</span><span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span><span style="color:#6e7681">  </span>assertThat(captured.captured()).containsExactly(expectedActiveWithTimestamp);<span style="color:#6e7681">
+</span></span></span><span style="display:flex;"><span>}</span></span></code></pre>
+</figure><p><code>flush()</code> is the whole trick: it returns only when every sent record is polled, accounted for, and
+drained, so the assertion afterward is deterministic instead of a <code>Thread.sleep</code> and a prayer. There
+is a <code>CrashRestartHarness</code> in the same kit for the nastier question - does the consumer reprocess
+the right window after a crash - that drives two real consumer phases across a commit point without
+a live broker to flake on. Verification is not just something I do to the library; it is something
+the library hands to you for the code you write on top of it.</p>
+<h2 id="the-optimization-that-looked-great-and-did-not-pan-out">The optimization that looked great and did not pan out</h2>
+<p>I will end on the number I said I would come back to, because it is the most honest thing in this
+post.</p>
+<p>The <code>KEY_ORDERED</code> dispatcher - the mode that guarantees per-key ordering - used a single lock for
+all of its internal bookkeeping. On the 12-thread box, at sub-millisecond work, that lock was my
+prime suspect for why KPipe trailed CPC&rsquo;s <code>KEY</code> mode: more cores meant more threads contending on
+one lock. So I rewrote it. The global lock became a concurrent map with one lightweight monitor per
+key, so workers for different keys never contend. I grilled the design, verified it under jcstress
+with a new stress test that proves the tricky eviction race is actually reached, and benchmarked it
+in isolation.</p>
+<p>In isolation it was a rout: <strong>+122% throughput at high key cardinality, +112% at moderate</strong>. The
+lock really had been the bottleneck in the dispatcher, and removing it made the dispatcher scale up
+with cores instead of down. Merged, verified, done.</p>
+<p>Then I re-ran the actual broker benchmark - the 1 ms <code>KEY_ORDERED</code> cell, the one that started the
+whole investigation - to watch it flip.</p>
+<p>It did not flip. 52,949 rec/s before, 52,216 after. Flat. The ratio against CPC <code>KEY</code> moved from
+0.83x to 0.86x, entirely inside the noise.</p>
+<p>Here is what happened, and why I am telling you instead of quietly not mentioning it. The
+micro-benchmark isolated pure dispatch cost, and there the lock was the whole story. But at the
+broker, with a real 1 ms of work per record, the per-record budget is dominated by fetch,
+deserialization, offset tracking, and the per-key serialization the mode exists to provide - the
+dispatcher lock was a rounding error inside all of that. I removed a real bottleneck that was not
+the bottleneck <em>there</em>. The rewrite is a genuine win for dispatch-bound workloads and it makes the
+code better; it simply does not move the broker number I hoped it would, and the README&rsquo;s
+sub-millisecond caveat stays exactly as it was written.</p>
+<p>I could have shown you the +122% and stopped. The reason I did not is the same reason the jcstress
+suite exists: the point of measuring a thing is to find out what is true, and a benchmark you only
+publish when it flatters you is not a benchmark, it is an ad. The prediction was made, it was
+measured, and it was refuted. That is a result too.</p>
+<h2 id="closing">Closing</h2>
+<p>The first two posts made the case that KPipe is a nicer way to write a Kafka consumer and that it is
+fast. This one is the part I care about more: it is fast in the regime you actually run in, the
+speed comes with an at-least-once guarantee that is exhaustively tested rather than asserted, and
+when my own optimization missed I told you so.</p>
+<p>The ask is one line, Java 25 or later:</p>
+<figure class="highlight">
+    <pre tabindex="0" class="chroma"
+    ><code class="language-kotlin" data-lang="kotlin"><span style="display:flex;"><span>implementation(<span style="color:#a5d6ff">&#34;io.github.eschizoid:kpipe-api:1.18.0&#34;</span>)</span></span></code></pre>
+</figure><p>The numbers are the reason to try it. The stress suite is the reason to leave it running while you
+sleep.</p>
+<p><a href="https://github.com/eschizoid/kpipe">GitHub repo</a> · <a href="https://github.com/eschizoid/kpipe/tree/main/benchmarks">Benchmarks README</a> · <a href="https://github.com/eschizoid/kpipe/tree/main/benchmarks/results">Raw JMH JSON</a></p>
+
+			</div>
+
+			<div class="tags">
+				
+					
+						<ul class="flat">
+							
+							<li><a href="/tags/kafka">kafka</a></li>
+							
+							<li><a href="/tags/java">java</a></li>
+							
+							<li><a href="/tags/benchmarks">benchmarks</a></li>
+							
+							<li><a href="/tags/virtual-threads">virtual-threads</a></li>
+							
+							<li><a href="/tags/jmh">jmh</a></li>
+							
+							<li><a href="/tags/jcstress">jcstress</a></li>
+							
+							<li><a href="/tags/concurrency">concurrency</a></li>
+							
+						</ul>
+					
+				
+			</div><l></l><div id="disqus_thread"></div>
+<script>
+
+    (function() {
+        
+        
+        if (window.location.hostname == "localhost")
+            return;
+
+        var d = document, s = d.createElement('script');
+        s.src = 'https://mariano-gonzalez.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+	</div>
+	<div class="footer wrapper">
+	<nav class="nav">
+		<div>2026  <p>Copyright © 2026 Mariano Gonzalez</p><p xmlns:dct='http://purl.org/dc/terms/' xmlns:cc='http://creativecommons.org/ns#' class='license-text'><a rel='cc:attributionURL' property='dct:title' href='https://github.com/eschizoid/eschizoid.github.io/tree/main/content'>Content</a> licensed under <a rel='license' href='https://creativecommons.org/licenses/by/4.0'>CC BY 4.0</a></p> |  <a href="https://github.com/knadh/hugo-ink">Ink</a> theme on <a href="https://gohugo.io">Hugo</a></div>
+	</nav>
+</div>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1R50XCY25D"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-1R50XCY25D');
+</script><script>feather.replace()</script>
+</body>
+</html>

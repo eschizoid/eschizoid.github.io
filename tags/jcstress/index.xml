@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
-		<title>Jmh on Mariano Gonzalez</title>
-		<link>https://mariano-gonzalez.com/tags/jmh/</link>
-		<description>Recent content in Jmh on Mariano Gonzalez</description>
+		<title>Jcstress on Mariano Gonzalez</title>
+		<link>https://mariano-gonzalez.com/tags/jcstress/</link>
+		<description>Recent content in Jcstress on Mariano Gonzalez</description>
 		<generator>Hugo</generator>
 		<language>en-us</language>
 		
@@ -14,27 +14,13 @@
 		
 			<lastBuildDate>Wed, 22 Jul 2026 00:00:00 +0000</lastBuildDate>
 		
-			<atom:link href="https://mariano-gonzalez.com/tags/jmh/index.xml" rel="self" type="application/rss+xml" />
+			<atom:link href="https://mariano-gonzalez.com/tags/jcstress/index.xml" rel="self" type="application/rss+xml" />
 			<item>
 				<title>Fast is the easy part. Here is why you can trust KPipe with your offsets.</title>
 				<link>https://mariano-gonzalez.com/posts/post-9/</link>
 				<pubDate>Wed, 22 Jul 2026 00:00:00 +0000</pubDate>
 				<guid>https://mariano-gonzalez.com/posts/post-9/</guid>
 				<description>&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;&#xA;    &lt;img src=&#34;logo.png&#34; alt=&#34;kpipe&#34;  /&gt;&#xA;&lt;/p&gt;&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;&lt;em&gt;KPipe, part 3 of 3: &lt;a href=&#34;https://mariano-gonzalez.com/posts/post-4/&#34;&gt;a simpler way to structure consumers&lt;/a&gt; · &lt;a href=&#34;https://mariano-gonzalez.com/posts/post-5/&#34;&gt;the first benchmarks&lt;/a&gt; · &lt;strong&gt;fast is the easy part&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;Last time I benchmarked KPipe I ended with a warning about my own numbers. Single runs moved 5 to&#xA;40 percent between iterations. There was no latency-percentile data. I told you to read the&#xA;percentages as one-sigma indicators and not to quote the absolute throughput at anyone.&lt;/p&gt;&#xA;&lt;p&gt;That was the honest thing to say at the time, and it was also a promissory note. This post is me&#xA;paying it. The numbers here come from a quiesced machine - no browser, no IDE indexing, on mains&#xA;power - with five JMH forks instead of one, the full &lt;code&gt;workMicros&lt;/code&gt; sweep out to 100 ms per record,&#xA;and latency percentiles alongside. The raw JSON and a dated markdown snapshot are committed in&#xA;&lt;a href=&#34;https://github.com/eschizoid/kpipe/tree/main/benchmarks/results&#34;&gt;&lt;code&gt;benchmarks/results/&lt;/code&gt;&lt;/a&gt; as always. Where the last post had ±5-40% error bars, this&#xA;one has ±0.1-6% on nearly every cell.&lt;/p&gt;</description>
-			</item>
-			<item>
-				<title>From a Monocle port to one fluent type: how Telescope happened</title>
-				<link>https://mariano-gonzalez.com/posts/post-6/</link>
-				<pubDate>Sat, 30 May 2026 00:00:00 +0000</pubDate>
-				<guid>https://mariano-gonzalez.com/posts/post-6/</guid>
-				<description>&lt;p&gt;Telescope is a Java deep-copy DSL for records and POJOs. You build a path through an immutable&#xA;graph, then read it, write it, update it, traverse it, convert it, or thread an effect through it.&#xA;No hand-written copy constructors. No mention of &lt;code&gt;Iso&lt;/code&gt;, &lt;code&gt;Lens&lt;/code&gt;, &lt;code&gt;Prism&lt;/code&gt;, &lt;code&gt;Affine&lt;/code&gt;, or &lt;code&gt;Traversal&lt;/code&gt;&#xA;anywhere in your code. The end-state is one method-ref chain on the runtime DSL, or one fluent&#xA;chain on the generated navigator. Both bottom out at the same value:&lt;/p&gt;</description>
-			</item>
-			<item>
-				<title>Benchmarking KPipe against the parallel-Kafka libraries you would actually pick</title>
-				<link>https://mariano-gonzalez.com/posts/post-5/</link>
-				<pubDate>Wed, 20 May 2026 00:00:00 +0000</pubDate>
-				<guid>https://mariano-gonzalez.com/posts/post-5/</guid>
-				<description>&lt;blockquote&gt;&#xA;&lt;p&gt;&lt;em&gt;KPipe, part 2 of 3: &lt;a href=&#34;https://mariano-gonzalez.com/posts/post-4/&#34;&gt;a simpler way to structure consumers&lt;/a&gt; · &lt;strong&gt;the first benchmarks&lt;/strong&gt; · &lt;a href=&#34;https://mariano-gonzalez.com/posts/post-9/&#34;&gt;fast is the easy part&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;&lt;strong&gt;Update, July 2026.&lt;/strong&gt; The two caveats at the bottom of this post - single-run variance of 5-40%,&#xA;no latency-percentile data - are now closed. &lt;a href=&#34;https://mariano-gonzalez.com/posts/post-9/&#34;&gt;Part 3&lt;/a&gt; re-runs everything on a&#xA;quiesced box at five JMH forks with ±0.1-6% error bars and the full 0-100ms sweep, where the gap&#xA;over Confluent Parallel Consumer widens to 41x, and adds the correctness half this post never&#xA;touched: the at-least-once guarantee under jcstress. The numbers below are the first, rougher cut -&#xA;read them as the start of the story, not the last word.&lt;/p&gt;</description>
 			</item>
 	</channel>
 </rss>
