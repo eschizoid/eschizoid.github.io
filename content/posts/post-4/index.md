@@ -19,6 +19,8 @@ I built KPipe to fix that.
 
 ![kpipe](logo.png)
 
+> _KPipe, part 1 of 3: **a simpler way to structure consumers** · [the first benchmarks](/posts/post-5/) · [fast is the easy part](/posts/post-9/)_
+
 [GitHub repo][gh]
 
 ## External write-ups

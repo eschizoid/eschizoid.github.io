@@ -11,6 +11,15 @@ tags:
   - jmh
 ---
 
+> _KPipe, part 2 of 3: [a simpler way to structure consumers](/posts/post-4/) · **the first benchmarks** · [fast is the easy part](/posts/post-9/)_
+
+> **Update, July 2026.** The two caveats at the bottom of this post - single-run variance of 5-40%,
+> no latency-percentile data - are now closed. [Part 3](/posts/post-9/) re-runs everything on a
+> quiesced box at five JMH forks with ±0.1-6% error bars and the full 0-100ms sweep, where the gap
+> over Confluent Parallel Consumer widens to 41x, and adds the correctness half this post never
+> touched: the at-least-once guarantee under jcstress. The numbers below are the first, rougher cut -
+> read them as the start of the story, not the last word.
+
 KPipe is a Java 25 Kafka consumer library that runs each record on a virtual thread. The pitch:
 the performance of a hand-rolled `KafkaConsumer` + `Thread.ofVirtual()` loop, with the operational
 stack already wired up. Lowest-pending-offset commits, retry, DLQ producer, backpressure with
