@@ -218,12 +218,5 @@
 				<guid>https://mariano-gonzalez.com/tags/mlops/</guid>
 				<description></description>
 			</item>
-			<item>
-				<title>Rust</title>
-				<link>https://mariano-gonzalez.com/tags/rust/</link>
-				<pubDate>Fri, 07 Apr 2023 14:00:00 -0500</pubDate>
-				<guid>https://mariano-gonzalez.com/tags/rust/</guid>
-				<description></description>
-			</item>
 	</channel>
 </rss>

@@ -72,13 +72,6 @@
 				<description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;&#xA;&lt;p&gt;As the field of machine learning advances, it has become increasingly important for organizations to develop robust&#xA;practices for managing their workflows. That&amp;rsquo;s where MLOps comes in - a set of best practices and tools for managing the&#xA;entire lifecycle of machine learning models, from development to deployment and beyond.&lt;/p&gt;&#xA;&lt;p&gt;In this blog post, we&amp;rsquo;ll delve into how MLOps practices can be leveraged to deploy an LLM&#xA;in &lt;a href=&#34;https://aws.amazon.com/sagemaker/&#34;&gt;AWS SageMaker&lt;/a&gt;, using the&#xA;popular &lt;a href=&#34;https://github.com/aws/sagemaker-huggingface-inference-toolkit&#34;&gt;Hugging Face Transformers library&lt;/a&gt;. We&amp;rsquo;ll cover&#xA;everything from setting up an end-to-end pipeline for deploying a Large Language Model on SageMaker, to monitoring its&#xA;performance.&lt;/p&gt;</description>
 			</item>
 			<item>
-				<title>Hello World</title>
-				<link>https://mariano-gonzalez.com/posts/post-1/</link>
-				<pubDate>Fri, 07 Apr 2023 14:00:00 -0500</pubDate>
-				<guid>https://mariano-gonzalez.com/posts/post-1/</guid>
-				<description>&lt;p&gt;I&amp;rsquo;m a scala developer by trade, so let&amp;rsquo;s say hello in rust!&lt;/p&gt;&#xA;&lt;figure class=&#34;highlight&#34;&gt;&#xA;    &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&#xA;    &gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff7b72&#34;&gt;fn&lt;/span&gt; &lt;span style=&#34;color:#d2a8ff;font-weight:bold&#34;&gt;main&lt;/span&gt;()&lt;span style=&#34;color:#6e7681&#34;&gt; &lt;/span&gt;{&lt;span style=&#34;color:#6e7681&#34;&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6e7681&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#d2a8ff;font-weight:bold&#34;&gt;println!&lt;/span&gt;(&lt;span style=&#34;color:#a5d6ff&#34;&gt;&amp;#34;Hello World!&amp;#34;&lt;/span&gt;);&lt;span style=&#34;color:#6e7681&#34;&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;/figure&gt;</description>
-			</item>
-			<item>
 				<title>About</title>
 				<link>https://mariano-gonzalez.com/about/</link>
 				<pubDate>Fri, 07 Apr 2023 13:58:29 -0500</pubDate>

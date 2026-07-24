@@ -8,7 +8,7 @@
 	<meta itemprop="description" content="The last KPipe benchmark post told you not to trust the absolute numbers. This one earns them back: a quiesced box, five forks, honest error bars, and the full 0-100ms sweep where the gap over Confluent Parallel Consumer widens to 41x. Then the half a throughput chart cannot show - the at-least-once guarantee under jcstress - and one optimization that looked great and did not pan out.">
 	<meta itemprop="datePublished" content="2026-07-22T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-07-22T00:00:00+00:00">
-	<meta itemprop="wordCount" content="1920">
+	<meta itemprop="wordCount" content="1875">
 	<meta itemprop="keywords" content="Kafka,Java,Benchmarks,Virtual-Threads,Jmh,Jcstress,Concurrency"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-9/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="Fast is the easy part. Here is why you can trust KPipe with your offsets.">
@@ -29,20 +29,20 @@
 	<meta name="twitter:title" content="Fast is the easy part. Here is why you can trust KPipe with your offsets.">
 	<meta name="twitter:description" content="The last KPipe benchmark post told you not to trust the absolute numbers. This one earns them back: a quiesced box, five forks, honest error bars, and the full 0-100ms sweep where the gap over Confluent Parallel Consumer widens to 41x. Then the half a throughput chart cannot show - the at-least-once guarantee under jcstress - and one optimization that looked great and did not pan out.">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1784759422" />
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1784759422" />
-	<script defer type="text/javascript"  src="/js/copy-code.js?v=1784759422"></script>
-		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1784759422" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1784895943" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1784895943" />
+	<script defer type="text/javascript"  src="/js/copy-code.js?v=1784895943"></script>
+		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1784895943" />
 	
 
-        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1784759422" />
+        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1784895943" />
 
-	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1784759422"></script>
+	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1784895943"></script>
 	
-		<script src="https://mariano-gonzalez.com/js/main.js?v=1784759422"></script>
+		<script src="https://mariano-gonzalez.com/js/main.js?v=1784895943"></script>
 
 	
-		<link rel="stylesheet" href="/css/copy-code-button.css?v=1784759422">
+		<link rel="stylesheet" href="/css/copy-code-button.css?v=1784895943">
 	
 </head>
 
@@ -117,7 +117,7 @@ loss instead.</p>
 <p><a href="https://github.com/eschizoid/kpipe">GitHub repo</a></p>
 <h2 id="the-numbers-redone-right">The numbers, redone right</h2>
 <p>The headline regime is 10 to 100 ms of work per record - the range where a real consumer lives once
-it is doing a database write or an HTTP call per message, not just counting bytes. Throughput, in
+it is doing a database write or an HTTP call per message instead of just counting bytes. Throughput, in
 records per second, at-least-once delivery, on a 6-core laptop:</p>
 <table>
 	<thead>
@@ -156,35 +156,34 @@ records per second, at-least-once delivery, on a 6-core laptop:</p>
 	</tbody>
 </table>
 <p>That is roughly <strong>6.6x Confluent Parallel Consumer at 10 ms and 41x at 100 ms</strong>. The last post
-stopped at 1 ms of work and reported 4-7x; extending into the range where consumers actually spend
-their time, the gap does not close, it widens.</p>
-<p>Two honest asterisks on that table, because a benchmark you cannot poke holes in is a benchmark
-nobody should believe. Reactor Kafka at 100 ms did not finish - every fork blew past the harness&rsquo;s
-two-minute drain budget at an effective ~105 rec/s, so I recorded it as a did-not-finish rather than
-extrapolate a flattering-to-me number. And Confluent Parallel Consumer 0.5.3.3 is the last release
-before that project was retired in May; I am benchmarking against the last standing version, and I
-say so.</p>
+stopped at 1 ms of work and reported 4-7x; extend into the range where consumers actually spend
+their time and the gap keeps widening.</p>
+<p>Two asterisks on that table, because you should get to poke at a benchmark before you believe it.
+Reactor Kafka at 100 ms did not finish - every fork blew past the harness&rsquo;s two-minute drain budget
+at an effective ~105 rec/s, so I recorded it as a did-not-finish rather than extrapolate a
+flattering-to-me number. And Confluent Parallel Consumer 0.5.3.3 is the last release before that
+project was retired in May, so I am benchmarking against the final version there will ever be.</p>
 <h2 id="why-the-gap-widens-instead-of-closing">Why the gap widens instead of closing</h2>
-<p>The interesting part is that Confluent&rsquo;s numbers are not noisy - they are pinned. CPC runs a pool of
-100 worker threads. At 10 ms per record that pool tops out at <code>100 workers / 10 ms = 10,000 rec/s</code>;
-at 100 ms, <code>100 / 100 ms = 1,000 rec/s</code>. The benchmark measured 8,696 and 968. The model predicts
+<p>Confluent&rsquo;s numbers deserve a second look: ±0.1% error bars at 100 ms, because they are pinned to a
+ceiling. CPC runs a pool of 100 worker threads. At 10 ms per record that pool tops out at
+<code>100 workers / 10 ms = 10,000 rec/s</code>; at 100 ms, <code>100 / 100 ms = 1,000 rec/s</code>. The benchmark measured 8,696 and 968. The model predicts
 the measurement almost exactly, because a platform-thread pool has a hard ceiling and that workload
 sits right on it.</p>
 <p>KPipe has no such pool. It runs one virtual thread per record, so its throughput tracks what the
-machine can actually overlap, not a fixed worker count. That is the whole thesis of the library in
-one comparison: platform pools saturate, virtual-thread-per-record does not. It is a threading-model
-verdict, not a tuning gap, and it is why the multiple grows with per-record latency instead of
+machine can actually overlap. That is the library&rsquo;s whole thesis in one comparison: a pool of 100
+platform threads cannot beat <code>workers / work-time</code> however you tune it, and a virtual thread per
+record has no ceiling to hit - which is why the multiple grows with per-record latency instead of
 shrinking.</p>
-<p>The honest cost, stated plainly because it is real: KPipe allocates the most per record of anything
-in the field, about 1.7 KB/op against CPC&rsquo;s ~35 B/op, most of it the fresh virtual thread. You are
-trading memory for the throughput lead under blocking work. That is a deliberate trade, not a hidden
-one, and the allocation profile is in the repo next to the throughput JSON.</p>
+<p>Now the bill. KPipe allocates the most per record of anything in the field, about 1.7 KB/op against
+CPC&rsquo;s ~35 B/op, most of it the fresh virtual thread. You are trading memory for the throughput lead
+under blocking work, and the allocation profile sits in the repo next to the throughput JSON so you
+can decide whether the trade suits you.</p>
 <p>The one place I will not oversell: at sub-millisecond work, <code>KEY_ORDERED</code> versus CPC&rsquo;s <code>KEY</code> mode is
 genuinely box-dependent. On a 4-vCPU CI runner KPipe wins 1.42x; on my 12-thread laptop it is 0.86x,
 slightly behind. I will come back to that number at the end of this post, because it has a story.</p>
 <h2 id="the-half-a-throughput-chart-cannot-show">The half a throughput chart cannot show</h2>
-<p>Here is the thing every Kafka-library benchmark leaves out, mine included until now: a throughput
-number tells you nothing about whether the fast consumer is also a correct one. It is trivial to be
+<p>Every Kafka-library benchmark, mine included until now, skips the question that matters more: is
+the fast consumer also a correct one? A throughput chart cannot tell you. It is trivial to be
 fast if you are allowed to drop a record on a rebalance or double-commit an offset under load. The
 whole point of KPipe over a hand-rolled <code>Consumer.poll</code> loop is the operational stack - and that
 stack is only worth anything if it is right.</p>
@@ -193,8 +192,8 @@ that on faith. Every CI run gates on a <a href="https://openjdk.org/projects/cod
 of 1.18, four modules - that hammers the offset lifecycle, the backpressure handshake, and the
 dispatcher&rsquo;s per-key handoff under every thread interleaving the scheduler can produce. A single
 FORBIDDEN outcome - one lost record, one double-run, one offset committed ahead of an unfinished
-one - fails the build. This is not a unit test asserting a happy path; it is an exhaustive search
-for the interleaving that breaks the guarantee.</p>
+one - fails the build. A unit test asserts one path through the code. This searches every
+interleaving for the one that breaks the guarantee.</p>
 <p>Building that suite was not academic. It found three real bugs before any user hit them:</p>
 <ul>
 <li>An <strong>offset-tracking race</strong> where a concurrent add-versus-remove-if-empty on the pending-offset
@@ -205,9 +204,10 @@ redelivered - a down DLQ applies backpressure instead of quietly eating messages
 <li>A <strong>circuit breaker blind to the batch path</strong>, tripping on per-record failures but not on the
 batch sink&rsquo;s.</li>
 </ul>
-<p>None of the runtimes I benchmark against state their delivery guarantee this way, let alone test it
-this way. That is the real pitch, and it is a slower, less clickable one than &ldquo;41x&rdquo;: the fast number
-gets you to try it, the stress suite is why you keep it in front of your offsets.</p>
+<p>None of the runtimes I benchmark against document their delivery guarantee this way, let alone test
+it. That pitch is slower and less clickable than &ldquo;41x&rdquo;, but it is the one I would want as an
+operator: the fast number gets you to try it, the stress suite is why you keep it in front of your
+offsets.</p>
 <p>The 1.18 release leaned into the same idea. Dead-letter records now carry <strong>all</strong> their original
 headers plus a full <code>x-dlq-*</code> envelope, including a source timestamp, so a DLQ is a replayable
 record of what happened rather than a payload graveyard. A throwing metrics callback can no longer
@@ -216,8 +216,8 @@ observability code cannot take down the data path. And it shipped the feature I 
 most: Protobuf with Confluent Schema Registry, end to end, wire-compatible with Confluent&rsquo;s own
 <code>KafkaProtobufSerializer</code>, as an opt-in module so the JSON and Avro users carry none of its weight.</p>
 <h2 id="the-same-verification-handed-to-you">The same verification, handed to you</h2>
-<p>The jcstress suite is how I verify the library. But the honest problem with &ldquo;the library is
-correct&rdquo; is that your pipeline is your code, and most Kafka test setups make you choose between
+<p>The jcstress suite is how I verify the library. But &ldquo;the library is correct&rdquo; only goes so far:
+your pipeline is your code, and most Kafka test setups make you choose between
 mocking so much that you test nothing real, or standing up a Testcontainers broker and paying five
 seconds of Docker per test.</p>
 <p>1.18 ships a third option: <code>kpipe-test</code>, a Docker-free kit that drives a <strong>real</strong> <code>KPipeConsumer</code> -
@@ -240,11 +240,10 @@ test exercises the actual runtime, in about 5 to 20 ms, with no broker:</p>
 drained, so the assertion afterward is deterministic instead of a <code>Thread.sleep</code> and a prayer. There
 is a <code>CrashRestartHarness</code> in the same kit for the nastier question - does the consumer reprocess
 the right window after a crash - that drives two real consumer phases across a commit point without
-a live broker to flake on. Verification is not just something I do to the library; it is something
-the library hands to you for the code you write on top of it.</p>
+a live broker to flake on. So the library&rsquo;s verification story now covers your code too, with no
+Docker in the loop.</p>
 <h2 id="the-optimization-that-looked-great-and-did-not-pan-out">The optimization that looked great and did not pan out</h2>
-<p>I will end on the number I said I would come back to, because it is the most honest thing in this
-post.</p>
+<p>I will end on the number I said I would come back to.</p>
 <p>The <code>KEY_ORDERED</code> dispatcher - the mode that guarantees per-key ordering - used a single lock for
 all of its internal bookkeeping. On the 12-thread box, at sub-millisecond work, that lock was my
 prime suspect for why KPipe trailed CPC&rsquo;s <code>KEY</code> mode: more cores meant more threads contending on
@@ -259,7 +258,7 @@ with cores instead of down. Merged, verified, done.</p>
 whole investigation - to watch it flip.</p>
 <p>It did not flip. 52,949 rec/s before, 52,216 after. Flat. The ratio against CPC <code>KEY</code> moved from
 0.83x to 0.86x, entirely inside the noise.</p>
-<p>Here is what happened, and why I am telling you instead of quietly not mentioning it. The
+<p>Here is what happened. The
 micro-benchmark isolated pure dispatch cost, and there the lock was the whole story. But at the
 broker, with a real 1 ms of work per record, the per-record budget is dominated by fetch,
 deserialization, offset tracking, and the per-key serialization the mode exists to provide - the
@@ -269,13 +268,13 @@ code better; it simply does not move the broker number I hoped it would, and the
 sub-millisecond caveat stays exactly as it was written.</p>
 <p>I could have shown you the +122% and stopped. The reason I did not is the same reason the jcstress
 suite exists: the point of measuring a thing is to find out what is true, and a benchmark you only
-publish when it flatters you is not a benchmark, it is an ad. The prediction was made, it was
-measured, and it was refuted. That is a result too.</p>
+publish when it flatters you is just an ad. I made a prediction, measured it, and watched it miss.
+That is a result too.</p>
 <h2 id="closing">Closing</h2>
 <p>The first two posts made the case that KPipe is a nicer way to write a Kafka consumer and that it is
-fast. This one is the part I care about more: it is fast in the regime you actually run in, the
-speed comes with an at-least-once guarantee that is exhaustively tested rather than asserted, and
-when my own optimization missed I told you so.</p>
+fast. This one is the part I care about more: it is fast in the regime you actually run in, a stress
+suite hammers the at-least-once guarantee on every commit, and when my own optimization missed I
+told you so.</p>
 <p>The ask is one line, Java 25 or later:</p>
 <figure class="highlight">
     <pre tabindex="0" class="chroma"
