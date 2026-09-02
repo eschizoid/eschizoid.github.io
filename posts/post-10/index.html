@@ -8,7 +8,7 @@
 	<meta itemprop="description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. They look unrelated until you notice they are the same move: represent the work as a graph, define ready and done as strict gates, and let an engine walk it. That move has a name, and it is worth doing on purpose.">
 	<meta itemprop="datePublished" content="2026-09-02T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-09-02T00:00:00+00:00">
-	<meta itemprop="wordCount" content="1434">
+	<meta itemprop="wordCount" content="1412">
 	<meta itemprop="keywords" content="Ai-Agents,Graph,Workflow,Beads,Automation,Claude-Code"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-10/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="Two agent tools taught me the same thing: the work is a graph">
@@ -29,20 +29,20 @@
 	<meta name="twitter:title" content="Two agent tools taught me the same thing: the work is a graph">
 	<meta name="twitter:description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. They look unrelated until you notice they are the same move: represent the work as a graph, define ready and done as strict gates, and let an engine walk it. That move has a name, and it is worth doing on purpose.">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788373036" />
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788373036" />
-	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788373036"></script>
-		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788373036" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788374743" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788374743" />
+	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788374743"></script>
+		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788374743" />
 	
 
-        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788373036" />
+        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788374743" />
 
-	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788373036"></script>
+	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788374743"></script>
 	
-		<script src="https://mariano-gonzalez.com/js/main.js?v=1788373036"></script>
+		<script src="https://mariano-gonzalez.com/js/main.js?v=1788374743"></script>
 
 	
-		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788373036">
+		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788374743">
 	
 </head>
 
@@ -100,7 +100,7 @@
 <p>Hand real work to a coding agent and two problems show up, one at each end of the same job.</p>
 <p>At the start: what should it do next? A long project is a web of dependencies. Task B needs A
 finished first, C and D can go in parallel, E is blocked on both. Hold that in a flat TODO and the
-agent picks the wrong thing, and the plan itself dies the moment its context window rolls over.</p>
+agent picks the wrong thing, and the plan dies with the context window that held it.</p>
 <p>At the end: is this actually done? The agent opened six pull requests. CI is green on four. One has
 a review comment nobody resolved. One looks merged-ready but the approval is sitting on a commit
 three pushes old. Which of the six can you actually merge, right now, without breaking <code>main</code>?</p>
@@ -230,9 +230,8 @@ the ends that nothing currently connects:</p>
 pull request until its gate passes, merges it, and the corresponding beads node closes, which drops
 the <em>next</em> node into the ready set. A graph draining itself to green, with a human watching two sets
 of gates instead of driving every step.</p>
-<p>I want to be honest about where this stands, because receipts, proof you can check, are the point
-and I do not have them yet: those two graphs are not wired together today. I run beads by hand and fleet-merge by
-hand. Nothing connects them yet; the diagram shows where the pipe would go once I build it. Building
+<p>To be clear about where this stands: those two graphs are not wired together today. I run beads by
+hand and fleet-merge by hand, and the diagram shows where the pipe would go once I build it. Building
 that bridge, and showing a real dependency graph drain to a stack of merged pull requests without me
 touching the middle, is the next post. This one is the idea that makes that post worth writing.</p>
 <h2 id="closing">Closing</h2>

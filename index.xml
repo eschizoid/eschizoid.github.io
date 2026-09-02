@@ -20,7 +20,7 @@
 				<link>https://mariano-gonzalez.com/posts/post-10/</link>
 				<pubDate>Wed, 02 Sep 2026 00:00:00 +0000</pubDate>
 				<guid>https://mariano-gonzalez.com/posts/post-10/</guid>
-				<description>&lt;h2 id=&#34;the-setup&#34;&gt;The setup&lt;/h2&gt;&#xA;&lt;p&gt;Hand real work to a coding agent and two problems show up, one at each end of the same job.&lt;/p&gt;&#xA;&lt;p&gt;At the start: what should it do next? A long project is a web of dependencies. Task B needs A&#xA;finished first, C and D can go in parallel, E is blocked on both. Hold that in a flat TODO and the&#xA;agent picks the wrong thing, and the plan itself dies the moment its context window rolls over.&lt;/p&gt;</description>
+				<description>&lt;h2 id=&#34;the-setup&#34;&gt;The setup&lt;/h2&gt;&#xA;&lt;p&gt;Hand real work to a coding agent and two problems show up, one at each end of the same job.&lt;/p&gt;&#xA;&lt;p&gt;At the start: what should it do next? A long project is a web of dependencies. Task B needs A&#xA;finished first, C and D can go in parallel, E is blocked on both. Hold that in a flat TODO and the&#xA;agent picks the wrong thing, and the plan dies with the context window that held it.&lt;/p&gt;</description>
 			</item>
 			<item>
 				<title>Fast is the easy part. Here is why you can trust KPipe with your offsets.</title>
