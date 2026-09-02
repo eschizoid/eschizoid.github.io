@@ -1,11 +1,11 @@
 ---
-title: "Two agent tools taught me the same thing: the work is a graph"
+title: "Make has walked dependency graphs for forty years. I pointed one at an agent."
 date: 2026-09-02
 description: "Beads models what an AI agent should do next as a dependency graph. My fleet-merge
-  skill decides when a pull request is actually done and merges it. They look unrelated until you
-  notice they are the same move: represent the work as a graph, define ready and done as strict
-  gates, and let an engine walk it. I call the habit graph engineering, and it is worth doing on
-  purpose."
+  skill decides when a pull request is actually done and merges it. Neither idea is new: build
+  systems have walked graphs and gated on staleness since make. What changes when the walker is an
+  agent is what the gates are for, because a compiler cannot talk itself into believing a green
+  checkmark and an agent can."
 tags:
   - ai-agents
   - graph
@@ -77,25 +77,23 @@ dependency decides start order. And every node has the same question hanging ove
 at the other end, only inverted: beads asks whether a node can start, fleet-merge asks whether it
 can finish.
 
-The answer is a gate, and the gate does all the work. A pull request is done only when all of
-these hold at once:
+The answer is a gate: four conditions that must all hold before a pull request may merge. What makes
+it worth writing down is that not one of them is the signal GitHub puts in front of you. Every
+obvious green light has a look-alike failure behind it, and the gate exists to tell those apart.
 
-- No real CI failure, and nothing still running. Not "the checkmark is green": a check that is still
-  in progress reports no conclusion yet, and if you read that as success you merge with the tests
-  half-finished.
-- A review sign-off on the *current* commit. Wherever the review came from, if it sits on a commit
-  you have since pushed over, it approved code that no longer exists and says nothing about what you
-  are about to merge.
-- No suppressed review comments. This is the one that catches real bugs; the best find yet was a
-  test asserting on a string that both the success path and the error path emit, so it would have
-  passed on the exact failure it was written to catch. A reviewer can file notes that never become
-  blocking threads, so the review summary still reads "no new comments" and the unresolved count
-  still says zero, while a real finding sits collapsed one click out of view.
-- It is not a release pull request. Cutting a release is a human decision; the loop has no business
-  making it as a side effect of being green.
+| GitHub shows you | Why that is not done | What the gate requires |
+| --- | --- | --- |
+| A green checkmark | a check still running has no verdict yet, so "not failing" gets read as "passed" | every check finished, none of them failed |
+| An APPROVED review | the approval may sit on a commit you have since pushed over | a sign-off on the commit that is there now |
+| Zero unresolved threads | a reviewer can file notes that never become threads, so nothing is unresolved and nothing was read either | no suppressed comments, checked every round |
+| A perfectly green release PR | cutting a release is a human decision | that the pull request is not a release |
 
-None of those four is the naive signal. The green checkmark, the APPROVED badge, the zero-unresolved
-count: each looks like done and is not. The value is in refusing the signals that merely resemble
+The third row is the one that catches real bugs. Those notes arrive collapsed, one click out of
+view, and the review summary above them still says "no new comments" in good faith. The best find
+yet was a test asserting on a string that both the success path and the error path emit, so it would
+have passed on the exact failure it was written to catch. Nothing in the interface was red.
+
+So the gate is a small piece of paranoia, written down once: refuse the signals that merely resemble
 done, the same way `bd ready` refuses to hand you a node that still has an open blocker.
 
 Where does that sign-off come from? Sometimes a reviewer shows up on their own. When nobody does,
@@ -123,11 +121,20 @@ One table is enough to make the case:
 | Who walks it       | the coding agent               | the merge loop                    |
 
 Sit with the gate row for a moment: both cells refuse a signal that merely looks like the real
-thing. The table is the argument: model the work as a graph, write down what *ready* and *done* actually
-mean as gates that refuse the look-alike signals, and let an engine walk it. I have started calling
-the habit graph engineering, which is a grand name for something small. The payoff is that you stop
-supervising turn by turn: the agent asks the graph what is ready and writes back what it finished,
-and your job shrinks to owning the gates.
+thing. The table is the argument: model the work as a graph, write down what *ready* and *done*
+actually mean as gates that refuse the look-alike signals, and let an engine walk it.
+
+None of which is a new idea, and I want to be careful not to dress it up as one. Build systems have
+worked this way for forty years. `make` does not ask you what to compile next; it walks a dependency
+graph and rebuilds what is stale. Bazel and Nix went further and made the gate strict, because a
+target that merely looks up to date is the oldest bug in the genre. Every scheduler, every CI
+pipeline, every package manager is the same machine.
+
+What is new is the walker. Those systems walked graphs of files with a compiler at the other end;
+what I have been doing is pointing the same structure at an agent, which is a walker that can write
+the code, open the pull request and read the review. That is the only part I built, and it is the
+part where the gates stop being a formality: a compiler cannot talk itself into believing a stale
+target was fresh, and an agent, left to judge its own work by the green checkmark, absolutely can.
 
 ## The loop neither one closes
 
@@ -150,7 +157,8 @@ touching the middle, is the next post. This one is the idea that makes that post
 
 I set out to stop my agents from picking the wrong task, and to stop myself from merging
 half-reviewed code. Two narrow tools, two opposite ends of the work, and the fix at both ends turned
-out to be identical. The graph carries the plan and the memory. The gate does the judging I used to
-do by hand, one task at a time.
+out to be one your build system has been running the whole time. The graph carries the plan and the
+memory. The gate does the judging I used to do by hand, one task at a time.
 
-The work is a graph. Build it that way, and the agent stops getting lost. That is the whole post.
+So there is nothing to invent here, which is the good news. Put the work in a graph, write the gates
+down honestly, and hand the walk to the agent. That is the whole post.
