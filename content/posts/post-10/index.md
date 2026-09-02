@@ -3,9 +3,9 @@ title: "Two graphs run my coding agents: one picks the work, one decides it is d
 date: 2026-09-02
 description: "Beads models what an AI agent should do next as a dependency graph. My fleet-merge
   skill decides when a pull request is actually done and merges it. Neither idea is new: build
-  systems have walked graphs and gated on staleness since make. What changes when the walker is an
-  agent is what the gates are for, because a compiler cannot talk itself into believing a green
-  checkmark and an agent can."
+  systems have walked dependency graphs and gated on staleness since make. What changes when the
+  walker is an agent is the failure mode: make gets staleness wrong mechanically, and an agent gets
+  it wrong agreeably, because it wants the task to be done."
 tags:
   - ai-agents
   - graph
