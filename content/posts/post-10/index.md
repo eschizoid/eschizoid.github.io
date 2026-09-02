@@ -96,14 +96,19 @@ have passed on the exact failure it was written to catch. Nothing in the interfa
 So the gate is a small piece of paranoia, written down once: refuse the signals that merely resemble
 done, the same way `bd ready` refuses to hand you a node that still has an open blocker.
 
-Where does that sign-off come from? Sometimes a reviewer shows up on their own. When nobody does,
-fleet-merge does not wait around; it produces the review itself, and the interesting part is how it
-sizes one. It does not pick a number of reviewers and fill it. It reads the diff and assigns one
-specialist per failure class: a correctness reviewer when behavior changes, a silent-failure hunter
-when the change touches error paths or a check that can pass while proving nothing, a comment
-analyzer when prose describes the code, a test analyzer when a test claims something is now guarded.
-A one-file fix draws a single reviewer. A migration draws a crowd. The panel is never fixed; the
-diff decides who shows up.
+Row two assumes a sign-off exists, so it is worth asking where one comes from. A teammate can review
+the pull request, and on a repo full of agent-written changes that is exactly the bottleneck you were
+trying to remove. Most repos hand the job to an automated code reviewer instead, which works until
+the run it quietly skips: no review is posted, no error is raised, and the pull request simply waits
+for a verdict that is never coming.
+
+So fleet-merge stops waiting. If no review has landed on the current commit, it runs its own, and the
+part worth stealing is how it decides who runs it. It does not pick a number of reviewers and fill
+the slots. It reads the diff and assigns one specialist per failure class: a correctness reviewer
+when behavior changes, a silent-failure hunter when the change touches error paths or a check that
+can pass while proving nothing, a comment analyzer when prose describes the code, a test analyzer
+when a test claims something is now guarded. A one-file fix draws a single reviewer. A migration
+draws a crowd. The diff decides who shows up.
 
 So fleet-merge answers the end-of-work question, and it answers it structurally too: finishable
 work is a node whose gate passes on its current state.
