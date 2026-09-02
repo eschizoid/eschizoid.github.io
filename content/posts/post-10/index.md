@@ -59,15 +59,15 @@ forgetting. Context windows roll over and the session dies, but the DAG is commi
 code. A fresh agent runs `bd ready` and is immediately oriented, no re-briefing. The graph is the
 memory.
 
-So beads answers the start-of-work question, and it answers it structurally: **ready work is a node
-with no unmet dependencies.**
+So beads answers the start-of-work question, and it answers it structurally: ready work is a node
+with no unmet dependencies.
 
 ## The second graph: what is ready to finish
 
 `fleet-merge` is a skill I wrote to close the other end. Point it at a repo with open pull requests
 and it watches them until each one is genuinely mergeable, then merges it with whatever method the
-repo allows. It is the boring, vigilant gatekeeper that never gets tired and never waves something
-through because it is Friday.
+repo allows. It runs the same checklist on the fiftieth pull request as on the first, and it does
+not wave one through because it is Friday.
 
 I did not think of it as a graph tool when I wrote it. It is. The pull requests are nodes. Two pull
 requests that touch the same file have an edge between them: whichever merges second has to rebase,
@@ -85,9 +85,11 @@ these hold at once:
 - A review sign-off on the *current* commit. Wherever the review came from, if it sits on a commit
   you have since pushed over, it approved code that no longer exists and says nothing about what you
   are about to merge.
-- No suppressed review comments. This is the one that catches real bugs. A reviewer can file notes
-  that never become blocking threads, so the review summary still reads "no new comments" and the
-  unresolved count still says zero, while a real finding sits collapsed one click out of view.
+- No suppressed review comments. This is the one that catches real bugs; the best find yet was a
+  test asserting on a string that both the success path and the error path emit, so it would have
+  passed on the exact failure it was written to catch. A reviewer can file notes that never become
+  blocking threads, so the review summary still reads "no new comments" and the unresolved count
+  still says zero, while a real finding sits collapsed one click out of view.
 - It is not a release pull request. Cutting a release is a human decision; the loop has no business
   making it as a side effect of being green.
 
@@ -104,12 +106,12 @@ analyzer when prose describes the code, a test analyzer when a test claims somet
 A one-file fix draws a single reviewer. A migration draws a crowd. The panel is never fixed; the
 diff decides who shows up.
 
-So fleet-merge answers the end-of-work question, and it answers it structurally too: **finishable
-work is a node whose gate passes on its current state.**
+So fleet-merge answers the end-of-work question, and it answers it structurally too: finishable
+work is a node whose gate passes on its current state.
 
 ## The same move, twice
 
-Line the two up and the shared shape stands out.
+One table is enough to make the case:
 
 |                    | beads                          | fleet-merge                       |
 | ------------------ | ------------------------------ | --------------------------------- |
@@ -119,17 +121,11 @@ Line the two up and the shared shape stands out.
 | The question       | what can start                 | what can finish                   |
 | Who walks it       | the coding agent               | the merge loop                    |
 
-Strip the domains away and both tools make the same three-part move:
-
-1. Model the work as a graph, so you compute order from the graph instead of holding it in your head.
-2. Define *ready* and *done* as explicit gates, and make the gates refuse the signals that only look
-   like readiness.
-3. Let an autonomous engine walk the graph, transitioning a node only when its gate actually passes.
-
-Once you see the move, you start building it on purpose. I have started calling it graph
-engineering: turning "a pile of work an agent has to keep straight" into "a graph an agent can
-query." The agent stops being something you supervise turn by turn and becomes something that reads
-the graph, acts, and updates it. Your job shrinks to owning the gates.
+The table is the argument: model the work as a graph, write down what *ready* and *done* actually
+mean as gates that refuse the look-alike signals, and let an engine walk it. I have started calling
+the habit graph engineering, which is a grand name for something small. The payoff is that you stop
+supervising turn by turn: the agent asks the graph what is ready and writes back what it finished,
+and your job shrinks to owning the gates.
 
 ## The loop neither one closes
 
