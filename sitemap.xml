@@ -2,6 +2,36 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://mariano-gonzalez.com/tags/ai-agents/</loc>
+    <lastmod>2026-09-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/tags/automation/</loc>
+    <lastmod>2026-09-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/tags/beads/</loc>
+    <lastmod>2026-09-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/tags/claude-code/</loc>
+    <lastmod>2026-09-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/tags/graph/</loc>
+    <lastmod>2026-09-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/</loc>
+    <lastmod>2026-09-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/posts/</loc>
+    <lastmod>2026-09-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/tags/</loc>
+    <lastmod>2026-09-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/posts/post-10/</loc>
+    <lastmod>2026-09-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://mariano-gonzalez.com/tags/workflow/</loc>
+    <lastmod>2026-09-02T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://mariano-gonzalez.com/tags/benchmarks/</loc>
     <lastmod>2026-07-22T00:00:00+00:00</lastmod>
   </url><url>
@@ -21,15 +51,6 @@
     <lastmod>2026-07-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://mariano-gonzalez.com/tags/kafka/</loc>
-    <lastmod>2026-07-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://mariano-gonzalez.com/</loc>
-    <lastmod>2026-07-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://mariano-gonzalez.com/posts/</loc>
-    <lastmod>2026-07-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://mariano-gonzalez.com/tags/</loc>
     <lastmod>2026-07-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://mariano-gonzalez.com/tags/virtual-threads/</loc>
