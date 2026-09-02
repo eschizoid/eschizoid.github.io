@@ -8,7 +8,7 @@
 	<meta itemprop="description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. They look unrelated until you notice they are the same move: represent the work as a graph, define ready and done as strict gates, and let an engine walk it. That move has a name, and it is worth doing on purpose.">
 	<meta itemprop="datePublished" content="2026-09-02T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-09-02T00:00:00+00:00">
-	<meta itemprop="wordCount" content="1412">
+	<meta itemprop="wordCount" content="1400">
 	<meta itemprop="keywords" content="Ai-Agents,Graph,Workflow,Beads,Automation,Claude-Code"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-10/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="Two agent tools taught me the same thing: the work is a graph">
@@ -29,20 +29,20 @@
 	<meta name="twitter:title" content="Two agent tools taught me the same thing: the work is a graph">
 	<meta name="twitter:description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. They look unrelated until you notice they are the same move: represent the work as a graph, define ready and done as strict gates, and let an engine walk it. That move has a name, and it is worth doing on purpose.">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788374743" />
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788374743" />
-	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788374743"></script>
-		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788374743" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788375316" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788375316" />
+	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788375316"></script>
+		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788375316" />
 	
 
-        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788374743" />
+        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788375316" />
 
-	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788374743"></script>
+	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788375316"></script>
 	
-		<script src="https://mariano-gonzalez.com/js/main.js?v=1788374743"></script>
+		<script src="https://mariano-gonzalez.com/js/main.js?v=1788375316"></script>
 
 	
-		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788374743">
+		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788375316">
 	
 </head>
 
@@ -130,13 +130,13 @@ demand; there is no plan to remember.</p>
 forgetting. Context windows roll over and the session dies, but the DAG is committed next to the
 code. A fresh agent runs <code>bd ready</code> and is immediately oriented, no re-briefing. The graph is the
 memory.</p>
-<p>So beads answers the start-of-work question, and it answers it structurally: <strong>ready work is a node
-with no unmet dependencies.</strong></p>
+<p>So beads answers the start-of-work question, and it answers it structurally: ready work is a node
+with no unmet dependencies.</p>
 <h2 id="the-second-graph-what-is-ready-to-finish">The second graph: what is ready to finish</h2>
 <p><code>fleet-merge</code> is a skill I wrote to close the other end. Point it at a repo with open pull requests
 and it watches them until each one is genuinely mergeable, then merges it with whatever method the
-repo allows. It is the boring, vigilant gatekeeper that never gets tired and never waves something
-through because it is Friday.</p>
+repo allows. It runs the same checklist on the fiftieth pull request as on the first, and it does
+not wave one through because it is Friday.</p>
 <p>I did not think of it as a graph tool when I wrote it. It is. The pull requests are nodes. Two pull
 requests that touch the same file have an edge between them: whichever merges second has to rebase,
 so fleet-merge lands them strictly one at a time. The edge decides merge order the same way a beads
@@ -152,9 +152,11 @@ half-finished.</li>
 <li>A review sign-off on the <em>current</em> commit. Wherever the review came from, if it sits on a commit
 you have since pushed over, it approved code that no longer exists and says nothing about what you
 are about to merge.</li>
-<li>No suppressed review comments. This is the one that catches real bugs. A reviewer can file notes
-that never become blocking threads, so the review summary still reads &ldquo;no new comments&rdquo; and the
-unresolved count still says zero, while a real finding sits collapsed one click out of view.</li>
+<li>No suppressed review comments. This is the one that catches real bugs; the best find yet was a
+test asserting on a string that both the success path and the error path emit, so it would have
+passed on the exact failure it was written to catch. A reviewer can file notes that never become
+blocking threads, so the review summary still reads &ldquo;no new comments&rdquo; and the unresolved count
+still says zero, while a real finding sits collapsed one click out of view.</li>
 <li>It is not a release pull request. Cutting a release is a human decision; the loop has no business
 making it as a side effect of being green.</li>
 </ul>
@@ -169,10 +171,10 @@ when the change touches error paths or a check that can pass while proving nothi
 analyzer when prose describes the code, a test analyzer when a test claims something is now guarded.
 A one-file fix draws a single reviewer. A migration draws a crowd. The panel is never fixed; the
 diff decides who shows up.</p>
-<p>So fleet-merge answers the end-of-work question, and it answers it structurally too: <strong>finishable
-work is a node whose gate passes on its current state.</strong></p>
+<p>So fleet-merge answers the end-of-work question, and it answers it structurally too: finishable
+work is a node whose gate passes on its current state.</p>
 <h2 id="the-same-move-twice">The same move, twice</h2>
-<p>Line the two up and the shared shape stands out.</p>
+<p>One table is enough to make the case:</p>
 <table>
 	<thead>
 			<tr>
@@ -209,17 +211,11 @@ work is a node whose gate passes on its current state.</strong></p>
 			</tr>
 	</tbody>
 </table>
-<p>Strip the domains away and both tools make the same three-part move:</p>
-<ol>
-<li>Model the work as a graph, so you compute order from the graph instead of holding it in your head.</li>
-<li>Define <em>ready</em> and <em>done</em> as explicit gates, and make the gates refuse the signals that only look
-like readiness.</li>
-<li>Let an autonomous engine walk the graph, transitioning a node only when its gate actually passes.</li>
-</ol>
-<p>Once you see the move, you start building it on purpose. I have started calling it graph
-engineering: turning &ldquo;a pile of work an agent has to keep straight&rdquo; into &ldquo;a graph an agent can
-query.&rdquo; The agent stops being something you supervise turn by turn and becomes something that reads
-the graph, acts, and updates it. Your job shrinks to owning the gates.</p>
+<p>The table is the argument: model the work as a graph, write down what <em>ready</em> and <em>done</em> actually
+mean as gates that refuse the look-alike signals, and let an engine walk it. I have started calling
+the habit graph engineering, which is a grand name for something small. The payoff is that you stop
+supervising turn by turn: the agent asks the graph what is ready and writes back what it finished,
+and your job shrinks to owning the gates.</p>
 <h2 id="the-loop-neither-one-closes">The loop neither one closes</h2>
 <p>Here is what got me to write this down. Each tool owns one end, and there is an obvious pipe between
 the ends that nothing currently connects:</p>
