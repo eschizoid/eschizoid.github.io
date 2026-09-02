@@ -8,7 +8,7 @@
 	<meta itemprop="description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. They look unrelated until you notice they are the same move: represent the work as a graph, define ready and done as strict gates, and let an engine walk it. That move has a name, and it is worth doing on purpose.">
 	<meta itemprop="datePublished" content="2026-09-02T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-09-02T00:00:00+00:00">
-	<meta itemprop="wordCount" content="1355">
+	<meta itemprop="wordCount" content="1523">
 	<meta itemprop="keywords" content="Ai-Agents,Graph,Workflow,Beads,Automation,Claude-Code"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-10/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="Two agent tools taught me the same thing: the work is a graph">
@@ -29,20 +29,20 @@
 	<meta name="twitter:title" content="Two agent tools taught me the same thing: the work is a graph">
 	<meta name="twitter:description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. They look unrelated until you notice they are the same move: represent the work as a graph, define ready and done as strict gates, and let an engine walk it. That move has a name, and it is worth doing on purpose.">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788371684" />
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788371684" />
-	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788371684"></script>
-		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788371684" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788372353" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788372353" />
+	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788372353"></script>
+		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788372353" />
 	
 
-        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788371684" />
+        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788372353" />
 
-	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788371684"></script>
+	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788372353"></script>
 	
-		<script src="https://mariano-gonzalez.com/js/main.js?v=1788371684"></script>
+		<script src="https://mariano-gonzalez.com/js/main.js?v=1788372353"></script>
 
 	
-		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788371684">
+		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788372353">
 	
 </head>
 
@@ -98,7 +98,7 @@
 			<div class="markdown">
 				<h2 id="the-setup">The setup</h2>
 <p>Hand real work to a coding agent and two problems show up, one at each end of the same job.</p>
-<p>At the start: what should it do next? A long project is not a list, it is a web. Task B needs A
+<p>At the start: what should it do next? A long project is a web of dependencies. Task B needs A
 finished first, C and D can go in parallel, E is blocked on both. Hold that in a flat TODO and the
 agent picks the wrong thing, or redoes finished work, or loses the plan the moment its context
 window rolls over.</p>
@@ -125,8 +125,8 @@ agent what to do; you describe the shape of the work and let it ask the graph.</
 </span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"># bd-1  Add auth middleware   (no open blockers)</span></span></span></code></pre>
 </figure><p><code>bd ready</code> is the whole trick. It returns the nodes whose dependencies are all satisfied, which is
 exactly the set of things that can be worked right now. Finish <code>bd-1</code>, close it, and <code>bd-2</code> falls
-into the ready set on its own. The agent never guesses at order, because order is not a plan it has
-to remember; it is a property of the graph, recomputed on demand.</p>
+into the ready set on its own. The agent never guesses at order, because the graph recomputes order
+on demand and it never has to remember one.</p>
 <p>The other half is that the graph is git-backed, so it survives the thing agents are worst at:
 forgetting. Context windows roll over and the session dies, but the DAG is committed next to the
 code. A fresh agent runs <code>bd ready</code> and is immediately oriented, no re-briefing. The graph is the
@@ -141,7 +141,8 @@ through because it is Friday.</p>
 <p>I did not think of it as a graph tool when I wrote it. It is. The pull requests are nodes. Two pull
 requests that touch the same file have an edge between them: whichever merges second has to rebase,
 so they cannot land in parallel. And every node has the same question hanging over it that beads
-asks at the other end, only inverted: not &ldquo;can this start,&rdquo; but &ldquo;can this finish.&rdquo;</p>
+asks at the other end, only inverted: beads asks whether a node can start, fleet-merge asks whether
+it can finish.</p>
 <p>The answer is a gate, and the gate does all the work. A pull request is done only when all of
 these hold at once:</p>
 <ul>
@@ -159,6 +160,16 @@ still says zero, while a real finding sits one click out of view.</li>
 <p>None of those four is the naive signal. The green checkmark, the APPROVED badge, the zero-unresolved
 count: each looks like done and is not. The value is in refusing the signals that merely resemble
 done, the same way <code>bd ready</code> refuses to hand you a node whose dependencies only look satisfied.</p>
+<p>There is a second wrinkle the gate assumes away: often there is no automated reviewer to produce
+that signal at all. The review bot goes missing for whole sessions at a time. When it does,
+fleet-merge does not fall back to &ldquo;merge on green&rdquo;; it runs its own review round, and the part worth
+stealing is how it sizes one. It does not pick a number of reviewers and fill it. It reads what the
+diff actually risks and assigns one specialist per failure class: a correctness reviewer when
+behavior changes, a silent-failure hunter when the change touches error paths or a check that can
+pass while proving nothing, a comment analyzer when prose describes the code, a test analyzer when a
+test claims something is now guarded. A one-file fix draws one of these personas. A migration draws
+four. The panel is never fixed; the set falls out of the shape of the change, the same way
+<code>bd ready</code> falls out of the shape of the graph.</p>
 <p>So fleet-merge answers the end-of-work question, and it answers it structurally too: <strong>finishable
 work is a node whose gate passes on its current state.</strong></p>
 <h2 id="the-same-move-twice">The same move, twice</h2>
@@ -201,7 +212,7 @@ work is a node whose gate passes on its current state.</strong></p>
 </table>
 <p>Neither tool is really &ldquo;a TODO list&rdquo; or &ldquo;a merge bot.&rdquo; Both are the same three-part move:</p>
 <ol>
-<li>Model the work as a graph, so order is a property you compute, not a plan you hold in your head.</li>
+<li>Model the work as a graph, so you compute order from the graph instead of holding it in your head.</li>
 <li>Define <em>ready</em> and <em>done</em> as explicit gates, and make the gates refuse the signals that only look
 like readiness.</li>
 <li>Let an autonomous engine walk the graph, transitioning a node only when its gate actually passes.</li>
@@ -226,9 +237,9 @@ the <em>next</em> node into the ready set. A graph draining itself to green, wit
 of gates instead of driving every step.</p>
 <p>I want to be honest about where this stands, because the receipts are the point and I do not have
 them yet: those two graphs are not wired together today. I run beads by hand and fleet-merge by
-hand. The pipe in that diagram is a claim, not a demo. Building the bridge, and showing a real
-dependency graph drain to a stack of merged pull requests without me touching the middle, is the
-next post. This one is the idea that makes that post worth writing.</p>
+hand. Nothing connects them yet; the diagram shows where the pipe would go once I build it. Building
+that bridge, and showing a real dependency graph drain to a stack of merged pull requests without me
+touching the middle, is the next post. This one is the idea that makes that post worth writing.</p>
 <h2 id="closing">Closing</h2>
 <p>I did not set out to build a philosophy of agent workflows. I set out to stop my agents from picking
 the wrong task and to stop myself from merging half-reviewed code. Two narrow tools, two opposite
