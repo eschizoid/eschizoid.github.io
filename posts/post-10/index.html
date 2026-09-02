@@ -8,7 +8,7 @@
 	<meta itemprop="description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. They look unrelated until you notice they are the same move: represent the work as a graph, define ready and done as strict gates, and let an engine walk it. That move has a name, and it is worth doing on purpose.">
 	<meta itemprop="datePublished" content="2026-09-02T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-09-02T00:00:00+00:00">
-	<meta itemprop="wordCount" content="1498">
+	<meta itemprop="wordCount" content="1492">
 	<meta itemprop="keywords" content="Ai-Agents,Graph,Workflow,Beads,Automation,Claude-Code"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-10/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="Two agent tools taught me the same thing: the work is a graph">
@@ -29,20 +29,20 @@
 	<meta name="twitter:title" content="Two agent tools taught me the same thing: the work is a graph">
 	<meta name="twitter:description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. They look unrelated until you notice they are the same move: represent the work as a graph, define ready and done as strict gates, and let an engine walk it. That move has a name, and it is worth doing on purpose.">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788372423" />
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788372423" />
-	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788372423"></script>
-		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788372423" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788372648" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788372648" />
+	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788372648"></script>
+		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788372648" />
 	
 
-        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788372423" />
+        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788372648" />
 
-	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788372423"></script>
+	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788372648"></script>
 	
-		<script src="https://mariano-gonzalez.com/js/main.js?v=1788372423"></script>
+		<script src="https://mariano-gonzalez.com/js/main.js?v=1788372648"></script>
 
 	
-		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788372423">
+		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788372648">
 	
 </head>
 
@@ -125,8 +125,8 @@ agent what to do; you describe the shape of the work and let it ask the graph.</
 </span></span><span style="display:flex;"><span><span style="color:#8b949e;font-style:italic"># bd-1  Add auth middleware   (no open blockers)</span></span></span></code></pre>
 </figure><p><code>bd ready</code> is the whole trick. It returns the nodes whose dependencies are all satisfied, which is
 exactly the set of things that can be worked right now. Finish <code>bd-1</code>, close it, and <code>bd-2</code> falls
-into the ready set on its own. The agent never guesses at order, because the graph recomputes order
-on demand and it never has to remember one.</p>
+into the ready set on its own. The agent never guesses at order, because the graph recomputes it on
+demand; there is no plan to remember.</p>
 <p>The other half is that the graph is git-backed, so it survives the thing agents are worst at:
 forgetting. Context windows roll over and the session dies, but the DAG is committed next to the
 code. A fresh agent runs <code>bd ready</code> and is immediately oriented, no re-briefing. The graph is the
@@ -136,7 +136,7 @@ with no unmet dependencies.</strong></p>
 <h2 id="the-second-graph-what-is-ready-to-finish">The second graph: what is ready to finish</h2>
 <p><code>fleet-merge</code> is a skill I wrote to close the other end. Point it at a repo with open pull requests
 and it watches them until each one is genuinely mergeable, then merges it with whatever method the
-repo allows. It is the boring, vigilant reviewer that never gets tired and never waves something
+repo allows. It is the boring, vigilant gatekeeper that never gets tired and never waves something
 through because it is Friday.</p>
 <p>I did not think of it as a graph tool when I wrote it. It is. The pull requests are nodes. Two pull
 requests that touch the same file have an edge between them: whichever merges second has to rebase,
@@ -149,9 +149,9 @@ these hold at once:</p>
 <li>No real CI failure, and nothing still running. Not &ldquo;the checkmark is green&rdquo;: a check that is still
 in progress reports no conclusion yet, and if you read that as success you merge with the tests
 half-finished.</li>
-<li>The review sign-off is on the <em>current</em> commit. An approval on a commit that has since been pushed
-over is not an approval of the code you are about to merge. It is an approval of code that no
-longer exists.</li>
+<li>The review sign-off is on the <em>current</em> commit. If the approval sits on a commit you have since
+pushed over, it approved code that no longer exists and says nothing about what you are about to
+merge.</li>
 <li>No suppressed review comments. This is the one that pays. A reviewer can leave notes that never
 become blocking threads, so the summary still reads &ldquo;no new comments&rdquo; and the unresolved count
 still says zero, while a real finding sits one click out of view.</li>
@@ -215,11 +215,10 @@ work is a node whose gate passes on its current state.</strong></p>
 like readiness.</li>
 <li>Let an autonomous engine walk the graph, transitioning a node only when its gate actually passes.</li>
 </ol>
-<p>That move is worth naming, because once you see it you start building it deliberately. Call it graph
+<p>Once you see the move, you start building it on purpose. I have started calling it graph
 engineering: turning &ldquo;a pile of work an agent has to keep straight&rdquo; into &ldquo;a graph an agent can
-query.&rdquo; The agent stops being something you supervise turn by turn and becomes
-something that reads the graph, acts, and updates it. You are no longer in the loop; you own the
-gates.</p>
+query.&rdquo; The agent stops being something you supervise turn by turn and becomes something that reads
+the graph, acts, and updates it. You are no longer in the loop; you own the gates.</p>
 <h2 id="the-loop-neither-one-closes">The loop neither one closes</h2>
 <p>Here is what got me to write this down. Each tool owns one end, and there is an obvious pipe between
 the ends that nothing currently connects:</p>
