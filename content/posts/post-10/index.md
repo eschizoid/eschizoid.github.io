@@ -4,7 +4,8 @@ date: 2026-09-02
 description: "Beads models what an AI agent should do next as a dependency graph. My fleet-merge
   skill decides when a pull request is actually done and merges it. They look unrelated until you
   notice they are the same move: represent the work as a graph, define ready and done as strict
-  gates, and let an engine walk it. That move has a name, and it is worth doing on purpose."
+  gates, and let an engine walk it. I call the habit graph engineering, and it is worth doing on
+  purpose."
 tags:
   - ai-agents
   - graph
@@ -121,7 +122,8 @@ One table is enough to make the case:
 | The question       | what can start                 | what can finish                   |
 | Who walks it       | the coding agent               | the merge loop                    |
 
-The table is the argument: model the work as a graph, write down what *ready* and *done* actually
+Sit with the gate row for a moment: both cells refuse a signal that merely looks like the real
+thing. The table is the argument: model the work as a graph, write down what *ready* and *done* actually
 mean as gates that refuse the look-alike signals, and let an engine walk it. I have started calling
 the habit graph engineering, which is a grand name for something small. The payoff is that you stop
 supervising turn by turn: the agent asks the graph what is ready and writes back what it finished,
@@ -148,7 +150,7 @@ touching the middle, is the next post. This one is the idea that makes that post
 
 I set out to stop my agents from picking the wrong task, and to stop myself from merging
 half-reviewed code. Two narrow tools, two opposite ends of the work, and the fix at both ends turned
-out to be identical. The graph carries the plan and the memory. The gate carries the judgment I used
-to spend by hand, one task at a time.
+out to be identical. The graph carries the plan and the memory. The gate does the judging I used to
+do by hand, one task at a time.
 
 The work is a graph. Build it that way, and the agent stops getting lost. That is the whole post.
