@@ -52,8 +52,8 @@ bd ready
 
 `bd ready` is the whole trick. It returns the nodes whose dependencies are all satisfied, which is
 exactly the set of things that can be worked right now. Finish `bd-1`, close it, and `bd-2` falls
-into the ready set on its own. The agent never guesses at order, because the graph recomputes order
-on demand and it never has to remember one.
+into the ready set on its own. The agent never guesses at order, because the graph recomputes it on
+demand; there is no plan to remember.
 
 The other half is that the graph is git-backed, so it survives the thing agents are worst at:
 forgetting. Context windows roll over and the session dies, but the DAG is committed next to the
@@ -67,7 +67,7 @@ with no unmet dependencies.**
 
 `fleet-merge` is a skill I wrote to close the other end. Point it at a repo with open pull requests
 and it watches them until each one is genuinely mergeable, then merges it with whatever method the
-repo allows. It is the boring, vigilant reviewer that never gets tired and never waves something
+repo allows. It is the boring, vigilant gatekeeper that never gets tired and never waves something
 through because it is Friday.
 
 I did not think of it as a graph tool when I wrote it. It is. The pull requests are nodes. Two pull
@@ -82,9 +82,9 @@ these hold at once:
 - No real CI failure, and nothing still running. Not "the checkmark is green": a check that is still
   in progress reports no conclusion yet, and if you read that as success you merge with the tests
   half-finished.
-- The review sign-off is on the *current* commit. An approval on a commit that has since been pushed
-  over is not an approval of the code you are about to merge. It is an approval of code that no
-  longer exists.
+- The review sign-off is on the *current* commit. If the approval sits on a commit you have since
+  pushed over, it approved code that no longer exists and says nothing about what you are about to
+  merge.
 - No suppressed review comments. This is the one that pays. A reviewer can leave notes that never
   become blocking threads, so the summary still reads "no new comments" and the unresolved count
   still says zero, while a real finding sits one click out of view.
@@ -125,11 +125,10 @@ Neither tool is really "a TODO list" or "a merge bot." Both are the same three-p
    like readiness.
 3. Let an autonomous engine walk the graph, transitioning a node only when its gate actually passes.
 
-That move is worth naming, because once you see it you start building it deliberately. Call it graph
+Once you see the move, you start building it on purpose. I have started calling it graph
 engineering: turning "a pile of work an agent has to keep straight" into "a graph an agent can
-query." The agent stops being something you supervise turn by turn and becomes
-something that reads the graph, acts, and updates it. You are no longer in the loop; you own the
-gates.
+query." The agent stops being something you supervise turn by turn and becomes something that reads
+the graph, acts, and updates it. You are no longer in the loop; you own the gates.
 
 ## The loop neither one closes
 
