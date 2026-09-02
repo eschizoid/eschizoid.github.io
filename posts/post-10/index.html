@@ -8,7 +8,7 @@
 	<meta itemprop="description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. Neither idea is new: build systems have walked graphs and gated on staleness since make. What changes when the walker is an agent is what the gates are for, because a compiler cannot talk itself into believing a green checkmark and an agent can.">
 	<meta itemprop="datePublished" content="2026-09-02T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-09-02T00:00:00+00:00">
-	<meta itemprop="wordCount" content="1654">
+	<meta itemprop="wordCount" content="1650">
 	<meta itemprop="keywords" content="Ai-Agents,Graph,Workflow,Beads,Automation,Claude-Code"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-10/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="Two graphs run my coding agents: one picks the work, one decides it is done">
@@ -29,20 +29,20 @@
 	<meta name="twitter:title" content="Two graphs run my coding agents: one picks the work, one decides it is done">
 	<meta name="twitter:description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. Neither idea is new: build systems have walked graphs and gated on staleness since make. What changes when the walker is an agent is what the gates are for, because a compiler cannot talk itself into believing a green checkmark and an agent can.">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788391266" />
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788391266" />
-	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788391266"></script>
-		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788391266" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788392310" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788392310" />
+	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788392310"></script>
+		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788392310" />
 	
 
-        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788391266" />
+        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788392310" />
 
-	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788391266"></script>
+	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788392310"></script>
 	
-		<script src="https://mariano-gonzalez.com/js/main.js?v=1788391266"></script>
+		<script src="https://mariano-gonzalez.com/js/main.js?v=1788392310"></script>
 
 	
-		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788391266">
+		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788392310">
 	
 </head>
 
@@ -135,8 +135,8 @@ with no unmet dependencies.</p>
 <h2 id="the-second-graph-what-is-ready-to-finish">The second graph: what is ready to finish</h2>
 <p><code>fleet-merge</code> is a skill I wrote to close the other end. Point it at a repo with open pull requests
 and it watches them until each one is genuinely mergeable, then merges it with whatever method the
-repo allows. It runs the same checklist on the fiftieth pull request as on the first, and it does
-not wave one through because it is Friday.</p>
+repo allows. When one of them needs a human decision it stops and says so, rather than sitting in
+the loop burning polls.</p>
 <p>I did not think of it as a graph tool when I wrote it. It is. The pull requests are nodes. Two pull
 requests that touch the same file have an edge between them: whichever merges second has to rebase,
 so fleet-merge lands them strictly one at a time. The edge decides merge order the same way a beads
