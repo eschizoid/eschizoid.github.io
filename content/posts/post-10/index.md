@@ -19,7 +19,7 @@ draft: false
 
 Hand real work to a coding agent and two problems show up, one at each end of the same job.
 
-At the start: what should it do next? A long project is not a list, it is a web. Task B needs A
+At the start: what should it do next? A long project is a web of dependencies. Task B needs A
 finished first, C and D can go in parallel, E is blocked on both. Hold that in a flat TODO and the
 agent picks the wrong thing, or redoes finished work, or loses the plan the moment its context
 window rolls over.
@@ -52,8 +52,8 @@ bd ready
 
 `bd ready` is the whole trick. It returns the nodes whose dependencies are all satisfied, which is
 exactly the set of things that can be worked right now. Finish `bd-1`, close it, and `bd-2` falls
-into the ready set on its own. The agent never guesses at order, because order is not a plan it has
-to remember; it is a property of the graph, recomputed on demand.
+into the ready set on its own. The agent never guesses at order, because the graph recomputes order
+on demand and it never has to remember one.
 
 The other half is that the graph is git-backed, so it survives the thing agents are worst at:
 forgetting. Context windows roll over and the session dies, but the DAG is committed next to the
@@ -73,7 +73,8 @@ through because it is Friday.
 I did not think of it as a graph tool when I wrote it. It is. The pull requests are nodes. Two pull
 requests that touch the same file have an edge between them: whichever merges second has to rebase,
 so they cannot land in parallel. And every node has the same question hanging over it that beads
-asks at the other end, only inverted: not "can this start," but "can this finish."
+asks at the other end, only inverted: beads asks whether a node can start, fleet-merge asks whether
+it can finish.
 
 The answer is a gate, and the gate does all the work. A pull request is done only when all of
 these hold at once:
@@ -93,6 +94,17 @@ None of those four is the naive signal. The green checkmark, the APPROVED badge,
 count: each looks like done and is not. The value is in refusing the signals that merely resemble
 done, the same way `bd ready` refuses to hand you a node whose dependencies only look satisfied.
 
+There is a second wrinkle the gate assumes away: often there is no automated reviewer to produce
+that signal at all. The review bot goes missing for whole sessions at a time. When it does,
+fleet-merge does not fall back to "merge on green"; it runs its own review round, and the part worth
+stealing is how it sizes one. It does not pick a number of reviewers and fill it. It reads what the
+diff actually risks and assigns one specialist per failure class: a correctness reviewer when
+behavior changes, a silent-failure hunter when the change touches error paths or a check that can
+pass while proving nothing, a comment analyzer when prose describes the code, a test analyzer when a
+test claims something is now guarded. A one-file fix draws one of these personas. A migration draws
+four. The panel is never fixed; the set falls out of the shape of the change, the same way
+`bd ready` falls out of the shape of the graph.
+
 So fleet-merge answers the end-of-work question, and it answers it structurally too: **finishable
 work is a node whose gate passes on its current state.**
 
@@ -110,7 +122,7 @@ Line the two up and the shared shape stands out.
 
 Neither tool is really "a TODO list" or "a merge bot." Both are the same three-part move:
 
-1. Model the work as a graph, so order is a property you compute, not a plan you hold in your head.
+1. Model the work as a graph, so you compute order from the graph instead of holding it in your head.
 2. Define *ready* and *done* as explicit gates, and make the gates refuse the signals that only look
    like readiness.
 3. Let an autonomous engine walk the graph, transitioning a node only when its gate actually passes.
@@ -140,9 +152,9 @@ of gates instead of driving every step.
 
 I want to be honest about where this stands, because the receipts are the point and I do not have
 them yet: those two graphs are not wired together today. I run beads by hand and fleet-merge by
-hand. The pipe in that diagram is a claim, not a demo. Building the bridge, and showing a real
-dependency graph drain to a stack of merged pull requests without me touching the middle, is the
-next post. This one is the idea that makes that post worth writing.
+hand. Nothing connects them yet; the diagram shows where the pipe would go once I build it. Building
+that bridge, and showing a real dependency graph drain to a stack of merged pull requests without me
+touching the middle, is the next post. This one is the idea that makes that post worth writing.
 
 ## Closing
 
