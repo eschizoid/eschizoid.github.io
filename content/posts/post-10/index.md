@@ -1,5 +1,5 @@
 ---
-title: "Make has walked dependency graphs for forty years. I pointed one at an agent."
+title: "Two graphs run my coding agents: one picks the work, one decides it is done"
 date: 2026-09-02
 description: "Beads models what an AI agent should do next as a dependency graph. My fleet-merge
   skill decides when a pull request is actually done and merges it. Neither idea is new: build
