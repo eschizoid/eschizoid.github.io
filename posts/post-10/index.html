@@ -2,17 +2,17 @@
 <html>
 <head>
 	<meta charset="utf-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Two agent tools taught me the same thing: the work is a graph - Mariano Gonzalez</title><meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Make has walked dependency graphs for forty years. I pointed one at an agent. - Mariano Gonzalez</title><meta name="viewport" content="width=device-width, initial-scale=1">
 	
-	<meta itemprop="name" content="Two agent tools taught me the same thing: the work is a graph">
-	<meta itemprop="description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. They look unrelated until you notice they are the same move: represent the work as a graph, define ready and done as strict gates, and let an engine walk it. I call the habit graph engineering, and it is worth doing on purpose.">
+	<meta itemprop="name" content="Make has walked dependency graphs for forty years. I pointed one at an agent.">
+	<meta itemprop="description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. Neither idea is new: build systems have walked graphs and gated on staleness since make. What changes when the walker is an agent is what the gates are for, because a compiler cannot talk itself into believing a green checkmark and an agent can.">
 	<meta itemprop="datePublished" content="2026-09-02T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-09-02T00:00:00+00:00">
-	<meta itemprop="wordCount" content="1420">
+	<meta itemprop="wordCount" content="1585">
 	<meta itemprop="keywords" content="Ai-Agents,Graph,Workflow,Beads,Automation,Claude-Code"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-10/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
-	<meta property="og:title" content="Two agent tools taught me the same thing: the work is a graph">
-	<meta property="og:description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. They look unrelated until you notice they are the same move: represent the work as a graph, define ready and done as strict gates, and let an engine walk it. I call the habit graph engineering, and it is worth doing on purpose.">
+	<meta property="og:title" content="Make has walked dependency graphs for forty years. I pointed one at an agent.">
+	<meta property="og:description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. Neither idea is new: build systems have walked graphs and gated on staleness since make. What changes when the walker is an agent is what the gates are for, because a compiler cannot talk itself into believing a green checkmark and an agent can.">
 	<meta property="og:locale" content="en_us">
 	<meta property="og:type" content="article">
 		<meta property="article:section" content="posts">
@@ -26,23 +26,23 @@
 		<meta property="article:tag" content="Claude-Code">
 
 	<meta name="twitter:card" content="summary">
-	<meta name="twitter:title" content="Two agent tools taught me the same thing: the work is a graph">
-	<meta name="twitter:description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. They look unrelated until you notice they are the same move: represent the work as a graph, define ready and done as strict gates, and let an engine walk it. I call the habit graph engineering, and it is worth doing on purpose.">
+	<meta name="twitter:title" content="Make has walked dependency graphs for forty years. I pointed one at an agent.">
+	<meta name="twitter:description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. Neither idea is new: build systems have walked graphs and gated on staleness since make. What changes when the walker is an agent is what the gates are for, because a compiler cannot talk itself into believing a green checkmark and an agent can.">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788375459" />
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788375459" />
-	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788375459"></script>
-		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788375459" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788387126" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788387126" />
+	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788387126"></script>
+		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788387126" />
 	
 
-        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788375459" />
+        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788387126" />
 
-	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788375459"></script>
+	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788387126"></script>
 	
-		<script src="https://mariano-gonzalez.com/js/main.js?v=1788375459"></script>
+		<script src="https://mariano-gonzalez.com/js/main.js?v=1788387126"></script>
 
 	
-		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788375459">
+		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788387126">
 	
 </head>
 
@@ -91,7 +91,7 @@
 					</div>
 				
 				<div class="matter">
-					<h1 class="title">Two agent tools taught me the same thing: the work is a graph</h1>
+					<h1 class="title">Make has walked dependency graphs for forty years. I pointed one at an agent.</h1>
 				</div>
 			</div>
 					
@@ -143,25 +143,45 @@ so fleet-merge lands them strictly one at a time. The edge decides merge order t
 dependency decides start order. And every node has the same question hanging over it that beads asks
 at the other end, only inverted: beads asks whether a node can start, fleet-merge asks whether it
 can finish.</p>
-<p>The answer is a gate, and the gate does all the work. A pull request is done only when all of
-these hold at once:</p>
-<ul>
-<li>No real CI failure, and nothing still running. Not &ldquo;the checkmark is green&rdquo;: a check that is still
-in progress reports no conclusion yet, and if you read that as success you merge with the tests
-half-finished.</li>
-<li>A review sign-off on the <em>current</em> commit. Wherever the review came from, if it sits on a commit
-you have since pushed over, it approved code that no longer exists and says nothing about what you
-are about to merge.</li>
-<li>No suppressed review comments. This is the one that catches real bugs; the best find yet was a
-test asserting on a string that both the success path and the error path emit, so it would have
-passed on the exact failure it was written to catch. A reviewer can file notes that never become
-blocking threads, so the review summary still reads &ldquo;no new comments&rdquo; and the unresolved count
-still says zero, while a real finding sits collapsed one click out of view.</li>
-<li>It is not a release pull request. Cutting a release is a human decision; the loop has no business
-making it as a side effect of being green.</li>
-</ul>
-<p>None of those four is the naive signal. The green checkmark, the APPROVED badge, the zero-unresolved
-count: each looks like done and is not. The value is in refusing the signals that merely resemble
+<p>The answer is a gate: four conditions that must all hold before a pull request may merge. What makes
+it worth writing down is that not one of them is the signal GitHub puts in front of you. Every
+obvious green light has a look-alike failure behind it, and the gate exists to tell those apart.</p>
+<table>
+	<thead>
+			<tr>
+					<th>GitHub shows you</th>
+					<th>Why that is not done</th>
+					<th>What the gate requires</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>A green checkmark</td>
+					<td>a check still running has no verdict yet, so &ldquo;not failing&rdquo; gets read as &ldquo;passed&rdquo;</td>
+					<td>every check finished, none of them failed</td>
+			</tr>
+			<tr>
+					<td>An APPROVED review</td>
+					<td>the approval may sit on a commit you have since pushed over</td>
+					<td>a sign-off on the commit that is there now</td>
+			</tr>
+			<tr>
+					<td>Zero unresolved threads</td>
+					<td>a reviewer can file notes that never become threads, so nothing is unresolved and nothing was read either</td>
+					<td>no suppressed comments, checked every round</td>
+			</tr>
+			<tr>
+					<td>A perfectly green release PR</td>
+					<td>cutting a release is a human decision</td>
+					<td>that the pull request is not a release</td>
+			</tr>
+	</tbody>
+</table>
+<p>The third row is the one that catches real bugs. Those notes arrive collapsed, one click out of
+view, and the review summary above them still says &ldquo;no new comments&rdquo; in good faith. The best find
+yet was a test asserting on a string that both the success path and the error path emit, so it would
+have passed on the exact failure it was written to catch. Nothing in the interface was red.</p>
+<p>So the gate is a small piece of paranoia, written down once: refuse the signals that merely resemble
 done, the same way <code>bd ready</code> refuses to hand you a node that still has an open blocker.</p>
 <p>Where does that sign-off come from? Sometimes a reviewer shows up on their own. When nobody does,
 fleet-merge does not wait around; it produces the review itself, and the interesting part is how it
@@ -212,11 +232,18 @@ work is a node whose gate passes on its current state.</p>
 	</tbody>
 </table>
 <p>Sit with the gate row for a moment: both cells refuse a signal that merely looks like the real
-thing. The table is the argument: model the work as a graph, write down what <em>ready</em> and <em>done</em> actually
-mean as gates that refuse the look-alike signals, and let an engine walk it. I have started calling
-the habit graph engineering, which is a grand name for something small. The payoff is that you stop
-supervising turn by turn: the agent asks the graph what is ready and writes back what it finished,
-and your job shrinks to owning the gates.</p>
+thing. The table is the argument: model the work as a graph, write down what <em>ready</em> and <em>done</em>
+actually mean as gates that refuse the look-alike signals, and let an engine walk it.</p>
+<p>None of which is a new idea, and I want to be careful not to dress it up as one. Build systems have
+worked this way for forty years. <code>make</code> does not ask you what to compile next; it walks a dependency
+graph and rebuilds what is stale. Bazel and Nix went further and made the gate strict, because a
+target that merely looks up to date is the oldest bug in the genre. Every scheduler, every CI
+pipeline, every package manager is the same machine.</p>
+<p>What is new is the walker. Those systems walked graphs of files with a compiler at the other end;
+what I have been doing is pointing the same structure at an agent, which is a walker that can write
+the code, open the pull request and read the review. That is the only part I built, and it is the
+part where the gates stop being a formality: a compiler cannot talk itself into believing a stale
+target was fresh, and an agent, left to judge its own work by the green checkmark, absolutely can.</p>
 <h2 id="the-loop-neither-one-closes">The loop neither one closes</h2>
 <p>Here is what got me to write this down. Each tool owns one end, and there is an obvious pipe between
 the ends that nothing currently connects:</p>
@@ -234,9 +261,10 @@ touching the middle, is the next post. This one is the idea that makes that post
 <h2 id="closing">Closing</h2>
 <p>I set out to stop my agents from picking the wrong task, and to stop myself from merging
 half-reviewed code. Two narrow tools, two opposite ends of the work, and the fix at both ends turned
-out to be identical. The graph carries the plan and the memory. The gate does the judging I used to
-do by hand, one task at a time.</p>
-<p>The work is a graph. Build it that way, and the agent stops getting lost. That is the whole post.</p>
+out to be one your build system has been running the whole time. The graph carries the plan and the
+memory. The gate does the judging I used to do by hand, one task at a time.</p>
+<p>So there is nothing to invent here, which is the good news. Put the work in a graph, write the gates
+down honestly, and hand the walk to the agent. That is the whole post.</p>
 
 			</div>
 
