@@ -94,16 +94,14 @@ None of those four is the naive signal. The green checkmark, the APPROVED badge,
 count: each looks like done and is not. The value is in refusing the signals that merely resemble
 done, the same way `bd ready` refuses to hand you a node whose dependencies only look satisfied.
 
-There is a second wrinkle the gate assumes away: often there is no automated reviewer to produce
-that signal at all. The review bot goes missing for whole sessions at a time. When it does,
-fleet-merge does not fall back to "merge on green"; it runs its own review round, and the part worth
-stealing is how it sizes one. It does not pick a number of reviewers and fill it. It reads what the
-diff actually risks and assigns one specialist per failure class: a correctness reviewer when
-behavior changes, a silent-failure hunter when the change touches error paths or a check that can
-pass while proving nothing, a comment analyzer when prose describes the code, a test analyzer when a
-test claims something is now guarded. A one-file fix draws one of these personas. A migration draws
-four. The panel is never fixed; the set falls out of the shape of the change, the same way
-`bd ready` falls out of the shape of the graph.
+The gate has a second half worth stealing: fleet-merge does not wait around for a review to appear,
+it produces one. Before a node can pass, it runs a review round sized to what the change actually
+risks. It does not pick a number of reviewers and fill it. It reads the diff and assigns one
+specialist per failure class: a correctness reviewer when behavior changes, a silent-failure hunter
+when the change touches error paths or a check that can pass while proving nothing, a comment
+analyzer when prose describes the code, a test analyzer when a test claims something is now guarded.
+A one-file fix draws one of these personas. A migration draws four. The panel is never fixed; the set
+falls out of the shape of the change, the same way `bd ready` falls out of the shape of the graph.
 
 So fleet-merge answers the end-of-work question, and it answers it structurally too: **finishable
 work is a node whose gate passes on its current state.**
