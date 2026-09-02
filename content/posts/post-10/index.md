@@ -67,8 +67,8 @@ with no unmet dependencies.
 
 `fleet-merge` is a skill I wrote to close the other end. Point it at a repo with open pull requests
 and it watches them until each one is genuinely mergeable, then merges it with whatever method the
-repo allows. It runs the same checklist on the fiftieth pull request as on the first, and it does
-not wave one through because it is Friday.
+repo allows. When one of them needs a human decision it stops and says so, rather than sitting in
+the loop burning polls.
 
 I did not think of it as a graph tool when I wrote it. It is. The pull requests are nodes. Two pull
 requests that touch the same file have an edge between them: whichever merges second has to rebase,
