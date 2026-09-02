@@ -125,11 +125,11 @@ forty years. `make` does not ask you what to compile next; it walks a dependency
 and Nix went further and made the gate strict, because a target that merely looks up to date is the oldest bug in the
 genre. Every scheduler, every CI pipeline, every package manager is the same machine.
 
-What is new is the walker. Those systems walked graphs of files with a compiler at the other end; what I have been doing
-is pointing the same structure at an agent, which is a walker that can write the code, open the pull request and read
-the review. That is the only part I built, and it is the part where the gates stop being a formality: a compiler cannot
-talk itself into believing a stale target was fresh, and an agent, left to judge its own work by the green checkmark,
-absolutely can.
+What is new is the walker. Those systems walked graphs of files with a compiler at the other end; here the walker is an
+agent that can write the code, open the pull request and read the review. The part I built is the gate, and the walker
+is why it has to be strict: `make` gets staleness wrong mechanically, from a bad timestamp or a missing dependency, but
+an agent gets it wrong agreeably. It wants the task to be done, so an ambiguous signal reads as success. That failure
+mode is what the gate is written against.
 
 ## The loop neither one closes
 
