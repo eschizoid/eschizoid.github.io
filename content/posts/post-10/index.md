@@ -21,7 +21,7 @@ Hand real work to a coding agent and two problems show up, one at each end of th
 
 At the start: what should it do next? A long project is a web of dependencies. Task B needs A
 finished first, C and D can go in parallel, E is blocked on both. Hold that in a flat TODO and the
-agent picks the wrong thing, and the plan itself dies the moment its context window rolls over.
+agent picks the wrong thing, and the plan dies with the context window that held it.
 
 At the end: is this actually done? The agent opened six pull requests. CI is green on four. One has
 a review comment nobody resolved. One looks merged-ready but the approval is sitting on a commit
@@ -143,9 +143,8 @@ pull request until its gate passes, merges it, and the corresponding beads node 
 the *next* node into the ready set. A graph draining itself to green, with a human watching two sets
 of gates instead of driving every step.
 
-I want to be honest about where this stands, because receipts, proof you can check, are the point
-and I do not have them yet: those two graphs are not wired together today. I run beads by hand and fleet-merge by
-hand. Nothing connects them yet; the diagram shows where the pipe would go once I build it. Building
+To be clear about where this stands: those two graphs are not wired together today. I run beads by
+hand and fleet-merge by hand, and the diagram shows where the pipe would go once I build it. Building
 that bridge, and showing a real dependency graph drain to a stack of merged pull requests without me
 touching the middle, is the next post. This one is the idea that makes that post worth writing.
 
