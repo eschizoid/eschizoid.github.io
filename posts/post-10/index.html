@@ -8,7 +8,7 @@
 	<meta itemprop="description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. Neither idea is new: build systems have walked graphs and gated on staleness since make. What changes when the walker is an agent is what the gates are for, because a compiler cannot talk itself into believing a green checkmark and an agent can.">
 	<meta itemprop="datePublished" content="2026-09-02T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-09-02T00:00:00+00:00">
-	<meta itemprop="wordCount" content="1613">
+	<meta itemprop="wordCount" content="1617">
 	<meta itemprop="keywords" content="Ai-Agents,Graph,Workflow,Beads,Automation,Claude-Code"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-10/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="Two graphs run my coding agents: one picks the work, one decides it is done">
@@ -29,20 +29,20 @@
 	<meta name="twitter:title" content="Two graphs run my coding agents: one picks the work, one decides it is done">
 	<meta name="twitter:description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. Neither idea is new: build systems have walked graphs and gated on staleness since make. What changes when the walker is an agent is what the gates are for, because a compiler cannot talk itself into believing a green checkmark and an agent can.">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788392871" />
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788392871" />
-	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788392871"></script>
-		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788392871" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788393438" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788393438" />
+	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788393438"></script>
+		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788393438" />
 	
 
-        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788392871" />
+        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788393438" />
 
-	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788392871"></script>
+	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788393438"></script>
 	
-		<script src="https://mariano-gonzalez.com/js/main.js?v=1788392871"></script>
+		<script src="https://mariano-gonzalez.com/js/main.js?v=1788393438"></script>
 
 	
-		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788392871">
+		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788393438">
 	
 </head>
 
@@ -234,11 +234,11 @@ actually mean, and let an engine walk it.</p>
 forty years. <code>make</code> does not ask you what to compile next; it walks a dependency graph and rebuilds what is stale. Bazel
 and Nix went further and made the gate strict, because a target that merely looks up to date is the oldest bug in the
 genre. Every scheduler, every CI pipeline, every package manager is the same machine.</p>
-<p>What is new is the walker. Those systems walked graphs of files with a compiler at the other end; what I have been doing
-is pointing the same structure at an agent, which is a walker that can write the code, open the pull request and read
-the review. That is the only part I built, and it is the part where the gates stop being a formality: a compiler cannot
-talk itself into believing a stale target was fresh, and an agent, left to judge its own work by the green checkmark,
-absolutely can.</p>
+<p>What is new is the walker. Those systems walked graphs of files with a compiler at the other end; here the walker is an
+agent that can write the code, open the pull request and read the review. The part I built is the gate, and the walker
+is why it has to be strict: <code>make</code> gets staleness wrong mechanically, from a bad timestamp or a missing dependency, but
+an agent gets it wrong agreeably. It wants the task to be done, so an ambiguous signal reads as success. That failure
+mode is what the gate is written against.</p>
 <h2 id="the-loop-neither-one-closes">The loop neither one closes</h2>
 <p>Here is what got me to write this down. Each tool owns one end, and there is an obvious pipe between the ends that
 nothing currently connects:</p>
