@@ -5,14 +5,14 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Two agent tools taught me the same thing: the work is a graph - Mariano Gonzalez</title><meta name="viewport" content="width=device-width, initial-scale=1">
 	
 	<meta itemprop="name" content="Two agent tools taught me the same thing: the work is a graph">
-	<meta itemprop="description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. They look unrelated until you notice they are the same move: represent the work as a graph, define ready and done as strict gates, and let an engine walk it. That move has a name, and it is worth doing on purpose.">
+	<meta itemprop="description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. They look unrelated until you notice they are the same move: represent the work as a graph, define ready and done as strict gates, and let an engine walk it. I call the habit graph engineering, and it is worth doing on purpose.">
 	<meta itemprop="datePublished" content="2026-09-02T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-09-02T00:00:00+00:00">
-	<meta itemprop="wordCount" content="1400">
+	<meta itemprop="wordCount" content="1420">
 	<meta itemprop="keywords" content="Ai-Agents,Graph,Workflow,Beads,Automation,Claude-Code"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-10/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="Two agent tools taught me the same thing: the work is a graph">
-	<meta property="og:description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. They look unrelated until you notice they are the same move: represent the work as a graph, define ready and done as strict gates, and let an engine walk it. That move has a name, and it is worth doing on purpose.">
+	<meta property="og:description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. They look unrelated until you notice they are the same move: represent the work as a graph, define ready and done as strict gates, and let an engine walk it. I call the habit graph engineering, and it is worth doing on purpose.">
 	<meta property="og:locale" content="en_us">
 	<meta property="og:type" content="article">
 		<meta property="article:section" content="posts">
@@ -27,22 +27,22 @@
 
 	<meta name="twitter:card" content="summary">
 	<meta name="twitter:title" content="Two agent tools taught me the same thing: the work is a graph">
-	<meta name="twitter:description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. They look unrelated until you notice they are the same move: represent the work as a graph, define ready and done as strict gates, and let an engine walk it. That move has a name, and it is worth doing on purpose.">
+	<meta name="twitter:description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. They look unrelated until you notice they are the same move: represent the work as a graph, define ready and done as strict gates, and let an engine walk it. I call the habit graph engineering, and it is worth doing on purpose.">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788375316" />
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788375316" />
-	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788375316"></script>
-		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788375316" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788375459" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788375459" />
+	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788375459"></script>
+		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788375459" />
 	
 
-        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788375316" />
+        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788375459" />
 
-	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788375316"></script>
+	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788375459"></script>
 	
-		<script src="https://mariano-gonzalez.com/js/main.js?v=1788375316"></script>
+		<script src="https://mariano-gonzalez.com/js/main.js?v=1788375459"></script>
 
 	
-		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788375316">
+		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788375459">
 	
 </head>
 
@@ -211,7 +211,8 @@ work is a node whose gate passes on its current state.</p>
 			</tr>
 	</tbody>
 </table>
-<p>The table is the argument: model the work as a graph, write down what <em>ready</em> and <em>done</em> actually
+<p>Sit with the gate row for a moment: both cells refuse a signal that merely looks like the real
+thing. The table is the argument: model the work as a graph, write down what <em>ready</em> and <em>done</em> actually
 mean as gates that refuse the look-alike signals, and let an engine walk it. I have started calling
 the habit graph engineering, which is a grand name for something small. The payoff is that you stop
 supervising turn by turn: the agent asks the graph what is ready and writes back what it finished,
@@ -233,8 +234,8 @@ touching the middle, is the next post. This one is the idea that makes that post
 <h2 id="closing">Closing</h2>
 <p>I set out to stop my agents from picking the wrong task, and to stop myself from merging
 half-reviewed code. Two narrow tools, two opposite ends of the work, and the fix at both ends turned
-out to be identical. The graph carries the plan and the memory. The gate carries the judgment I used
-to spend by hand, one task at a time.</p>
+out to be identical. The graph carries the plan and the memory. The gate does the judging I used to
+do by hand, one task at a time.</p>
 <p>The work is a graph. Build it that way, and the agent stops getting lost. That is the whole post.</p>
 
 			</div>
