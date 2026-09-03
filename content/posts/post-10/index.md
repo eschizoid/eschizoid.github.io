@@ -1,11 +1,11 @@
 ---
-title: "Two graphs run my coding agents: one picks the work, one decides it is done"
+title: "How I use two dependency graphs to run my coding agents"
 date: 2026-09-02
-description: "Beads models what an AI agent should do next as a dependency graph. My fleet-merge
-  skill decides when a pull request is actually done and merges it. Neither idea is new: build
-  systems have walked dependency graphs and gated on staleness since make. What changes when the
-  graph drives an agent is the failure mode: make gets staleness wrong mechanically, and an agent
-  gets it wrong agreeably, because it wants the task to be done."
+description: "Beads tracks what an AI agent should do next as a dependency graph. My fleet-merge
+  skill decides when a pull request is done and merges it. Neither idea is new, because build
+  systems have walked dependency graphs and checked for stale results since make. What changes when
+  the graph drives an agent is the kind of mistake you get. make gets staleness wrong for mechanical
+  reasons, and an agent gets doneness wrong because it wants the task to be finished."
 tags:
   - ai-agents
   - graph
@@ -20,25 +20,31 @@ draft: false
 
 ## The setup
 
-Hand real work to a coding agent and two problems show up, one at each end of the same job.
+When you give real work to a coding agent, two problems show up, one at the start of the job and one
+at the end.
 
-At the start: what should it do next? A long project is a web of dependencies. Task B needs A finished first, C and D
-can go in parallel, E is blocked on both. Hold that in a flat TODO and the agent picks the wrong thing, and the plan
-dies with the context window that held it.
+The first problem is deciding what the agent should do next. A long project is a set of tasks with
+dependencies between them. Task B needs task A finished first, tasks C and D can run at the same
+time, and task E is blocked until both A and B are done. If you keep all of that in a flat to-do
+list, the agent picks the wrong task, and the plan is lost as soon as the agent's context window
+fills up and rolls over.
 
-At the end: is this actually done? The agent opened six pull requests. CI is green on four. One has a review comment
-nobody resolved. One looks merged-ready but the approval is sitting on a commit three pushes old. Which of the six can
-you actually merge, right now, without breaking `main`?
+The second problem is deciding whether the work is actually done. Say the agent opened six pull
+requests. The continuous integration checks are green on four of them. One has a review comment that
+nobody resolved. One looks ready to merge, but the approval sits on a commit that is three pushes
+old. You have to figure out which of the six you can merge right now without breaking the main
+branch.
 
-I reach for a different tool at each end. [Beads](https://github.com/steveyegge/beads) for the first, a skill I wrote
-called `fleet-merge` for the second. I used them for months before I noticed they are the same idea in two places.
+I use a different tool for each end. I use [Beads](https://github.com/steveyegge/beads) for the start
+of the job, and a skill I wrote called fleet-merge for the end. I used both for months before I
+noticed they are the same idea applied in two places.
 
 ## The first graph: what is ready to start
 
 [Beads](https://steve-yegge.medium.com/the-beads-revolution-how-i-built-the-todo-system-that-ai-agents-actually-want-to-use-228a5f9be2a9)
-is Steve Yegge's issue tracker for AI agents. Its one good idea, the one everything else hangs off, is that work is a
-directed graph. A task is a node. A dependency is an edge. You do not tell the agent what to do; you describe the shape
-of the work and let it ask the graph.
+is Steve Yegge's issue tracker for AI agents. The main idea is that work is a directed graph, where a
+task is a node and a dependency is an edge between two nodes. You do not tell the agent what to do.
+You describe the shape of the work, and the agent asks the graph what is available.
 
 ```bash
 # two nodes and an explicit edge between them
@@ -51,111 +57,126 @@ bd ready
 # bd-1  Add auth middleware   (no open blockers)
 ```
 
-`bd ready` is the one command that matters. It returns the nodes whose dependencies are all satisfied, which is exactly
-the set of things that can be worked right now. Finish `bd-1`, close it, and `bd-2` falls into the ready set on its own.
-The agent never guesses at order, because the graph recomputes it on demand; there is no plan to remember.
+The command that does the work is `bd ready`. It returns the nodes whose dependencies are all done,
+which is the set of tasks the agent can work on right now. When you finish bd-1 and close it, bd-2
+moves into the ready set on its own. The agent never has to guess the order, because the graph works
+out the order each time you ask, and there is no separate plan to remember.
 
-The other half is that the graph is git-backed, so it survives the thing agents are worst at:
-forgetting. Context windows roll over and the session dies, but the DAG is committed next to the code. A fresh agent
-runs `bd ready` and is immediately oriented, no re-briefing.
+The other useful part is that the graph is stored in git, so it survives the thing agents are worst
+at, which is forgetting. The context window rolls over and the session ends, but the graph is
+committed next to the code. A new agent runs `bd ready` and knows where things stand, with no need
+to be briefed again.
 
-So beads answers the start-of-work question, and it answers it structurally: ready work is a node with no unmet
-dependencies.
+Beads answers the start-of-work question, and it answers it as a rule you can check. Work is ready
+when the node has no unmet dependencies.
 
 ## The second graph: what is ready to finish
 
-`fleet-merge` is a skill I wrote to close the other end. Point it at a repo with open pull requests and it watches them
-until each one is genuinely mergeable, then merges it with whatever method the repo allows. When one of them needs a
-human decision it stops and says so, rather than sitting in the loop burning polls.
+Fleet-merge is a skill I wrote to handle the other end. You point it at a repository with open pull
+requests, and it watches each one until the pull request can be merged, and then it merges the pull
+request with whatever method the repository allows. When a pull request needs a human decision, it
+stops and says so, instead of staying in the loop and wasting checks.
 
-I did not think of it as a graph tool when I wrote it. It is. The pull requests are nodes. Two pull requests that touch
-the same file have an edge between them: whichever merges second has to rebase, so the two cannot land in parallel and
-have to be serialized by hand. The edge does for merging what a beads dependency does for starting: it takes parallel
-off the table. And every node has the same
-question hanging over it that beads asks at the other end, only inverted: beads asks whether a node can start,
-fleet-merge asks whether it can finish.
+I did not think of fleet-merge as a graph tool when I wrote it, but it is one. The pull requests are
+nodes. Two pull requests that change the same file have an edge between them, because whichever one
+merges second has to rebase, so the two cannot merge at the same time and have to be ordered by
+hand. The edge does for merging what a beads dependency does for starting, which is to remove the
+option of doing both at once. Every node also has the same question over it that beads asks, only
+reversed. Beads asks whether a node can start, and fleet-merge asks whether a node can finish.
 
-The answer is a gate: four conditions that must all hold before a pull request may merge. The reason it exists at all
-is that not one of them is satisfied by the signal GitHub shows you. Three of the four exist because an obvious
-green light has a look-alike failure behind it; the fourth marks the one decision the loop is not allowed to make.
+The answer is a set of four conditions that all have to hold before a pull request can merge. The
+reason the conditions are worth writing down is that none of them is the signal GitHub shows you.
+Three of the four exist because a green signal can hide a real failure, and the fourth marks the one
+decision the loop is not allowed to make.
 
-| GitHub shows you             | Why that is not done                                                                                      | What the gate requires                      |
+| GitHub shows you             | Why that is not done                                                                                      | What the check requires                     |
 |------------------------------|-----------------------------------------------------------------------------------------------------------|---------------------------------------------|
-| No red X                     | a check still running has no verdict yet, so "not failing" gets read as "passed"                          | every check finished, none of them failed   |
-| An APPROVED review           | the approval may sit on a commit you have since pushed over                                               | a sign-off on the commit that is there now  |
-| Zero unresolved threads      | a reviewer can file notes that never become blocking threads, so the count stays zero while a real finding sits hidden | no suppressed comments, checked every round |
-| A perfectly green release PR | cutting a release is a human decision                                                                     | that the pull request is not a release      |
+| No red X                     | a check that is still running has no result yet, so "not failing" gets read as "passed"                    | every check finished, and none of them failed |
+| An approved review           | the approval may sit on a commit you have pushed over since                                               | an approval on the commit that is there now |
+| Zero unresolved threads      | a reviewer can leave notes that never become blocking threads, so the count stays at zero and a real finding stays hidden | no hidden comments, checked every round     |
+| A green release pull request | cutting a release is a human decision                                                                     | the pull request is not a release           |
 
-The third row is the one that catches real bugs. Those notes arrive collapsed, one click out of view, and the review
-summary above them still says "no new comments" in good faith. The best find yet was a test asserting on a string that
-both the success path and the error path emit, so it would have passed on the exact failure it was written to catch.
-Nothing in the interface was red.
+The third row is the one that catches real bugs. The notes come in collapsed and one click out of
+view, and the review summary above them still says "no new comments" in good faith. The best example
+so far was a test that checked for a string that both the success path and the error path print, so
+the test would have passed on the exact failure it was written to catch. Nothing in the interface
+was red.
 
-Row two assumes a sign-off exists, so it is worth asking where one comes from. A teammate can review the pull request,
-and on a repo full of agent-written changes that is exactly the bottleneck you were trying to remove. The usual answer
-is an automated code reviewer, which works until the reviewer quietly skips a run: no review is posted, no error is
-raised, and the pull request simply waits for a verdict that is never coming.
+The second row assumes an approval exists, so it is worth asking where the approval comes from. A
+teammate can review the pull request, but on a repository full of agent-written changes, teammate
+review is the bottleneck you were trying to remove. The usual answer is an automated code reviewer,
+which works until the reviewer skips a run. When the reviewer skips a run, no review is posted, no
+error is raised, and the pull request waits for an approval that never comes.
 
-Rather than wait, fleet-merge runs the review itself, and the part worth stealing is how it decides who runs it. It
-does not pick a number of reviewers and fill the slots. It reads the diff and
-assigns one reviewer per failure class: a correctness reviewer when behavior changes, a silent-failure hunter when the
-change touches error paths or a check that can pass while proving nothing, a comment analyzer when prose describes the
-code, a test analyzer when a test claims something is now guarded. A one-file fix gets one reviewer; a migration gets
-four or five. The diff sets the number.
+Fleet-merge does not wait for the approval. When no review has landed on the current commit,
+fleet-merge runs the review itself, and the part worth copying is how it picks the reviewers. It does
+not pick a fixed number of reviewers and fill the slots. It reads the change and assigns one reviewer
+for each kind of failure the change can have. It assigns a correctness reviewer when behavior
+changes, a reviewer for silent failures when the change touches error handling or a check that can
+pass without proving anything, a comment reviewer when prose describes the code, and a test reviewer
+when a test claims something is now covered. A one-file fix gets one reviewer, and a large migration
+gets four or five. The size of the change sets the number.
 
-The first three rows are the same refusal written down once, so a loop can apply it without me: a signal that resembles
-done is not done, the same way `bd ready` refuses a node that still has an open blocker. The fourth is just a rule:
-releases stay mine to call. So the end-of-work answer mirrors the start: a pull request is finishable only when its
-gate passes on the commit that is there now.
+The first three rows are the same refusal, written down once so the loop can apply it without me. A
+signal that looks done is not done, the same way `bd ready` refuses a node that still has an open
+blocker. The fourth row is a rule, because releases stay mine to decide. The end-of-work answer
+matches the start-of-work answer. A pull request can finish only when all four conditions hold on the
+commit that is there now.
 
-## The same move, twice
+## The same idea in both tools
 
-Side by side:
+Here are the two tools side by side.
 
-|              | beads                          | fleet-merge                         |
-|--------------|--------------------------------|-------------------------------------|
-| Node         | a task                         | a pull request                      |
-| Edge         | this task needs that one first | these two touch the same file       |
-| The gate     | dependencies satisfied         | CI, fresh sign-off, no hidden notes, not a release |
-| The question | what can start                 | what can finish                     |
-| Who walks it | the coding agent               | the merge loop                      |
+|              | beads                          | fleet-merge                                        |
+|--------------|--------------------------------|----------------------------------------------------|
+| Node         | a task                         | a pull request                                     |
+| Edge         | this task needs that one first | these two change the same file                     |
+| The check    | dependencies are done          | checks pass, fresh approval, no hidden notes, not a release |
+| The question | what can start                 | what can finish                                    |
+| Who walks it | the coding agent               | the merge loop                                     |
 
-Sit with the gate row for a moment, because it is the row that does the work: both cells refuse to act on anything less
-than the written condition. The rest follows from it. Model the work as a graph, write down what *ready* and *done*
-actually mean, and let an engine walk it.
+Look at the check row, because it does the work in both tools. Each cell refuses to act on anything
+less than the written condition. The rest follows from the check. You put the work in a graph, you
+write down what ready and done actually mean, and you let a program walk the graph.
 
-None of which is a new idea, and I want to be careful not to dress it up as one. Build systems have worked this way
-since the 1970s. `make` does not ask you what to compile next; it walks a dependency graph and rebuilds what is stale.
-Bazel and Nix went further and made the gate strict, because a target that merely looks up to date is the oldest bug in
-the genre. Schedulers, CI pipelines, package managers: the same machine.
+None of that is a new idea, and I do not want to present it as one. Build systems have worked this
+way since the 1970s. `make` does not ask you what to compile next. It walks a dependency graph and
+rebuilds the targets that are stale. Bazel and Nix made the check stricter, because a target that
+looks up to date but is not is one of the oldest bugs in the field. Schedulers, continuous
+integration pipelines, and package managers all work the same way.
 
-What is new is what the graph drives. Those systems drove a compiler; here the graph drives an agent that writes the
-code and opens the pull request. The part I built is the gate, and the agent is why it has to be strict: `make` gets
-staleness wrong mechanically, from a bad timestamp or a missing dependency, but the agent that wrote the code gets
-doneness wrong agreeably. It wants the task to be done, so an ambiguous signal reads as success. Ask the agent that
-wrote the code whether the code is done and it will tell you yes. The gate is that second opinion, enforced by the loop
-whether or not I am watching.
+What is new is what the graph drives. The older systems drove a compiler. Here the graph drives an
+agent that writes the code and opens the pull request. The part I built is the set of checks, and the
+agent is the reason the checks have to be strict. `make` gets staleness wrong for mechanical reasons,
+like a bad timestamp or a missing dependency, but the agent that wrote the code gets doneness wrong
+because it wants the task to be finished. An ambiguous signal reads as success. If you ask the agent
+that wrote the code whether the code is done, it will tell you yes. The checks are the second
+opinion, and the loop enforces them whether or not I am watching.
 
-## The loop neither one closes
+## The loop neither tool closes yet
 
-Here is what got me to write this down. Each tool owns one end, and there is an obvious pipe between the ends that
-nothing currently connects:
+Here is the reason I wrote this down. Each tool handles one end of the work, and there is an obvious
+connection between the two ends that nothing joins today.
 
-![The loop: bd ready feeds the agent, the agent opens a pull request, the gate passes, fleet-merge merges, the node closes, and the next node becomes ready](loop.svg)
+![The loop: bd ready feeds the agent, the agent opens a pull request, the checks pass, fleet-merge merges, the node closes, and the next node becomes ready](loop.svg)
 
-In that picture, beads emits a ready node. The agent builds it and opens a pull request. fleet-merge watches that pull
-request until its gate passes, merges it, and the corresponding beads node closes, which drops the *next* node into the
-ready set. The graph empties itself, and the human watches two sets of gates instead of driving every step.
+In the diagram, beads returns a ready node. The agent builds the node and opens a pull request.
+Fleet-merge watches the pull request until the checks pass, merges the pull request, and closes the
+matching beads node, which moves the next node into the ready set. The graph empties itself, and I
+watch two sets of checks instead of driving every step.
 
-To be clear about where this stands: those two graphs are not wired together today. I run beads by hand and fleet-merge
-by hand, and the diagram shows where the pipe would go once I build it. Building that bridge, and showing a real
-dependency graph drain to a stack of merged pull requests without me touching the middle, is the next post.
+I want to be clear about where the work stands. The two graphs are not connected today. I run beads
+by hand and I run fleet-merge by hand, and the diagram shows where the connection would go once I
+build it. Building the connection, and showing a real dependency graph drain down to a stack of
+merged pull requests without me touching the middle, is the next post.
 
 ## Closing
 
-I set out to stop my agents from picking the wrong task, and to stop myself from merging half-reviewed code. Two narrow
-tools, two opposite ends of the work, and both fixes turned out to be the machine your build system has been running
-all along. The graph holds the plan so nothing rides on my memory, and the gate does the judging I used to do by hand,
-one pull request at a time.
+I set out to stop my agents from picking the wrong task, and to stop myself from merging code that
+was not fully reviewed. I ended up with two small tools at opposite ends of the work, and both
+answers turned out to be the same machine the build system has run all along. The graph holds the
+plan, so I do not have to keep it in my head, and the checks do the judging I used to do by hand, one
+pull request at a time.
 
-Put the work in a graph and write the gates down honestly. That is the whole post.
+Nothing here needs inventing. You put the work in a graph, you write the checks down honestly, and
+you let the programs do the walking.
