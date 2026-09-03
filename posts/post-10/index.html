@@ -8,7 +8,7 @@
 	<meta itemprop="description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. Neither idea is new: build systems have walked dependency graphs and gated on staleness since make. What changes when the graph drives an agent is the failure mode: make gets staleness wrong mechanically, and an agent gets it wrong agreeably, because it wants the task to be done.">
 	<meta itemprop="datePublished" content="2026-09-02T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-09-02T00:00:00+00:00">
-	<meta itemprop="wordCount" content="1669">
+	<meta itemprop="wordCount" content="1663">
 	<meta itemprop="keywords" content="Ai-Agents,Graph,Workflow,Beads,Automation,Claude-Code"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-10/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="Two graphs run my coding agents: one picks the work, one decides it is done">
@@ -29,20 +29,20 @@
 	<meta name="twitter:title" content="Two graphs run my coding agents: one picks the work, one decides it is done">
 	<meta name="twitter:description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. Neither idea is new: build systems have walked dependency graphs and gated on staleness since make. What changes when the graph drives an agent is the failure mode: make gets staleness wrong mechanically, and an agent gets it wrong agreeably, because it wants the task to be done.">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788395018" />
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788395018" />
-	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788395018"></script>
-		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788395018" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788395294" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788395294" />
+	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788395294"></script>
+		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788395294" />
 	
 
-        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788395018" />
+        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788395294" />
 
-	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788395018"></script>
+	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788395294"></script>
 	
-		<script src="https://mariano-gonzalez.com/js/main.js?v=1788395018"></script>
+		<script src="https://mariano-gonzalez.com/js/main.js?v=1788395294"></script>
 
 	
-		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788395018">
+		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788395294">
 	
 </head>
 
@@ -129,7 +129,7 @@ the set of things that can be worked right now. Finish <code>bd-1</code>, close 
 The agent never guesses at order, because the graph recomputes it on demand; there is no plan to remember.</p>
 <p>The other half is that the graph is git-backed, so it survives the thing agents are worst at:
 forgetting. Context windows roll over and the session dies, but the DAG is committed next to the code. A fresh agent
-runs <code>bd ready</code> and is immediately oriented, no re-briefing. The graph is the memory.</p>
+runs <code>bd ready</code> and is immediately oriented, no re-briefing.</p>
 <p>So beads answers the start-of-work question, and it answers it structurally: ready work is a node with no unmet
 dependencies.</p>
 <h2 id="the-second-graph-what-is-ready-to-finish">The second graph: what is ready to finish</h2>
@@ -188,12 +188,12 @@ raised, and the pull request simply waits for a verdict that is never coming.</p
 does not pick a number of reviewers and fill the slots. It reads the diff and
 assigns one reviewer per failure class: a correctness reviewer when behavior changes, a silent-failure hunter when the
 change touches error paths or a check that can pass while proving nothing, a comment analyzer when prose describes the
-code, a test analyzer when a test claims something is now guarded. A one-file fix draws a single reviewer. A migration
-draws a crowd. The diff decides who shows up.</p>
+code, a test analyzer when a test claims something is now guarded. A one-file fix gets one reviewer; a migration gets
+four or five. The diff sets the number.</p>
 <p>The first three rows are the same refusal written down once, so a loop can apply it without me: a signal that resembles
 done is not done, the same way <code>bd ready</code> refuses a node that still has an open blocker. The fourth is just a rule:
-releases stay mine to call. That is the end-of-work question answered structurally: finishable work is a node whose
-gate passes on its current state.</p>
+releases stay mine to call. So the end-of-work answer mirrors the start: a pull request is finishable only when its
+gate passes on the commit that is there now.</p>
 <h2 id="the-same-move-twice">The same move, twice</h2>
 <p>Side by side:</p>
 <table>
@@ -243,8 +243,8 @@ the genre. Schedulers, CI pipelines, package managers: the same machine.</p>
 code and opens the pull request. The part I built is the gate, and the agent is why it has to be strict: <code>make</code> gets
 staleness wrong mechanically, from a bad timestamp or a missing dependency, but the agent that wrote the code gets
 doneness wrong agreeably. It wants the task to be done, so an ambiguous signal reads as success. Ask the agent that
-wrote the code whether the code is done and it will tell you yes. The gate is the second opinion, written down once so a
-loop can hold it.</p>
+wrote the code whether the code is done and it will tell you yes. The gate is that second opinion, enforced by the loop
+whether or not I am watching.</p>
 <h2 id="the-loop-neither-one-closes">The loop neither one closes</h2>
 <p>Here is what got me to write this down. Each tool owns one end, and there is an obvious pipe between the ends that
 nothing currently connects:</p>
@@ -260,10 +260,9 @@ dependency graph drain to a stack of merged pull requests without me touching th
 <h2 id="closing">Closing</h2>
 <p>I set out to stop my agents from picking the wrong task, and to stop myself from merging half-reviewed code. Two narrow
 tools, two opposite ends of the work, and both fixes turned out to be the machine your build system has been running
-all along. The graph carries the plan and the memory. The gate does the judging I used to do by hand, one pull request
-at a time.</p>
-<p>Nothing here needs inventing. Put the work in a graph, write the gates down honestly, and let the engines do the
-walking. That is the whole post.</p>
+all along. The graph holds the plan so nothing rides on my memory, and the gate does the judging I used to do by hand,
+one pull request at a time.</p>
+<p>Put the work in a graph and write the gates down honestly. That is the whole post.</p>
 
 			</div>
 
