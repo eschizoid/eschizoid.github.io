@@ -27,7 +27,7 @@ them. Task B needs task A finished first, tasks C and D can run at the same time
 B are done. If you keep all of that in a flat to-do list, the agent picks the wrong task, and the plan is lost as soon
 as the agent's context window fills up and rolls over.
 
-The second problem is deciding whether the work is actually done. Say the agent opened six pull requests. The CI serve
+The second problem is deciding whether the work is actually done. Say the agent opened six pull requests. The CI server
 checks are green on four of them. One has a review comment that nobody resolved. One looks ready to merge, but the
 approval sits on a commit that is three pushes old. You have to figure out which of the six you can merge right now
 without breaking the main branch.
@@ -148,9 +148,9 @@ the two ends that nothing joins today.
 
 ![The loop: bd ready feeds the agent, the agent opens a pull request, the checks pass, fleet-merge merges, the node closes, and the next node becomes ready](loop.svg)
 
-In the diagram, beads returns a ready node. The agent builds the node and opens a pull request. Fleet-merge watches the
-pull request until the checks pass, merges the pull request, and closes the matching beads node, which moves the next
-node into the ready set. The graph empties itself, and I watch two sets of checks instead of driving every step.
+In the diagram, beads returns a ready node. The agent builds the node and opens a pull request. `fleet-merge` watches
+the pull request until the checks pass, merges the pull request, and closes the matching beads node, which moves the
+next node into the ready set. The graph empties itself, and I watch two sets of checks instead of driving every step.
 
 I want to be clear about where the work stands. The two graphs are not connected today. I run beads by hand and I run
 `fleet-merge` by hand, and the diagram shows where the connection would go once I build it. Building the connection, and
