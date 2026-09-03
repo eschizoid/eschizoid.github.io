@@ -80,7 +80,7 @@ failure behind it, and the gate exists to tell those apart.
 |------------------------------|-----------------------------------------------------------------------------------------------------------|---------------------------------------------|
 | A green checkmark            | a check still running has no verdict yet, so "not failing" gets read as "passed"                          | every check finished, none of them failed   |
 | An APPROVED review           | the approval may sit on a commit you have since pushed over                                               | a sign-off on the commit that is there now  |
-| Zero unresolved threads      | a reviewer can file notes that never become threads, so nothing is unresolved and nothing was read either | no suppressed comments, checked every round |
+| Zero unresolved threads      | a reviewer can file notes that never become blocking threads, so the count stays zero while a real finding sits hidden | no suppressed comments, checked every round |
 | A perfectly green release PR | cutting a release is a human decision                                                                     | that the pull request is not a release      |
 
 The third row is the one that catches real bugs. Those notes arrive collapsed, one click out of view, and the review
@@ -138,9 +138,9 @@ nothing currently connects:
 
 ![The loop: bd ready feeds the agent, the agent opens a pull request, the gate passes, fleet-merge merges, the node closes, and the next node becomes ready](loop.svg)
 
-Beads emits a ready node. The agent builds it and opens a pull request. fleet-merge watches that pull request until its
-gate passes, merges it, and the corresponding beads node closes, which drops the *next* node into the ready set. The
-graph empties itself, and I watch two sets of gates instead of driving every step.
+In that picture, beads emits a ready node. The agent builds it and opens a pull request. fleet-merge watches that pull
+request until its gate passes, merges it, and the corresponding beads node closes, which drops the *next* node into the
+ready set. The graph empties itself, and the human watches two sets of gates instead of driving every step.
 
 To be clear about where this stands: those two graphs are not wired together today. I run beads by hand and fleet-merge
 by hand, and the diagram shows where the pipe would go once I build it. Building that bridge, and showing a real
