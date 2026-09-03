@@ -83,20 +83,20 @@ human decision it stops and says so, rather than sitting in the loop burning pol
 I did not think of it as a graph tool when I wrote it. It is. The pull requests are nodes. Two pull requests that touch
 the same file have an edge between them: whichever merges second has to rebase, so the two cannot land in parallel and
 have to be serialized by hand. The edge does for merging what a beads dependency does for starting: it takes parallel
-off the table. And every node has the same
-question hanging over it that beads asks at the other end, only inverted: beads asks whether a node can start,
-fleet-merge asks whether it can finish.
+off the table. And every node has the same question hanging over it that beads asks at the other end, only inverted:
+beads asks whether a node can start,
+`fleet-merge` asks whether it can finish.
 
-The answer is a gate: four conditions that must all hold before a pull request may merge. The reason it exists at all
-is that not one of them is satisfied by the signal GitHub shows you. Three of the four exist because an obvious
-green light has a look-alike failure behind it; the fourth marks the one decision the loop is not allowed to make.
+The answer is a gate: four conditions that must all hold before a pull request may merge. The reason it exists at all is
+that not one of them is satisfied by the signal GitHub shows you. Three of the four exist because an obvious green light
+has a look-alike failure behind it; the fourth marks the one decision the loop is not allowed to make.
 
-| GitHub shows you             | Why that is not done                                                                                      | What the gate requires                      |
-|------------------------------|-----------------------------------------------------------------------------------------------------------|---------------------------------------------|
-| No red X                     | a check still running has no verdict yet, so "not failing" gets read as "passed"                          | every check finished, none of them failed   |
-| An APPROVED review           | the approval may sit on a commit you have since pushed over                                               | a sign-off on the commit that is there now  |
+| GitHub shows you             | Why that is not done                                                                                                   | What the gate requires                      |
+|------------------------------|------------------------------------------------------------------------------------------------------------------------|---------------------------------------------|
+| No red X                     | a check still running has no verdict yet, so "not failing" gets read as "passed"                                       | every check finished, none of them failed   |
+| An APPROVED review           | the approval may sit on a commit you have since pushed over                                                            | a sign-off on the commit that is there now  |
 | Zero unresolved threads      | a reviewer can file notes that never become blocking threads, so the count stays zero while a real finding sits hidden | no suppressed comments, checked every round |
-| A perfectly green release PR | cutting a release is a human decision                                                                     | that the pull request is not a release      |
+| A perfectly green release PR | cutting a release is a human decision                                                                                  | that the pull request is not a release      |
 
 The third row is the one that catches real bugs. Those notes arrive collapsed, one click out of view, and the review
 summary above them still says "no new comments" in good faith. The best find yet was a test asserting on a string that
@@ -108,29 +108,28 @@ and on a repo full of agent-written changes that is exactly the bottleneck you w
 is an automated code reviewer, which works until the reviewer quietly skips a run: no review is posted, no error is
 raised, and the pull request simply waits for a verdict that is never coming.
 
-Rather than wait, fleet-merge runs the review itself, and the part worth stealing is how it decides who runs it. It
-does not pick a number of reviewers and fill the slots. It reads the diff and
-assigns one reviewer per failure class: a correctness reviewer when behavior changes, a silent-failure hunter when the
-change touches error paths or a check that can pass while proving nothing, a comment analyzer when prose describes the
-code, a test analyzer when a test claims something is now guarded. A one-file fix gets one reviewer; a migration gets
-four or five. The diff sets the number.
+Rather than wait, `fleet-merge` runs the review itself, and the part worth stealing is how it decides who runs it. It
+does not pick a number of reviewers and fill the slots. It reads the diff and assigns one reviewer per failure class: a
+correctness reviewer when behavior changes, a silent-failure hunter when the change touches error paths or a check that
+can pass while proving nothing, a comment analyzer when prose describes the code, a test analyzer when a test claims
+something is now guarded. A one-file fix gets one reviewer; a migration gets four or five. The diff sets the number.
 
 The first three rows are the same refusal written down once, so a loop can apply it without me: a signal that resembles
 done is not done, the same way `bd ready` refuses a node that still has an open blocker. The fourth is just a rule:
-releases stay mine to call. So the end-of-work answer mirrors the start: a pull request is finishable only when its
-gate passes on the commit that is there now.
+releases stay mine to call. So the end-of-work answer mirrors the start: a pull request is finishable only when its gate
+passes on the commit that is there now.
 
 ## The same move, twice
 
 Side by side:
 
-|              | beads                          | fleet-merge                         |
-|--------------|--------------------------------|-------------------------------------|
-| Node         | a task                         | a pull request                      |
-| Edge         | this task needs that one first | these two touch the same file       |
+|              | beads                          | fleet-merge                                        |
+|--------------|--------------------------------|----------------------------------------------------|
+| Node         | a task                         | a pull request                                     |
+| Edge         | this task needs that one first | these two touch the same file                      |
 | The gate     | dependencies satisfied         | CI, fresh sign-off, no hidden notes, not a release |
-| The question | what can start                 | what can finish                     |
-| Who walks it | the coding agent               | the merge loop                      |
+| The question | what can start                 | what can finish                                    |
+| Who walks it | the coding agent               | the merge loop                                     |
 
 Sit with the gate row for a moment, because it is the row that does the work: both cells refuse to act on anything less
 than the written condition. The rest follows from it. Model the work as a graph, write down what *ready* and *done*
@@ -145,7 +144,7 @@ What is new is what the graph drives. Those systems drove a compiler; here the g
 code and opens the pull request. The part I built is the gate, and the agent is why it has to be strict: `make` gets
 staleness wrong mechanically, from a bad timestamp or a missing dependency, but the agent that wrote the code gets
 doneness wrong agreeably. It wants the task to be done, so an ambiguous signal reads as success. Ask the agent that
-wrote the code whether the code is done and it will tell you yes. The gate is that second opinion, enforced by the loop
+wrote the code whether the code is done, and it will tell you yes. The gate is that second opinion, enforced by the loop
 whether or not I am watching.
 
 ## The loop neither one closes
@@ -155,19 +154,19 @@ nothing currently connects:
 
 ![The loop: bd ready feeds the agent, the agent opens a pull request, the gate passes, fleet-merge merges, the node closes, and the next node becomes ready](loop.svg)
 
-In that picture, beads emits a ready node. The agent builds it and opens a pull request. fleet-merge watches that pull
+In that picture, beads emits a ready node. The agent builds it and opens a pull request. `fleet-merge` watches that pull
 request until its gate passes, merges it, and the corresponding beads node closes, which drops the *next* node into the
 ready set. The graph empties itself, and the human watches two sets of gates instead of driving every step.
 
-To be clear about where this stands: those two graphs are not wired together today. I run beads by hand and fleet-merge
-by hand, and the diagram shows where the pipe would go once I build it. Building that bridge, and showing a real
-dependency graph drain to a stack of merged pull requests without me touching the middle, is the next post.
+To be clear about where this stands: those two graphs are not wired together today. I run beads by hand and
+`fleet-merge` by hand, and the diagram shows where the pipe would go once I build it. Building that bridge, and showing
+a real dependency graph drain to a stack of merged pull requests without me touching the middle, is the next post.
 
 ## Closing
 
 I set out to stop my agents from picking the wrong task, and to stop myself from merging half-reviewed code. Two narrow
-tools, two opposite ends of the work, and both fixes turned out to be the machine your build system has been running
-all along. The graph holds the plan so nothing rides on my memory, and the gate does the judging I used to do by hand,
-one pull request at a time.
+tools, two opposite ends of the work, and both fixes turned out to be the machine your build system has been running all
+along. The graph holds the plan so nothing rides on my memory, and the gate does the judging I used to do by hand, one
+pull request at a time.
 
 Put the work in a graph and write the gates down honestly. That is the whole post.
