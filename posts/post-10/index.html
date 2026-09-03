@@ -29,20 +29,20 @@
 	<meta name="twitter:title" content="How I use two dependency graphs to run my coding agents">
 	<meta name="twitter:description" content="Beads tracks what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is done and merges it. Neither idea is new, because build systems have walked dependency graphs and checked for stale results since make. What changes when the graph drives an agent is the kind of mistake you get. make gets staleness wrong for mechanical reasons, and an agent gets doneness wrong because it wants the task to be finished.">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788410597" />
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788410597" />
-	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788410597"></script>
-		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788410597" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788411517" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788411517" />
+	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788411517"></script>
+		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788411517" />
 	
 
-        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788410597" />
+        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788411517" />
 
-	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788410597"></script>
+	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788411517"></script>
 	
-		<script src="https://mariano-gonzalez.com/js/main.js?v=1788410597"></script>
+		<script src="https://mariano-gonzalez.com/js/main.js?v=1788411517"></script>
 
 	
-		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788410597">
+		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788411517">
 	
 </head>
 
@@ -105,7 +105,7 @@
 them. Task B needs task A finished first, tasks C and D can run at the same time, and task E is blocked until both A and
 B are done. If you keep all of that in a flat to-do list, the agent picks the wrong task, and the plan is lost as soon
 as the agent&rsquo;s context window fills up and rolls over.</p>
-<p>The second problem is deciding whether the work is actually done. Say the agent opened six pull requests. The CI serve
+<p>The second problem is deciding whether the work is actually done. Say the agent opened six pull requests. The CI server
 checks are green on four of them. One has a review comment that nobody resolved. One looks ready to merge, but the
 approval sits on a commit that is three pushes old. You have to figure out which of the six you can merge right now
 without breaking the main branch.</p>
@@ -256,9 +256,9 @@ the two ends that nothing joins today.</p>
 <p><p class="md__image">
     <img src="loop.svg" alt="The loop: bd ready feeds the agent, the agent opens a pull request, the checks pass, fleet-merge merges, the node closes, and the next node becomes ready"  />
 </p></p>
-<p>In the diagram, beads returns a ready node. The agent builds the node and opens a pull request. Fleet-merge watches the
-pull request until the checks pass, merges the pull request, and closes the matching beads node, which moves the next
-node into the ready set. The graph empties itself, and I watch two sets of checks instead of driving every step.</p>
+<p>In the diagram, beads returns a ready node. The agent builds the node and opens a pull request. <code>fleet-merge</code> watches
+the pull request until the checks pass, merges the pull request, and closes the matching beads node, which moves the
+next node into the ready set. The graph empties itself, and I watch two sets of checks instead of driving every step.</p>
 <p>I want to be clear about where the work stands. The two graphs are not connected today. I run beads by hand and I run
 <code>fleet-merge</code> by hand, and the diagram shows where the connection would go once I build it. Building the connection, and
 showing a real dependency graph drain down to a stack of merged pull requests without me touching the middle, is the
