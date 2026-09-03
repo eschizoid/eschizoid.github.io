@@ -75,8 +75,8 @@ off the table. And every node has the same
 question hanging over it that beads asks at the other end, only inverted: beads asks whether a node can start,
 fleet-merge asks whether it can finish.
 
-The answer is a gate: four conditions that must all hold before a pull request may merge. What makes it worth writing
-down is that not one of them is satisfied by the signal GitHub shows you. Three of the four exist because an obvious
+The answer is a gate: four conditions that must all hold before a pull request may merge. The reason it exists at all
+is that not one of them is satisfied by the signal GitHub shows you. Three of the four exist because an obvious
 green light has a look-alike failure behind it; the fourth marks the one decision the loop is not allowed to make.
 
 | GitHub shows you             | Why that is not done                                                                                      | What the gate requires                      |
@@ -104,9 +104,9 @@ code, a test analyzer when a test claims something is now guarded. A one-file fi
 draws a crowd. The diff decides who shows up.
 
 The first three rows are the same refusal written down once, so a loop can apply it without me: a signal that resembles
-done is not done, the same way `bd ready` refuses a node that still has an open blocker. The fourth row is not a trap;
-it is a boundary, the finish that stays mine. That is the end-of-work question answered structurally: finishable work
-is a node whose gate passes on its current state.
+done is not done, the same way `bd ready` refuses a node that still has an open blocker. The fourth is just a rule:
+releases stay mine to call. That is the end-of-work question answered structurally: finishable work is a node whose
+gate passes on its current state.
 
 ## The same move, twice
 
@@ -132,9 +132,9 @@ the genre. Schedulers, CI pipelines, package managers: the same machine.
 What is new is what the graph drives. Those systems drove a compiler; here the graph drives an agent that writes the
 code and opens the pull request. The part I built is the gate, and the agent is why it has to be strict: `make` gets
 staleness wrong mechanically, from a bad timestamp or a missing dependency, but the agent that wrote the code gets
-doneness wrong agreeably. It wants the task to be done, so an ambiguous signal reads as success. Leave the verdict to
-the one who did the work and it grades itself a pass; the gate is the second opinion, written down so a loop can hold
-it.
+doneness wrong agreeably. It wants the task to be done, so an ambiguous signal reads as success. Ask the agent that
+wrote the code whether the code is done and it will tell you yes. The gate is the second opinion, written down once so a
+loop can hold it.
 
 ## The loop neither one closes
 
