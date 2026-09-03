@@ -68,17 +68,17 @@ human decision it stops and says so, rather than sitting in the loop burning pol
 
 I did not think of it as a graph tool when I wrote it. It is. The pull requests are nodes. Two pull requests that touch
 the same file have an edge between them: whichever merges second has to rebase, so fleet-merge lands them strictly one
-at a time. The edge decides merge order the same way a beads dependency decides start order. And every node has the same
+at a time. The edge does for merging what a beads dependency does for starting: it takes parallel off the table. And every node has the same
 question hanging over it that beads asks at the other end, only inverted: beads asks whether a node can start,
 fleet-merge asks whether it can finish.
 
 The answer is a gate: four conditions that must all hold before a pull request may merge. What makes it worth writing
-down is that not one of them is the signal GitHub puts in front of you. Every obvious green light has a look-alike
-failure behind it, and the gate exists to tell those apart.
+down is that not one of them is the signal GitHub puts in front of you. Three of the four exist because an obvious
+green light has a look-alike failure behind it; the fourth marks the one decision the loop is not allowed to make.
 
 | GitHub shows you             | Why that is not done                                                                                      | What the gate requires                      |
 |------------------------------|-----------------------------------------------------------------------------------------------------------|---------------------------------------------|
-| A green checkmark            | a check still running has no verdict yet, so "not failing" gets read as "passed"                          | every check finished, none of them failed   |
+| No red X                     | a check still running has no verdict yet, so "not failing" gets read as "passed"                          | every check finished, none of them failed   |
 | An APPROVED review           | the approval may sit on a commit you have since pushed over                                               | a sign-off on the commit that is there now  |
 | Zero unresolved threads      | a reviewer can file notes that never become blocking threads, so the count stays zero while a real finding sits hidden | no suppressed comments, checked every round |
 | A perfectly green release PR | cutting a release is a human decision                                                                     | that the pull request is not a release      |
@@ -90,7 +90,7 @@ Nothing in the interface was red.
 
 Row two assumes a sign-off exists, so it is worth asking where one comes from. A teammate can review the pull request,
 and on a repo full of agent-written changes that is exactly the bottleneck you were trying to remove. Most repos hand
-the job to an automated code reviewer instead, which works until the run it quietly skips: no review is posted, no error
+the job to an automated code reviewer instead, which works until a run it quietly skips: no review is posted, no error
 is raised, and the pull request simply waits for a verdict that is never coming.
 
 Rather than wait, fleet-merge runs the review itself, and the part worth stealing is how it decides who runs it. It
@@ -100,9 +100,10 @@ change touches error paths or a check that can pass while proving nothing, a com
 code, a test analyzer when a test claims something is now guarded. A one-file fix draws a single reviewer. A migration
 draws a crowd. The diff decides who shows up.
 
-All four rows are the same refusal written down once, so a loop can apply it without me: a signal that resembles done
-is not done, the same way `bd ready` refuses a node that still has an open blocker. That is the end-of-work question
-answered structurally: finishable work is a node whose gate passes on its current state.
+The first three rows are the same refusal written down once, so a loop can apply it without me: a signal that resembles
+done is not done, the same way `bd ready` refuses a node that still has an open blocker. The fourth row is not a trap;
+it is a boundary, the finish that stays mine. That is the end-of-work question answered structurally: finishable work
+is a node whose gate passes on its current state.
 
 ## The same move, twice
 
@@ -112,18 +113,18 @@ Side by side:
 |--------------|--------------------------------|-------------------------------------|
 | Node         | a task                         | a pull request                      |
 | Edge         | this task needs that one first | these two touch the same file       |
-| The gate     | dependencies satisfied         | CI, fresh sign-off, no hidden notes |
+| The gate     | dependencies satisfied         | CI, fresh sign-off, no hidden notes, not a release |
 | The question | what can start                 | what can finish                     |
 | Who walks it | the coding agent               | the merge loop                      |
 
-Sit with the gate row for a moment, because it is the row that does the work: both cells refuse a signal that merely
-looks like the real thing. The rest follows from it. Model the work as a graph, write down what *ready* and *done*
+Sit with the gate row for a moment, because it is the row that does the work: both cells refuse to act on anything less
+than the written condition. The rest follows from it. Model the work as a graph, write down what *ready* and *done*
 actually mean, and let an engine walk it.
 
-None of which is a new idea, and I want to be careful not to dress it up as one. Build systems have worked this way for
-forty years. `make` does not ask you what to compile next; it walks a dependency graph and rebuilds what is stale. Bazel
-and Nix went further and made the gate strict, because a target that merely looks up to date is the oldest bug in the
-genre. Every scheduler, every CI pipeline, every package manager is the same machine.
+None of which is a new idea, and I want to be careful not to dress it up as one. Build systems have worked this way
+since the 1970s. `make` does not ask you what to compile next; it walks a dependency graph and rebuilds what is stale.
+Bazel and Nix went further and made the gate strict, because a target that merely looks up to date is the oldest bug in
+the genre. Schedulers, CI pipelines, package managers: the same machine.
 
 What is new is the walker. Those systems walked graphs of files with a compiler at the other end; here the walker is an
 agent that can write the code, open the pull request and read the review. The part I built is the gate, and the walker
@@ -149,9 +150,9 @@ dependency graph drain to a stack of merged pull requests without me touching th
 ## Closing
 
 I set out to stop my agents from picking the wrong task, and to stop myself from merging half-reviewed code. Two narrow
-tools, two opposite ends of the work, and both fixes turned out to be the one your build system has been running all
-along. The graph carries the plan and the memory. The gate does the judging I used to do by hand, one pull request at a
-time.
+tools, two opposite ends of the work, and both fixes turned out to be the machine your build system has been running
+all along. The graph carries the plan and the memory. The gate does the judging I used to do by hand, one pull request
+at a time.
 
 Nothing here needs inventing. Put the work in a graph, write the gates down honestly, and hand the walk to the agent.
 That is the whole post.
