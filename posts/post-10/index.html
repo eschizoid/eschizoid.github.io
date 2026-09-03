@@ -8,7 +8,7 @@
 	<meta itemprop="description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. Neither idea is new: build systems have walked dependency graphs and gated on staleness since make. What changes when the graph drives an agent is the failure mode: make gets staleness wrong mechanically, and an agent gets it wrong agreeably, because it wants the task to be done.">
 	<meta itemprop="datePublished" content="2026-09-02T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-09-02T00:00:00+00:00">
-	<meta itemprop="wordCount" content="1671">
+	<meta itemprop="wordCount" content="1669">
 	<meta itemprop="keywords" content="Ai-Agents,Graph,Workflow,Beads,Automation,Claude-Code"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-10/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="Two graphs run my coding agents: one picks the work, one decides it is done">
@@ -29,20 +29,20 @@
 	<meta name="twitter:title" content="Two graphs run my coding agents: one picks the work, one decides it is done">
 	<meta name="twitter:description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. Neither idea is new: build systems have walked dependency graphs and gated on staleness since make. What changes when the graph drives an agent is the failure mode: make gets staleness wrong mechanically, and an agent gets it wrong agreeably, because it wants the task to be done.">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788394395" />
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788394395" />
-	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788394395"></script>
-		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788394395" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788395018" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788395018" />
+	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788395018"></script>
+		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788395018" />
 	
 
-        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788394395" />
+        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788395018" />
 
-	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788394395"></script>
+	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788395018"></script>
 	
-		<script src="https://mariano-gonzalez.com/js/main.js?v=1788394395"></script>
+		<script src="https://mariano-gonzalez.com/js/main.js?v=1788395018"></script>
 
 	
-		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788394395">
+		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788395018">
 	
 </head>
 
@@ -142,8 +142,8 @@ have to be serialized by hand. The edge does for merging what a beads dependency
 off the table. And every node has the same
 question hanging over it that beads asks at the other end, only inverted: beads asks whether a node can start,
 fleet-merge asks whether it can finish.</p>
-<p>The answer is a gate: four conditions that must all hold before a pull request may merge. What makes it worth writing
-down is that not one of them is satisfied by the signal GitHub shows you. Three of the four exist because an obvious
+<p>The answer is a gate: four conditions that must all hold before a pull request may merge. The reason it exists at all
+is that not one of them is satisfied by the signal GitHub shows you. Three of the four exist because an obvious
 green light has a look-alike failure behind it; the fourth marks the one decision the loop is not allowed to make.</p>
 <table>
 	<thead>
@@ -191,9 +191,9 @@ change touches error paths or a check that can pass while proving nothing, a com
 code, a test analyzer when a test claims something is now guarded. A one-file fix draws a single reviewer. A migration
 draws a crowd. The diff decides who shows up.</p>
 <p>The first three rows are the same refusal written down once, so a loop can apply it without me: a signal that resembles
-done is not done, the same way <code>bd ready</code> refuses a node that still has an open blocker. The fourth row is not a trap;
-it is a boundary, the finish that stays mine. That is the end-of-work question answered structurally: finishable work
-is a node whose gate passes on its current state.</p>
+done is not done, the same way <code>bd ready</code> refuses a node that still has an open blocker. The fourth is just a rule:
+releases stay mine to call. That is the end-of-work question answered structurally: finishable work is a node whose
+gate passes on its current state.</p>
 <h2 id="the-same-move-twice">The same move, twice</h2>
 <p>Side by side:</p>
 <table>
@@ -242,9 +242,9 @@ the genre. Schedulers, CI pipelines, package managers: the same machine.</p>
 <p>What is new is what the graph drives. Those systems drove a compiler; here the graph drives an agent that writes the
 code and opens the pull request. The part I built is the gate, and the agent is why it has to be strict: <code>make</code> gets
 staleness wrong mechanically, from a bad timestamp or a missing dependency, but the agent that wrote the code gets
-doneness wrong agreeably. It wants the task to be done, so an ambiguous signal reads as success. Leave the verdict to
-the one who did the work and it grades itself a pass; the gate is the second opinion, written down so a loop can hold
-it.</p>
+doneness wrong agreeably. It wants the task to be done, so an ambiguous signal reads as success. Ask the agent that
+wrote the code whether the code is done and it will tell you yes. The gate is the second opinion, written down once so a
+loop can hold it.</p>
 <h2 id="the-loop-neither-one-closes">The loop neither one closes</h2>
 <p>Here is what got me to write this down. Each tool owns one end, and there is an obvious pipe between the ends that
 nothing currently connects:</p>
