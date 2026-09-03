@@ -27,14 +27,14 @@ them. Task B needs task A finished first, tasks C and D can run at the same time
 B are done. If you keep all of that in a flat to-do list, the agent picks the wrong task, and the plan is lost as soon
 as the agent's context window fills up and rolls over.
 
-The second problem is deciding whether the work is actually done. Say the agent opened six pull requests. The continuous
-integration checks are green on four of them. One has a review comment that nobody resolved. One looks ready to merge,
-but the approval sits on a commit that is three pushes old. You have to figure out which of the six you can merge right
-now without breaking the main branch.
+The second problem is deciding whether the work is actually done. Say the agent opened six pull requests. The CI serve
+checks are green on four of them. One has a review comment that nobody resolved. One looks ready to merge, but the
+approval sits on a commit that is three pushes old. You have to figure out which of the six you can merge right now
+without breaking the main branch.
 
 I use a different tool for each end. I use [Beads](https://github.com/steveyegge/beads) for the start of the job, and a
-skill I wrote called fleet-merge for the end. I used both for months before I noticed they are the same idea applied in
-two places.
+skill I wrote called `fleet-merge` for the end. I used both for months before I noticed they are the same idea applied
+in two places.
 
 ## The first graph: what is ready to start
 
@@ -68,16 +68,16 @@ unmet dependencies.
 
 ## The second graph: what is ready to finish
 
-Fleet-merge is a skill I wrote to handle the other end. You point it at a repository with open pull requests, and it
+`fleet-merge` is a skill I wrote to handle the other end. You point it at a repository with open pull requests, and it
 watches each one until the pull request can be merged, and then it merges the pull request with whatever method the
 repository allows. When a pull request needs a human decision, it stops and says so, instead of staying in the loop and
 wasting checks.
 
-I did not think of fleet-merge as a graph tool when I wrote it, but it is one. The pull requests are nodes. Two pull
+I did not think of `fleet-merge` as a graph tool when I wrote it, but it is one. The pull requests are nodes. Two pull
 requests that change the same file have an edge between them, because whichever one merges second has to rebase, so the
 two cannot merge at the same time and have to be ordered by hand. The edge does for merging what a beads dependency does
 for starting, which is to remove the option of doing both at once. Every node also has the same question over it that
-beads asks, only reversed. Beads asks whether a node can start, and fleet-merge asks whether a node can finish.
+beads asks, only reversed. Beads asks whether a node can start, and `fleet-merge` asks whether a node can finish.
 
 The answer is a set of four conditions that all have to hold before a pull request can merge. The reason the conditions
 are worth writing down is that none of them is the signal GitHub shows you. Three of the four exist because a green
@@ -100,13 +100,13 @@ the pull request, but on a repository full of agent-written changes, teammate re
 to remove. The usual answer is an automated code reviewer, which works until the reviewer skips a run. When the reviewer
 skips a run, no review is posted, no error is raised, and the pull request waits for an approval that never comes.
 
-Fleet-merge does not wait for the approval. When no review has landed on the current commit, fleet-merge runs the review
-itself, and the part worth copying is how it picks the reviewers. It does not pick a fixed number of reviewers and fill
-the slots. It reads the change and assigns one reviewer for each kind of failure the change can have. It assigns a
-correctness reviewer when behavior changes, a reviewer for silent failures when the change touches error handling or a
-check that can pass without proving anything, a comment reviewer when prose describes the code, and a test reviewer when
-a test claims something is now covered. A one-file fix gets one reviewer, and a large migration gets four or five. The
-size of the change sets the number.
+`fleet-merge` does not wait for the approval. When no review has landed on the current commit, `fleet-merge` runs the
+review itself, and the part worth copying is how it picks the reviewers. It does not pick a fixed number of reviewers
+and fill the slots. It reads the change and assigns one reviewer for each kind of failure the change can have. It
+assigns a correctness reviewer when behavior changes, a reviewer for silent failures when the change touches error
+handling or a check that can pass without proving anything, a comment reviewer when prose describes the code, and a test
+reviewer when a test claims something is now covered. A one-file fix gets one reviewer, and a large migration gets four
+or five. The size of the change sets the number.
 
 The first three rows are the same refusal, written down once so the loop can apply it without me. A signal that looks
 done is not done, the same way `bd ready` refuses a node that still has an open blocker. The fourth row is a rule,
@@ -153,7 +153,7 @@ pull request until the checks pass, merges the pull request, and closes the matc
 node into the ready set. The graph empties itself, and I watch two sets of checks instead of driving every step.
 
 I want to be clear about where the work stands. The two graphs are not connected today. I run beads by hand and I run
-fleet-merge by hand, and the diagram shows where the connection would go once I build it. Building the connection, and
+`fleet-merge` by hand, and the diagram shows where the connection would go once I build it. Building the connection, and
 showing a real dependency graph drain down to a stack of merged pull requests without me touching the middle, is the
 next post.
 
