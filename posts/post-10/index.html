@@ -29,20 +29,20 @@
 	<meta name="twitter:title" content="Two graphs run my coding agents: one picks the work, one decides it is done">
 	<meta name="twitter:description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. Neither idea is new: build systems have walked dependency graphs and gated on staleness since make. What changes when the graph drives an agent is the failure mode: make gets staleness wrong mechanically, and an agent gets it wrong agreeably, because it wants the task to be done.">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788394208" />
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788394208" />
-	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788394208"></script>
-		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788394208" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788394395" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788394395" />
+	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788394395"></script>
+		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788394395" />
 	
 
-        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788394208" />
+        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788394395" />
 
-	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788394208"></script>
+	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788394395"></script>
 	
-		<script src="https://mariano-gonzalez.com/js/main.js?v=1788394208"></script>
+		<script src="https://mariano-gonzalez.com/js/main.js?v=1788394395"></script>
 
 	
-		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788394208">
+		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788394395">
 	
 </head>
 
@@ -96,7 +96,10 @@
 			</div>
 					
 			<div class="markdown">
-				<h2 id="the-setup">The setup</h2>
+				<p><p class="md__image">
+    <img src="logo.png" alt="two graphs"  />
+</p></p>
+<h2 id="the-setup">The setup</h2>
 <p>Hand real work to a coding agent and two problems show up, one at each end of the same job.</p>
 <p>At the start: what should it do next? A long project is a web of dependencies. Task B needs A finished first, C and D
 can go in parallel, E is blocked on both. Hold that in a flat TODO and the agent picks the wrong thing, and the plan
@@ -183,7 +186,7 @@ is an automated code reviewer, which works until the reviewer quietly skips a ru
 raised, and the pull request simply waits for a verdict that is never coming.</p>
 <p>Rather than wait, fleet-merge runs the review itself, and the part worth stealing is how it decides who runs it. It
 does not pick a number of reviewers and fill the slots. It reads the diff and
-assigns one specialist per failure class: a correctness reviewer when behavior changes, a silent-failure hunter when the
+assigns one reviewer per failure class: a correctness reviewer when behavior changes, a silent-failure hunter when the
 change touches error paths or a check that can pass while proving nothing, a comment analyzer when prose describes the
 code, a test analyzer when a test claims something is now guarded. A one-file fix draws a single reviewer. A migration
 draws a crowd. The diff decides who shows up.</p>
