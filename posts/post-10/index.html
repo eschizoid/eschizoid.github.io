@@ -5,14 +5,14 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Two graphs run my coding agents: one picks the work, one decides it is done - Mariano Gonzalez</title><meta name="viewport" content="width=device-width, initial-scale=1">
 	
 	<meta itemprop="name" content="Two graphs run my coding agents: one picks the work, one decides it is done">
-	<meta itemprop="description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. Neither idea is new: build systems have walked dependency graphs and gated on staleness since make. What changes when the walker is an agent is the failure mode: make gets staleness wrong mechanically, and an agent gets it wrong agreeably, because it wants the task to be done.">
+	<meta itemprop="description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. Neither idea is new: build systems have walked dependency graphs and gated on staleness since make. What changes when the graph drives an agent is the failure mode: make gets staleness wrong mechanically, and an agent gets it wrong agreeably, because it wants the task to be done.">
 	<meta itemprop="datePublished" content="2026-09-02T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-09-02T00:00:00+00:00">
-	<meta itemprop="wordCount" content="1655">
+	<meta itemprop="wordCount" content="1671">
 	<meta itemprop="keywords" content="Ai-Agents,Graph,Workflow,Beads,Automation,Claude-Code"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-10/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="Two graphs run my coding agents: one picks the work, one decides it is done">
-	<meta property="og:description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. Neither idea is new: build systems have walked dependency graphs and gated on staleness since make. What changes when the walker is an agent is the failure mode: make gets staleness wrong mechanically, and an agent gets it wrong agreeably, because it wants the task to be done.">
+	<meta property="og:description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. Neither idea is new: build systems have walked dependency graphs and gated on staleness since make. What changes when the graph drives an agent is the failure mode: make gets staleness wrong mechanically, and an agent gets it wrong agreeably, because it wants the task to be done.">
 	<meta property="og:locale" content="en_us">
 	<meta property="og:type" content="article">
 		<meta property="article:section" content="posts">
@@ -27,22 +27,22 @@
 
 	<meta name="twitter:card" content="summary">
 	<meta name="twitter:title" content="Two graphs run my coding agents: one picks the work, one decides it is done">
-	<meta name="twitter:description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. Neither idea is new: build systems have walked dependency graphs and gated on staleness since make. What changes when the walker is an agent is the failure mode: make gets staleness wrong mechanically, and an agent gets it wrong agreeably, because it wants the task to be done.">
+	<meta name="twitter:description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. Neither idea is new: build systems have walked dependency graphs and gated on staleness since make. What changes when the graph drives an agent is the failure mode: make gets staleness wrong mechanically, and an agent gets it wrong agreeably, because it wants the task to be done.">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788393940" />
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788393940" />
-	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788393940"></script>
-		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788393940" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788394208" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788394208" />
+	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788394208"></script>
+		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788394208" />
 	
 
-        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788393940" />
+        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788394208" />
 
-	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788393940"></script>
+	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788394208"></script>
 	
-		<script src="https://mariano-gonzalez.com/js/main.js?v=1788393940"></script>
+		<script src="https://mariano-gonzalez.com/js/main.js?v=1788394208"></script>
 
 	
-		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788393940">
+		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788394208">
 	
 </head>
 
@@ -134,12 +134,13 @@ dependencies.</p>
 until each one is genuinely mergeable, then merges it with whatever method the repo allows. When one of them needs a
 human decision it stops and says so, rather than sitting in the loop burning polls.</p>
 <p>I did not think of it as a graph tool when I wrote it. It is. The pull requests are nodes. Two pull requests that touch
-the same file have an edge between them: whichever merges second has to rebase, so fleet-merge lands them strictly one
-at a time. The edge does for merging what a beads dependency does for starting: it takes parallel off the table. And every node has the same
+the same file have an edge between them: whichever merges second has to rebase, so the two cannot land in parallel and
+have to be serialized by hand. The edge does for merging what a beads dependency does for starting: it takes parallel
+off the table. And every node has the same
 question hanging over it that beads asks at the other end, only inverted: beads asks whether a node can start,
 fleet-merge asks whether it can finish.</p>
 <p>The answer is a gate: four conditions that must all hold before a pull request may merge. What makes it worth writing
-down is that not one of them is the signal GitHub puts in front of you. Three of the four exist because an obvious
+down is that not one of them is satisfied by the signal GitHub shows you. Three of the four exist because an obvious
 green light has a look-alike failure behind it; the fourth marks the one decision the loop is not allowed to make.</p>
 <table>
 	<thead>
@@ -177,9 +178,9 @@ summary above them still says &ldquo;no new comments&rdquo; in good faith. The b
 both the success path and the error path emit, so it would have passed on the exact failure it was written to catch.
 Nothing in the interface was red.</p>
 <p>Row two assumes a sign-off exists, so it is worth asking where one comes from. A teammate can review the pull request,
-and on a repo full of agent-written changes that is exactly the bottleneck you were trying to remove. Most repos hand
-the job to an automated code reviewer instead, which works until a run it quietly skips: no review is posted, no error
-is raised, and the pull request simply waits for a verdict that is never coming.</p>
+and on a repo full of agent-written changes that is exactly the bottleneck you were trying to remove. The usual answer
+is an automated code reviewer, which works until the reviewer quietly skips a run: no review is posted, no error is
+raised, and the pull request simply waits for a verdict that is never coming.</p>
 <p>Rather than wait, fleet-merge runs the review itself, and the part worth stealing is how it decides who runs it. It
 does not pick a number of reviewers and fill the slots. It reads the diff and
 assigns one specialist per failure class: a correctness reviewer when behavior changes, a silent-failure hunter when the
@@ -235,11 +236,12 @@ actually mean, and let an engine walk it.</p>
 since the 1970s. <code>make</code> does not ask you what to compile next; it walks a dependency graph and rebuilds what is stale.
 Bazel and Nix went further and made the gate strict, because a target that merely looks up to date is the oldest bug in
 the genre. Schedulers, CI pipelines, package managers: the same machine.</p>
-<p>What is new is the walker. Those systems walked graphs of files with a compiler at the other end; here the walker is an
-agent that can write the code, open the pull request and read the review. The part I built is the gate, and the walker
-is why it has to be strict: <code>make</code> gets staleness wrong mechanically, from a bad timestamp or a missing dependency, but
-an agent gets it wrong agreeably. It wants the task to be done, so an ambiguous signal reads as success. That failure
-mode is what the gate is written against.</p>
+<p>What is new is what the graph drives. Those systems drove a compiler; here the graph drives an agent that writes the
+code and opens the pull request. The part I built is the gate, and the agent is why it has to be strict: <code>make</code> gets
+staleness wrong mechanically, from a bad timestamp or a missing dependency, but the agent that wrote the code gets
+doneness wrong agreeably. It wants the task to be done, so an ambiguous signal reads as success. Leave the verdict to
+the one who did the work and it grades itself a pass; the gate is the second opinion, written down so a loop can hold
+it.</p>
 <h2 id="the-loop-neither-one-closes">The loop neither one closes</h2>
 <p>Here is what got me to write this down. Each tool owns one end, and there is an obvious pipe between the ends that
 nothing currently connects:</p>
@@ -257,8 +259,8 @@ dependency graph drain to a stack of merged pull requests without me touching th
 tools, two opposite ends of the work, and both fixes turned out to be the machine your build system has been running
 all along. The graph carries the plan and the memory. The gate does the judging I used to do by hand, one pull request
 at a time.</p>
-<p>Nothing here needs inventing. Put the work in a graph, write the gates down honestly, and hand the walk to the agent.
-That is the whole post.</p>
+<p>Nothing here needs inventing. Put the work in a graph, write the gates down honestly, and let the engines do the
+walking. That is the whole post.</p>
 
 			</div>
 
