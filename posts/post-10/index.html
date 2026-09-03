@@ -8,7 +8,7 @@
 	<meta itemprop="description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. Neither idea is new: build systems have walked dependency graphs and gated on staleness since make. What changes when the walker is an agent is the failure mode: make gets staleness wrong mechanically, and an agent gets it wrong agreeably, because it wants the task to be done.">
 	<meta itemprop="datePublished" content="2026-09-02T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-09-02T00:00:00+00:00">
-	<meta itemprop="wordCount" content="1624">
+	<meta itemprop="wordCount" content="1655">
 	<meta itemprop="keywords" content="Ai-Agents,Graph,Workflow,Beads,Automation,Claude-Code"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-10/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="Two graphs run my coding agents: one picks the work, one decides it is done">
@@ -29,20 +29,20 @@
 	<meta name="twitter:title" content="Two graphs run my coding agents: one picks the work, one decides it is done">
 	<meta name="twitter:description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. Neither idea is new: build systems have walked dependency graphs and gated on staleness since make. What changes when the walker is an agent is the failure mode: make gets staleness wrong mechanically, and an agent gets it wrong agreeably, because it wants the task to be done.">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788393732" />
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788393732" />
-	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788393732"></script>
-		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788393732" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788393940" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788393940" />
+	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788393940"></script>
+		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788393940" />
 	
 
-        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788393732" />
+        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788393940" />
 
-	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788393732"></script>
+	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788393940"></script>
 	
-		<script src="https://mariano-gonzalez.com/js/main.js?v=1788393732"></script>
+		<script src="https://mariano-gonzalez.com/js/main.js?v=1788393940"></script>
 
 	
-		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788393732">
+		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788393940">
 	
 </head>
 
@@ -135,12 +135,12 @@ until each one is genuinely mergeable, then merges it with whatever method the r
 human decision it stops and says so, rather than sitting in the loop burning polls.</p>
 <p>I did not think of it as a graph tool when I wrote it. It is. The pull requests are nodes. Two pull requests that touch
 the same file have an edge between them: whichever merges second has to rebase, so fleet-merge lands them strictly one
-at a time. The edge decides merge order the same way a beads dependency decides start order. And every node has the same
+at a time. The edge does for merging what a beads dependency does for starting: it takes parallel off the table. And every node has the same
 question hanging over it that beads asks at the other end, only inverted: beads asks whether a node can start,
 fleet-merge asks whether it can finish.</p>
 <p>The answer is a gate: four conditions that must all hold before a pull request may merge. What makes it worth writing
-down is that not one of them is the signal GitHub puts in front of you. Every obvious green light has a look-alike
-failure behind it, and the gate exists to tell those apart.</p>
+down is that not one of them is the signal GitHub puts in front of you. Three of the four exist because an obvious
+green light has a look-alike failure behind it; the fourth marks the one decision the loop is not allowed to make.</p>
 <table>
 	<thead>
 			<tr>
@@ -151,7 +151,7 @@ failure behind it, and the gate exists to tell those apart.</p>
 	</thead>
 	<tbody>
 			<tr>
-					<td>A green checkmark</td>
+					<td>No red X</td>
 					<td>a check still running has no verdict yet, so &ldquo;not failing&rdquo; gets read as &ldquo;passed&rdquo;</td>
 					<td>every check finished, none of them failed</td>
 			</tr>
@@ -178,7 +178,7 @@ both the success path and the error path emit, so it would have passed on the ex
 Nothing in the interface was red.</p>
 <p>Row two assumes a sign-off exists, so it is worth asking where one comes from. A teammate can review the pull request,
 and on a repo full of agent-written changes that is exactly the bottleneck you were trying to remove. Most repos hand
-the job to an automated code reviewer instead, which works until the run it quietly skips: no review is posted, no error
+the job to an automated code reviewer instead, which works until a run it quietly skips: no review is posted, no error
 is raised, and the pull request simply waits for a verdict that is never coming.</p>
 <p>Rather than wait, fleet-merge runs the review itself, and the part worth stealing is how it decides who runs it. It
 does not pick a number of reviewers and fill the slots. It reads the diff and
@@ -186,9 +186,10 @@ assigns one specialist per failure class: a correctness reviewer when behavior c
 change touches error paths or a check that can pass while proving nothing, a comment analyzer when prose describes the
 code, a test analyzer when a test claims something is now guarded. A one-file fix draws a single reviewer. A migration
 draws a crowd. The diff decides who shows up.</p>
-<p>All four rows are the same refusal written down once, so a loop can apply it without me: a signal that resembles done
-is not done, the same way <code>bd ready</code> refuses a node that still has an open blocker. That is the end-of-work question
-answered structurally: finishable work is a node whose gate passes on its current state.</p>
+<p>The first three rows are the same refusal written down once, so a loop can apply it without me: a signal that resembles
+done is not done, the same way <code>bd ready</code> refuses a node that still has an open blocker. The fourth row is not a trap;
+it is a boundary, the finish that stays mine. That is the end-of-work question answered structurally: finishable work
+is a node whose gate passes on its current state.</p>
 <h2 id="the-same-move-twice">The same move, twice</h2>
 <p>Side by side:</p>
 <table>
@@ -213,7 +214,7 @@ answered structurally: finishable work is a node whose gate passes on its curren
 			<tr>
 					<td>The gate</td>
 					<td>dependencies satisfied</td>
-					<td>CI, fresh sign-off, no hidden notes</td>
+					<td>CI, fresh sign-off, no hidden notes, not a release</td>
 			</tr>
 			<tr>
 					<td>The question</td>
@@ -227,13 +228,13 @@ answered structurally: finishable work is a node whose gate passes on its curren
 			</tr>
 	</tbody>
 </table>
-<p>Sit with the gate row for a moment, because it is the row that does the work: both cells refuse a signal that merely
-looks like the real thing. The rest follows from it. Model the work as a graph, write down what <em>ready</em> and <em>done</em>
+<p>Sit with the gate row for a moment, because it is the row that does the work: both cells refuse to act on anything less
+than the written condition. The rest follows from it. Model the work as a graph, write down what <em>ready</em> and <em>done</em>
 actually mean, and let an engine walk it.</p>
-<p>None of which is a new idea, and I want to be careful not to dress it up as one. Build systems have worked this way for
-forty years. <code>make</code> does not ask you what to compile next; it walks a dependency graph and rebuilds what is stale. Bazel
-and Nix went further and made the gate strict, because a target that merely looks up to date is the oldest bug in the
-genre. Every scheduler, every CI pipeline, every package manager is the same machine.</p>
+<p>None of which is a new idea, and I want to be careful not to dress it up as one. Build systems have worked this way
+since the 1970s. <code>make</code> does not ask you what to compile next; it walks a dependency graph and rebuilds what is stale.
+Bazel and Nix went further and made the gate strict, because a target that merely looks up to date is the oldest bug in
+the genre. Schedulers, CI pipelines, package managers: the same machine.</p>
 <p>What is new is the walker. Those systems walked graphs of files with a compiler at the other end; here the walker is an
 agent that can write the code, open the pull request and read the review. The part I built is the gate, and the walker
 is why it has to be strict: <code>make</code> gets staleness wrong mechanically, from a bad timestamp or a missing dependency, but
@@ -253,9 +254,9 @@ by hand, and the diagram shows where the pipe would go once I build it. Building
 dependency graph drain to a stack of merged pull requests without me touching the middle, is the next post.</p>
 <h2 id="closing">Closing</h2>
 <p>I set out to stop my agents from picking the wrong task, and to stop myself from merging half-reviewed code. Two narrow
-tools, two opposite ends of the work, and both fixes turned out to be the one your build system has been running all
-along. The graph carries the plan and the memory. The gate does the judging I used to do by hand, one pull request at a
-time.</p>
+tools, two opposite ends of the work, and both fixes turned out to be the machine your build system has been running
+all along. The graph carries the plan and the memory. The gate does the judging I used to do by hand, one pull request
+at a time.</p>
 <p>Nothing here needs inventing. Put the work in a graph, write the gates down honestly, and hand the walk to the agent.
 That is the whole post.</p>
 
