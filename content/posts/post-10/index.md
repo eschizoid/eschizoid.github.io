@@ -4,8 +4,8 @@ date: 2026-09-02
 description: "Beads models what an AI agent should do next as a dependency graph. My fleet-merge
   skill decides when a pull request is actually done and merges it. Neither idea is new: build
   systems have walked dependency graphs and gated on staleness since make. What changes when the
-  walker is an agent is the failure mode: make gets staleness wrong mechanically, and an agent gets
-  it wrong agreeably, because it wants the task to be done."
+  graph drives an agent is the failure mode: make gets staleness wrong mechanically, and an agent
+  gets it wrong agreeably, because it wants the task to be done."
 tags:
   - ai-agents
   - graph
@@ -67,13 +67,14 @@ until each one is genuinely mergeable, then merges it with whatever method the r
 human decision it stops and says so, rather than sitting in the loop burning polls.
 
 I did not think of it as a graph tool when I wrote it. It is. The pull requests are nodes. Two pull requests that touch
-the same file have an edge between them: whichever merges second has to rebase, so fleet-merge lands them strictly one
-at a time. The edge does for merging what a beads dependency does for starting: it takes parallel off the table. And every node has the same
+the same file have an edge between them: whichever merges second has to rebase, so the two cannot land in parallel and
+have to be serialized by hand. The edge does for merging what a beads dependency does for starting: it takes parallel
+off the table. And every node has the same
 question hanging over it that beads asks at the other end, only inverted: beads asks whether a node can start,
 fleet-merge asks whether it can finish.
 
 The answer is a gate: four conditions that must all hold before a pull request may merge. What makes it worth writing
-down is that not one of them is the signal GitHub puts in front of you. Three of the four exist because an obvious
+down is that not one of them is satisfied by the signal GitHub shows you. Three of the four exist because an obvious
 green light has a look-alike failure behind it; the fourth marks the one decision the loop is not allowed to make.
 
 | GitHub shows you             | Why that is not done                                                                                      | What the gate requires                      |
@@ -89,9 +90,9 @@ both the success path and the error path emit, so it would have passed on the ex
 Nothing in the interface was red.
 
 Row two assumes a sign-off exists, so it is worth asking where one comes from. A teammate can review the pull request,
-and on a repo full of agent-written changes that is exactly the bottleneck you were trying to remove. Most repos hand
-the job to an automated code reviewer instead, which works until a run it quietly skips: no review is posted, no error
-is raised, and the pull request simply waits for a verdict that is never coming.
+and on a repo full of agent-written changes that is exactly the bottleneck you were trying to remove. The usual answer
+is an automated code reviewer, which works until the reviewer quietly skips a run: no review is posted, no error is
+raised, and the pull request simply waits for a verdict that is never coming.
 
 Rather than wait, fleet-merge runs the review itself, and the part worth stealing is how it decides who runs it. It
 does not pick a number of reviewers and fill the slots. It reads the diff and
@@ -126,11 +127,12 @@ since the 1970s. `make` does not ask you what to compile next; it walks a depend
 Bazel and Nix went further and made the gate strict, because a target that merely looks up to date is the oldest bug in
 the genre. Schedulers, CI pipelines, package managers: the same machine.
 
-What is new is the walker. Those systems walked graphs of files with a compiler at the other end; here the walker is an
-agent that can write the code, open the pull request and read the review. The part I built is the gate, and the walker
-is why it has to be strict: `make` gets staleness wrong mechanically, from a bad timestamp or a missing dependency, but
-an agent gets it wrong agreeably. It wants the task to be done, so an ambiguous signal reads as success. That failure
-mode is what the gate is written against.
+What is new is what the graph drives. Those systems drove a compiler; here the graph drives an agent that writes the
+code and opens the pull request. The part I built is the gate, and the agent is why it has to be strict: `make` gets
+staleness wrong mechanically, from a bad timestamp or a missing dependency, but the agent that wrote the code gets
+doneness wrong agreeably. It wants the task to be done, so an ambiguous signal reads as success. Leave the verdict to
+the one who did the work and it grades itself a pass; the gate is the second opinion, written down so a loop can hold
+it.
 
 ## The loop neither one closes
 
@@ -154,5 +156,5 @@ tools, two opposite ends of the work, and both fixes turned out to be the machin
 all along. The graph carries the plan and the memory. The gate does the judging I used to do by hand, one pull request
 at a time.
 
-Nothing here needs inventing. Put the work in a graph, write the gates down honestly, and hand the walk to the agent.
-That is the whole post.
+Nothing here needs inventing. Put the work in a graph, write the gates down honestly, and let the engines do the
+walking. That is the whole post.
