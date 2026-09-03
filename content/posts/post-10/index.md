@@ -16,6 +16,8 @@ tags:
 draft: false
 ---
 
+![two graphs](logo.png)
+
 ## The setup
 
 Hand real work to a coding agent and two problems show up, one at each end of the same job.
@@ -96,7 +98,7 @@ raised, and the pull request simply waits for a verdict that is never coming.
 
 Rather than wait, fleet-merge runs the review itself, and the part worth stealing is how it decides who runs it. It
 does not pick a number of reviewers and fill the slots. It reads the diff and
-assigns one specialist per failure class: a correctness reviewer when behavior changes, a silent-failure hunter when the
+assigns one reviewer per failure class: a correctness reviewer when behavior changes, a silent-failure hunter when the
 change touches error paths or a check that can pass while proving nothing, a comment analyzer when prose describes the
 code, a test analyzer when a test claims something is now guarded. A one-file fix draws a single reviewer. A migration
 draws a crowd. The diff decides who shows up.
