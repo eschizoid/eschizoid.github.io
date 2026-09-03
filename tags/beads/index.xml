@@ -16,11 +16,11 @@
 		
 			<atom:link href="https://mariano-gonzalez.com/tags/beads/index.xml" rel="self" type="application/rss+xml" />
 			<item>
-				<title>Two graphs run my coding agents: one picks the work, one decides it is done</title>
+				<title>How I use two dependency graphs to run my coding agents</title>
 				<link>https://mariano-gonzalez.com/posts/post-10/</link>
 				<pubDate>Wed, 02 Sep 2026 00:00:00 +0000</pubDate>
 				<guid>https://mariano-gonzalez.com/posts/post-10/</guid>
-				<description>&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;&#xA;    &lt;img src=&#34;logo.png&#34; alt=&#34;two graphs&#34;  /&gt;&#xA;&lt;/p&gt;&lt;/p&gt;&#xA;&lt;h2 id=&#34;the-setup&#34;&gt;The setup&lt;/h2&gt;&#xA;&lt;p&gt;Hand real work to a coding agent and two problems show up, one at each end of the same job.&lt;/p&gt;&#xA;&lt;p&gt;At the start: what should it do next? A long project is a web of dependencies. Task B needs A finished first, C and D&#xA;can go in parallel, E is blocked on both. Hold that in a flat TODO and the agent picks the wrong thing, and the plan&#xA;dies with the context window that held it.&lt;/p&gt;</description>
+				<description>&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;&#xA;    &lt;img src=&#34;logo.png&#34; alt=&#34;two graphs&#34;  /&gt;&#xA;&lt;/p&gt;&lt;/p&gt;&#xA;&lt;h2 id=&#34;the-setup&#34;&gt;The setup&lt;/h2&gt;&#xA;&lt;p&gt;When you give real work to a coding agent, two problems show up, one at the start of the job and one&#xA;at the end.&lt;/p&gt;&#xA;&lt;p&gt;The first problem is deciding what the agent should do next. A long project is a set of tasks with&#xA;dependencies between them. Task B needs task A finished first, tasks C and D can run at the same&#xA;time, and task E is blocked until both A and B are done. If you keep all of that in a flat to-do&#xA;list, the agent picks the wrong task, and the plan is lost as soon as the agent&amp;rsquo;s context window&#xA;fills up and rolls over.&lt;/p&gt;</description>
 			</item>
 	</channel>
 </rss>
