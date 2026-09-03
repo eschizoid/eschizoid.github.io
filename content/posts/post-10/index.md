@@ -57,7 +57,7 @@ The agent never guesses at order, because the graph recomputes it on demand; the
 
 The other half is that the graph is git-backed, so it survives the thing agents are worst at:
 forgetting. Context windows roll over and the session dies, but the DAG is committed next to the code. A fresh agent
-runs `bd ready` and is immediately oriented, no re-briefing. The graph is the memory.
+runs `bd ready` and is immediately oriented, no re-briefing.
 
 So beads answers the start-of-work question, and it answers it structurally: ready work is a node with no unmet
 dependencies.
@@ -100,13 +100,13 @@ Rather than wait, fleet-merge runs the review itself, and the part worth stealin
 does not pick a number of reviewers and fill the slots. It reads the diff and
 assigns one reviewer per failure class: a correctness reviewer when behavior changes, a silent-failure hunter when the
 change touches error paths or a check that can pass while proving nothing, a comment analyzer when prose describes the
-code, a test analyzer when a test claims something is now guarded. A one-file fix draws a single reviewer. A migration
-draws a crowd. The diff decides who shows up.
+code, a test analyzer when a test claims something is now guarded. A one-file fix gets one reviewer; a migration gets
+four or five. The diff sets the number.
 
 The first three rows are the same refusal written down once, so a loop can apply it without me: a signal that resembles
 done is not done, the same way `bd ready` refuses a node that still has an open blocker. The fourth is just a rule:
-releases stay mine to call. That is the end-of-work question answered structurally: finishable work is a node whose
-gate passes on its current state.
+releases stay mine to call. So the end-of-work answer mirrors the start: a pull request is finishable only when its
+gate passes on the commit that is there now.
 
 ## The same move, twice
 
@@ -133,8 +133,8 @@ What is new is what the graph drives. Those systems drove a compiler; here the g
 code and opens the pull request. The part I built is the gate, and the agent is why it has to be strict: `make` gets
 staleness wrong mechanically, from a bad timestamp or a missing dependency, but the agent that wrote the code gets
 doneness wrong agreeably. It wants the task to be done, so an ambiguous signal reads as success. Ask the agent that
-wrote the code whether the code is done and it will tell you yes. The gate is the second opinion, written down once so a
-loop can hold it.
+wrote the code whether the code is done and it will tell you yes. The gate is that second opinion, enforced by the loop
+whether or not I am watching.
 
 ## The loop neither one closes
 
@@ -155,8 +155,7 @@ dependency graph drain to a stack of merged pull requests without me touching th
 
 I set out to stop my agents from picking the wrong task, and to stop myself from merging half-reviewed code. Two narrow
 tools, two opposite ends of the work, and both fixes turned out to be the machine your build system has been running
-all along. The graph carries the plan and the memory. The gate does the judging I used to do by hand, one pull request
-at a time.
+all along. The graph holds the plan so nothing rides on my memory, and the gate does the judging I used to do by hand,
+one pull request at a time.
 
-Nothing here needs inventing. Put the work in a graph, write the gates down honestly, and let the engines do the
-walking. That is the whole post.
+Put the work in a graph and write the gates down honestly. That is the whole post.
