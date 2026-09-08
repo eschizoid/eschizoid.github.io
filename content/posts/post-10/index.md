@@ -152,7 +152,7 @@ whether or not I am watching.
 Here is what got me to write this down. Each tool owns one end, and there is an obvious pipe between the ends that
 nothing currently connects:
 
-![The loop: bd ready feeds the agent, the agent opens a pull request, the gate passes, fleet-merge merges, the node closes, and the next node becomes ready](loop.svg)
+{{< inline-svg "loop.svg" >}}
 
 In that picture, beads emits a ready node. The agent builds it and opens a pull request. `fleet-merge` watches that pull
 request until its gate passes, merges it, and the corresponding beads node closes, which drops the *next* node into the

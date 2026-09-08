@@ -7,7 +7,7 @@ echo "🔨 Building site..."
 hugo
 
 echo "📦 Committing source to main..."
-git add content/ config.toml static/ deploy.sh
+git add content/ config.toml static/ layouts/ deploy.sh
 git commit -m "$COMMIT_MSG" || echo "Nothing new to commit on main"
 git push origin main
 

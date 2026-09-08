@@ -1,0 +1,7 @@
+{{- /* Inline a page-resource SVG into the HTML so it survives corporate
+proxies that strip image/svg+xml responses - inlined, it is just markup
+inside text/html. The SVG itself carries role="img" and aria-label. */ -}}
+{{- $svg := .Page.Resources.Get (.Get 0) -}}
+{{- if $svg -}}{{ $svg.Content | safeHTML }}{{- else -}}
+{{- errorf "inline-svg: resource %q not found on page %s" (.Get 0) .Page.Path -}}
+{{- end -}}
