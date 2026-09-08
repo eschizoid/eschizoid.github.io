@@ -8,7 +8,7 @@
 	<meta itemprop="description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. Neither idea is new: build systems have walked dependency graphs and gated on staleness since make. What changes when the graph drives an agent is the failure mode: make gets staleness wrong mechanically, and an agent gets it wrong agreeably, because it wants the task to be done.">
 	<meta itemprop="datePublished" content="2026-09-02T00:00:00+00:00">
 	<meta itemprop="dateModified" content="2026-09-02T00:00:00+00:00">
-	<meta itemprop="wordCount" content="1879">
+	<meta itemprop="wordCount" content="1898">
 	<meta itemprop="keywords" content="Ai-Agents,Graph,Workflow,Beads,Automation,Claude-Code"><meta property="og:url" content="https://mariano-gonzalez.com/posts/post-10/">
 	<meta property="og:site_name" content="Mariano Gonzalez">
 	<meta property="og:title" content="Two graphs run my coding agents: one picks the work, one decides it is done">
@@ -29,20 +29,20 @@
 	<meta name="twitter:title" content="Two graphs run my coding agents: one picks the work, one decides it is done">
 	<meta name="twitter:description" content="Beads models what an AI agent should do next as a dependency graph. My fleet-merge skill decides when a pull request is actually done and merges it. Neither idea is new: build systems have walked dependency graphs and gated on staleness since make. What changes when the graph drives an agent is the failure mode: make gets staleness wrong mechanically, and an agent gets it wrong agreeably, because it wants the task to be done.">
 <link href='https://fonts.googleapis.com/css?family=Playfair+Display:700' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788451941" />
-	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788451941" />
-	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788451941"></script>
-		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788451941" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/normalize.css?v=1788910297" />
+	<link rel="stylesheet" type="text/css" media="screen" href="https://mariano-gonzalez.com/css/main.css?v=1788910297" />
+	<script defer type="text/javascript"  src="/js/copy-code.js?v=1788910297"></script>
+		<link rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/custom.css?v=1788910297" />
 	
 
-        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788451941" />
+        <link id="dark-scheme" rel="stylesheet" type="text/css" href="https://mariano-gonzalez.com/css/dark.css?v=1788910297" />
 
-	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788451941"></script>
+	<script src="https://mariano-gonzalez.com/js/feather.min.js?v=1788910297"></script>
 	
-		<script src="https://mariano-gonzalez.com/js/main.js?v=1788451941"></script>
+		<script src="https://mariano-gonzalez.com/js/main.js?v=1788910297"></script>
 
 	
-		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788451941">
+		<link rel="stylesheet" href="/css/copy-code-button.css?v=1788910297">
 	
 </head>
 
@@ -259,9 +259,38 @@ whether or not I am watching.</p>
 <h2 id="the-loop-neither-one-closes">The loop neither one closes</h2>
 <p>Here is what got me to write this down. Each tool owns one end, and there is an obvious pipe between the ends that
 nothing currently connects:</p>
-<p><p class="md__image">
-    <img src="loop.svg" alt="The loop: bd ready feeds the agent, the agent opens a pull request, the gate passes, fleet-merge merges, the node closes, and the next node becomes ready"  />
-</p></p>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 280" role="img" aria-label="The loop: bd ready feeds the agent, the agent opens a pull request, the gate passes, fleet-merge converges and merges, the node closes, and the next node becomes ready.">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9375fd"/>
+    </marker>
+  </defs>
+  <g fill="none" stroke="#8a8f98" stroke-width="1.5">
+    <rect x="40"  y="40"  width="170" height="50" rx="8"/>
+    <rect x="300" y="40"  width="250" height="50" rx="8"/>
+    <rect x="640" y="40"  width="220" height="50" rx="8"/>
+    <rect x="640" y="190" width="220" height="50" rx="8"/>
+    <rect x="300" y="190" width="250" height="50" rx="8"/>
+    <rect x="40"  y="190" width="170" height="50" rx="8"/>
+  </g>
+  <g stroke="#9375fd" stroke-width="1.5" marker-end="url(#arr)">
+    <line x1="210" y1="65"  x2="292" y2="65"/>
+    <line x1="550" y1="65"  x2="632" y2="65"/>
+    <line x1="750" y1="90"  x2="750" y2="182"/>
+    <line x1="640" y1="215" x2="558" y2="215"/>
+    <line x1="300" y1="215" x2="218" y2="215"/>
+    <line x1="125" y1="190" x2="125" y2="98"/>
+  </g>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" fill="#8a8f98" text-anchor="middle">
+    <text x="125" y="70">bd ready</text>
+    <text x="425" y="70">agent implements the node</text>
+    <text x="750" y="70">opens a pull request</text>
+    <text x="750" y="220">the gate passes</text>
+    <text x="425" y="220">fleet-merge converges + merges</text>
+    <text x="125" y="220">node closes</text>
+  </g>
+</svg>
+
 <p>In that picture, beads emits a ready node. The agent builds it and opens a pull request. <code>fleet-merge</code> watches that pull
 request until its gate passes, merges it, and the corresponding beads node closes, which drops the <em>next</em> node into the
 ready set. The graph empties itself, and the human watches two sets of gates instead of driving every step.</p>
